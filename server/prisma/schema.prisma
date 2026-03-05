@@ -13,12 +13,73 @@ datasource db {
   provider = "postgresql"
 }
 
+enum MeetingStatus {
+  ACTIVE
+  ENDED
+}
+
+enum ParticipantRole {
+  HOST
+  MEMBER
+}
+
+enum ParticipantStatus {
+  WAITING
+  APPROVED
+  REJECTED
+  LEFT
+}
+
 model User {
-  id        String   @id //clerk user id
-  email     String   @unique
+  id        String  @id //clerk user id
+  email     String  @unique
   firstName String
   lastName  String?
   imageUrl  String?
+
+  meetingsHosted Meeting[]     @relation("HostMeetings")
+  participants   Participant[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Meeting {
+  id     String        @id @default(uuid())
+  title  String?
+  status MeetingStatus @default(ACTIVE)
+
+  hostId String
+  host   User   @relation("HostMeetings", fields: [hostId], references: [id])
+
+  participants Participant[]
+
+  createdAt DateTime  @default(now())
+  startedAt DateTime?
+  endedAt   DateTime?
+
+  @@index([hostId])
+}
+
+model Participant {
+  id String @id @default(uuid())
+
+  meetingId String
+  meeting   Meeting @relation(fields: [meetingId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  role   ParticipantRole
+  status ParticipantStatus
+
+  joinedAt DateTime?
+  leftAt   DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@unique([meetingId, userId])
+  @@index([meetingId])
+  @@index([userId])
+  @@index([meetingId, status])
 }
