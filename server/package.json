@@ -20,9 +20,12 @@
   "type": "module",
   "dependencies": {
     "@clerk/express": "^2.0.1",
+    "@prisma/adapter-pg": "^7.4.2",
+    "@prisma/client": "^7.4.2",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "svix": "^1.86.0"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.5",
@@ -31,6 +34,7 @@
     "@types/node": "^25.3.3",
     "eslint": "^10.0.2",
     "prettier": "^3.8.1",
+    "prisma": "^7.4.2",
     "ts-node-dev": "^2.0.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
