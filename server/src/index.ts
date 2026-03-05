@@ -3,8 +3,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import { clerkMiddleware,clerkClient, requireAuth, getAuth } from '@clerk/express'
 import {prisma} from "@/lib/prisma.js";
-import {verifyWebhook} from "@clerk/express/webhooks";
 import {Webhook} from "svix";
+import Room from "@/router/room.js";
 
 dotenv.config()
 
@@ -58,8 +58,6 @@ app.post('/api/webhooks', express.raw({ type: 'application/json' }), async (req,
     }
 
     res.status(200).json({ success: true });
-
-
 })
 
 // Global clerkMiddleware for all subsequent routes
@@ -68,7 +66,10 @@ app.use(clerkMiddleware());
 
 // Use requireAuth() to protect this route
 // If user isn't authenticated, requireAuth() will redirect back to the homepage
-app.get('/protected', requireAuth(), async (req, res) => {
+
+app.use('/api/room',Room)
+
+app.get('/api/protected', requireAuth(), async (req, res) => {
     // Use `getAuth()` to get the user's `userId`
     const { userId } = getAuth(req)
 
