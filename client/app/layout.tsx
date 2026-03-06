@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider"
-import {ClerkProvider, Show,SignInButton,SignUpButton,UserButton} from "@clerk/nextjs";
-import {ModeToggle} from "@/components/ModeToggle";
+import {ClerkProvider} from "@clerk/nextjs";
 import { shadcn } from '@clerk/ui/themes'
 import Header from "@/components/Header";
+import AxiosProvider from "@/components/AxiosProvider";
 
 
 const geistSans = Geist({
@@ -34,22 +34,25 @@ export default function RootLayout({
           <body
               className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
+          <ClerkProvider
+              appearance={{
+                  theme: shadcn,
+              }}
+          >
           <ThemeProvider
               attribute="class"
               defaultTheme="system"
               enableSystem
               disableTransitionOnChange
-
           >
-              <ClerkProvider
-                  appearance={{
-                      theme: shadcn,
-                  }}
-              >
-                  <Header/>
-                  {children}
-              </ClerkProvider>
+                <AxiosProvider>
+                    <Header/>
+                    {children}
+                </AxiosProvider>
+
+
           </ThemeProvider>
+          </ClerkProvider>
 
           </body>
           </html>

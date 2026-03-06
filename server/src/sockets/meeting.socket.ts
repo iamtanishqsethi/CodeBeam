@@ -2,6 +2,16 @@ import type {Server} from "socket.io";
 import {prisma} from "@/lib/prisma.js";
 import * as meetingService from "@/services/meeting.service.js";
 export default function registerMeetingSocket(io:Server) {
+    //authentication middleware
+    io.use((socket,next)=>{
+        const userId=socket.handshake.auth.userId
+        if(!userId){
+            return next(new Error("Unauthorized"))
+        }
+        socket.data.userId=userId
+        next()
+    })
+
     io.on('connection',(socket)=>{
 
         socket.on('join-waiting-room',({meetingId})=>{

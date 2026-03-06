@@ -9,7 +9,11 @@ router.post('/',express.raw({ type: 'application/json' }), async (req, res) => {
 
     console.log("webhook received")
     const payload = req.body;
-    const headers=req.headers;
+    const headers={
+        'svix-id':req.headers['svix-id'] as string,
+        'svix-timestamp':req.headers['svix-timestamp'] as string,
+        'svix-signature':req.headers['svix-signature'] as string,
+    }
 
     const webhookSecret = process.env.CLERK_WEBHOOK_SIGNING_SECRET;
     if (!webhookSecret) {
@@ -34,7 +38,7 @@ router.post('/',express.raw({ type: 'application/json' }), async (req, res) => {
             email: data.email_addresses?.[0]?.email_address,
             firstName: data.first_name,
             lastName: data.last_name,
-            imageUrl: data.profile_image_url,
+            imageUrl: data.image_url,
         };
 
         await prisma.user.upsert({

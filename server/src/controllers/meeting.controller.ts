@@ -17,7 +17,7 @@ export async function createMeeting(req:Request, res:Response) {
     }
     catch (e:Error|any){
         console.error(e)
-        return res.status(500).json(e.message||'Internal Server Error')
+        return res.status(500).json({message: e.message || 'Internal Server Error'})
     }
 
 
@@ -42,7 +42,7 @@ export async function joinMeeting(req:Request,res:Response) {
     }
     catch (e:Error|any){
         console.error(e)
-        return res.status(500).json(e.message||'Internal Server Error')
+        return res.status(500).json({message: e.message || 'Internal Server Error'})
     }
 
 }
@@ -73,7 +73,7 @@ export async function getWaitingRoom(req:Request,res:Response){
     }
     catch (e:Error|any){
         console.error(e)
-        return res.status(500).json(e.message||'Internal Server Error')
+        return res.status(500).json({message: e.message || 'Internal Server Error'})
     }
 
 
@@ -100,6 +100,9 @@ export async function approveParticipants(req:Request,res:Response){
         }
 
         const participantId=req.body.participantId
+        if(!participantId){
+            return res.status(400).json({message:'Participant ID is required'})
+        }
 
         await meetingService.approveParticipant(meetingId as string,participantId)
 
@@ -107,7 +110,7 @@ export async function approveParticipants(req:Request,res:Response){
     }
     catch (e:Error|any){
         console.error(e)
-        return res.status(500).json(e.message||'Internal Server Error')
+        return res.status(500).json({message: e.message || 'Internal Server Error'})
     }
 
 }
@@ -133,12 +136,15 @@ export async function rejectParticipants(req:Request,res:Response){
 
 
         const participantId=req.body.participantId
-        await meetingService.rejectParticipant(participantId)
+        if(!participantId){
+            return res.status(400).json({message:'Participant ID is required'})
+        }
+        await meetingService.rejectParticipant(meetingId as string,participantId)
         return res.status(200).json({success:true})
     }
     catch (e:Error|any){
         console.error(e)
-        return res.status(500).json(e.message||'Internal Server Error')
+        return res.status(500).json({message: e.message || 'Internal Server Error'})
     }
 
 
@@ -162,7 +168,7 @@ export async function getLiveKitToken(req:Request,res:Response){
     }
     catch (e:Error|any){
         console.error(e)
-        return res.status(500).json(e.message||'Internal Server Error')
+        return res.status(500).json({message: e.message || 'Internal Server Error'})
     }
 
 }
@@ -186,7 +192,7 @@ export async function leaveMeeting(req:Request,res:Response){
     }
     catch (e:Error|any){
         console.error(e)
-        return res.status(500).json(e.message||'Internal Server Error')
+        return res.status(500).json({message: e.message || 'Internal Server Error'})
     }
 
 
@@ -194,6 +200,11 @@ export async function leaveMeeting(req:Request,res:Response){
 
 export async function getParticipants(req:Request,res:Response){
     try{
+        const { userId } = getAuth(req)
+        if(!userId){
+            return res.status(401).json({message:'Unauthorized'})
+        }
+
         const meetingId=req.params.meetingId
         if(!meetingId){
             return res.status(400).json({message:'Meeting ID is required'})
@@ -204,7 +215,7 @@ export async function getParticipants(req:Request,res:Response){
     }
     catch (e:Error|any){
         console.error(e)
-        return res.status(500).json(e.message||'Internal Server Error')
+        return res.status(500).json({message: e.message || 'Internal Server Error'})
     }
 
 

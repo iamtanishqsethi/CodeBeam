@@ -73,9 +73,9 @@ export async function approveParticipant(meetingId:string,participantId:string){
      })
 }
 
-export async function rejectParticipant(participantId:string){
+export async function rejectParticipant(meetingId:string,participantId:string){
     await prisma.participant.update({
-        where:{id:participantId},
+        where:{id:participantId,meetingId},
         data:{status:"REJECTED"}
     })
 }

@@ -13,11 +13,12 @@ dotenv.config()
 const port = process.env.PORT || 5051;
 const app = express();
 
+const clientUrl=process.env.CLIENT_URL||"http://localhost:3000"
 
 
 app.use(cors(
     {
-        origin:['http://localhost:3000'],
+        origin:[clientUrl],
         credentials:true
     }
 ));
@@ -36,7 +37,7 @@ const server=http.createServer(app)
 
 export const io=new Server(server,{
     cors:{
-        origin:"http://localhost:3000",
+        origin:clientUrl,
     }
 })
 
