@@ -23,7 +23,7 @@ app.use(cors(
 ));
 
 // Webhook route MUST be placed BEFORE express.json() middleware
-app.post('/api/webhooks', webhookService)
+app.use('/api/webhooks', webhookService)
 
 app.use(express.json());
 
