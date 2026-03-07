@@ -3,7 +3,7 @@ import {ControlBar, DisconnectButton, TrackToggle} from "@livekit/components-rea
 import {useMeetingStore} from "@/store/meetingStore";
 import {Track} from "livekit-client";
 import {Button} from "@/components/ui/button";
-import {PhoneOff, Users} from "lucide-react";
+import {MessageCircle, PhoneOff, Users} from "lucide-react";
 interface ControlsProps {
     meetingId: string;
     onLeave: () => void;
@@ -36,6 +36,14 @@ export default function Controls({meetingId,onLeave}: ControlsProps ) {
                     className="rounded-full h-10 w-10 flex items-center justify-center bg-muted hover:bg-muted/80 transition-colors "
                 />
                 {/* Participants toggle */}
+                <Button
+                    variant={isChatOpen?'secondary':"ghost"}
+                    size="icon"
+                    className="rounded-full h-10 w-10"
+                    onClick={toggleChat}
+                >
+                    <MessageCircle className="h-4 w-4"/>
+                </Button>
                 <Button
                     variant={isParticipantsOpen ? "secondary" : "ghost"}
                     size="icon"

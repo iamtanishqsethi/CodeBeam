@@ -1,9 +1,8 @@
 import {useMeetingStore} from "@/store/meetingStore";
 import {useEffect, useState} from "react";
 import {getLiveKitToken, joinMeeting} from "@/services/api";
-import {connectSocket, socket} from "@/lib/socket";
+import {connectSocket, disconnectSocket, socket} from "@/lib/socket";
 import {useUser} from "@clerk/nextjs";
-import logger from "livekit-client/src/logger";
 
 export function useMeeting(meetingId:string) {
     const setToken=useMeetingStore(state=>state.setToken)
@@ -31,6 +30,9 @@ export function useMeeting(meetingId:string) {
                     const {token}=await getLiveKitToken(meetingId)
                     setToken(token)
                     setStatus("joined")
+                    // Host/Approved user also joins the room to hear waiting room events
+                    // but it will also give notification when a user approved in meet that "new user in waiting room" ? -> server side fix
+                    socket.emit("join-waiting-room", {meetingId})
                 }
                 if (data.status === "REJECTED") {
                     setStatus("rejected")
@@ -67,6 +69,7 @@ export function useMeeting(meetingId:string) {
         return ()=>{
             socket.off('participant-approved',handleApproved)
             socket.off('participant-rejected',handleRejected)
+            disconnectSocket()
         }
     },[meetingId,user])
 

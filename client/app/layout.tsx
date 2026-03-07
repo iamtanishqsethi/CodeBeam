@@ -6,6 +6,7 @@ import {ClerkProvider} from "@clerk/nextjs";
 import { shadcn } from '@clerk/ui/themes'
 import Header from "@/components/Header";
 import AxiosProvider from "@/components/AxiosProvider";
+import {Toaster} from "@/components/ui/sonner";
 
 
 const geistSans = Geist({
@@ -46,6 +47,7 @@ export default function RootLayout({
               disableTransitionOnChange
           >
                 <AxiosProvider>
+                    <Toaster />
                     <Header/>
                     {children}
                 </AxiosProvider>

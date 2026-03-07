@@ -4,12 +4,15 @@ import "@livekit/components-styles";
 import {useMeetingStore} from "@/store/meetingStore";
 import {useRouter} from "next/navigation";
 import {leaveMeeting} from "@/services/api";
-import {socket} from "@/lib/socket";
+import {connectSocket, disconnectSocket, socket} from "@/lib/socket";
 import {LiveKitRoom, RoomAudioRenderer} from "@livekit/components-react";
 import LayoutManager from "@/components/LayoutManager";
 import Controls from "@/components/Controls";
 import ParticipantsSidebar from "@/components/ParticipantsSidebar";
 import ChatPanel from "@/components/ChatPanel";
+import {toast} from "sonner";
+import {useEffect} from "react";
+import {useUser} from "@clerk/nextjs";
 
 interface MeetingLayoutProps {
     meetingId: string;
@@ -47,6 +50,19 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
         }
     }
 
+    useEffect(() => {
+        const handleNewWaitingUser = (data: any) => {
+            toast.message("New user joined the waiting room");
+            console.log("new user waiting", data);
+        };
+
+        socket.on('new-waiting-user', handleNewWaitingUser);
+
+        return () => {
+            socket.off('new-waiting-user', handleNewWaitingUser);
+        };
+    }, []);
+
 
     return(
 
@@ -64,7 +80,7 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
                    <LayoutManager/>
                    <Controls meetingId={meetingId} onLeave={handleLeave}/>
                </div>
-               {isParticipantsOpen && <ParticipantsSidebar/>}
+               {isParticipantsOpen && <ParticipantsSidebar meetingId={meetingId}/>}
                {isChatOpen && <ChatPanel meetingId={meetingId}/>}
                <RoomAudioRenderer/>
            </div>

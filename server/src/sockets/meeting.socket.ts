@@ -14,17 +14,35 @@ export default function registerMeetingSocket(io:Server) {
 
     io.on('connection',(socket)=>{
 
-        socket.on('join-waiting-room',({meetingId})=>{
+        socket.on('join-waiting-room',async ({meetingId})=>{
             try{
                 socket.join(meetingId)
-                socket.to(meetingId).emit('new-waiting-user')
+                
+                // Only notify others if the joining user is actually a WAITING participant
+                const participant = await prisma.participant.findFirst({
+                    where: {
+                        meetingId,
+                        userId: socket.data.userId,
+                        status: 'WAITING',
+                    },
+                    include:{
+                        user:true
+                    }
+                });
+
+                if (participant) {
+                    socket.to(meetingId).emit('new-waiting-user', {
+                        userName: participant.user.firstName,
+                        userId:socket.data.userId,
+                        imageUrl:participant.user.imageUrl,
+                        participantId: participant.id
+                    });
+                }
             }
             catch (e){
                 socket.emit('meeting:error',{message:"Error joining room"})
                 console.error(e)
             }
-
-
         })
 
         socket.on('approve-user',async ({participantId,meetingId})=>{

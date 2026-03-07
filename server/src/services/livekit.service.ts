@@ -1,4 +1,5 @@
 import {AccessToken} from "livekit-server-sdk";
+import {prisma} from "@/lib/prisma.js";
 
 export async function createLiveKitToken(meetingId:string,userId:string){
     if(!meetingId || !userId){
@@ -9,8 +10,12 @@ export async function createLiveKitToken(meetingId:string,userId:string){
     if(!LiveKitApiKey || !LiveKitApiSecret){
         throw new Error('LiveKit API Key and Secret are required')
     }
+    const user=await prisma.user.findUnique({where:{id:userId}})
+    if(!user){
+        throw new Error('User not found')
+    }
 
-    const accessToken=new AccessToken(LiveKitApiKey,LiveKitApiSecret,{identity:userId})
+    const accessToken=new AccessToken(LiveKitApiKey,LiveKitApiSecret,{identity:user.firstName})
     accessToken.addGrant(({
         room:meetingId,
         canPublish:true,
