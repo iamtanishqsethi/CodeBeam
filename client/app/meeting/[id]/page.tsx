@@ -10,31 +10,22 @@ export default function MeetingPage({params}: { params: Promise<{ id: string }>}
     const {id}=use(params)
     const {status}=useMeeting(id)
 
-    if (status === 'loading') {
-        return (
-            <div className="h-screen flex flex-col items-center justify-center gap-4">
-                <Loader2 className="h-8 w-8 animate-spin text-primary"/>
-                <p className="text-muted-foreground font-medium">Joining meeting...</p>
-            </div>
-        )
-    }
-
-    if(status==='waiting'){
-        return <WaitingRoom meetingId={id}/>
-    }
-    if(status==='joined'){
-        return <MeetingLayout meetingId={id}/>
-    }
-
-
-    if (status === 'rejected') {
-        return (
-            <div className="h-screen flex flex-col items-center justify-center gap-4">
-                <p className="text-destructive font-medium text-lg">Your request to join was rejected.</p>
-            </div>
-        )
-    }
-
-    return null
+    return (
+        <>
+            {status==='loading' && (
+                <div className="h-screen flex flex-col items-center justify-center gap-4">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary"/>
+                     <p className="text-muted-foreground font-medium">Joining meeting...</p>
+                </div>
+            )}
+            {status==='waiting' && <WaitingRoom meetingId={id}/>}
+            {status==='joined' && <MeetingLayout meetingId={id}/>}
+            {status==='rejected' && (
+                <div className="h-screen flex flex-col items-center justify-center gap-4">
+                    <p className="text-destructive font-medium text-lg">Your request to join was rejected.</p>
+                </div>
+            )}
+        </>
+    )
 
 }

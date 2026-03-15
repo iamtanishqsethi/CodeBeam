@@ -1,5 +1,6 @@
 import {create} from 'zustand'
-import {ChatMessage, MeetingStore} from "@/types/store.types";
+import { MeetingStore} from "@/types/store.types";
+
 
 
 export const useMeetingStore = create<MeetingStore>((set)=>({
@@ -12,6 +13,8 @@ export const useMeetingStore = create<MeetingStore>((set)=>({
     meetingId:null,
     setMeetingId:(id)=>set({meetingId:id}),
     clearMeetingId:()=>set({meetingId:null}),
+    isHost:false,
+    setHost:(v)=>set({isHost:v}),
 
     //chat
     chatMessages:[],

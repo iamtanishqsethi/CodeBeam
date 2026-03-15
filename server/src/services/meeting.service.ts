@@ -38,7 +38,10 @@ export async function joinMeeting(meetingId:string,userId:string){
     })
 
     if(existingMeet){
-        return {status:existingMeet.status}
+        return {
+            status:existingMeet.status,
+            isHost: meeting.hostId === userId
+        }
     }
 
     await prisma.participant.create({
@@ -50,7 +53,10 @@ export async function joinMeeting(meetingId:string,userId:string){
         }
     })
 
-    return {status:"WAITING"}
+    return {
+        status:"WAITING",
+        isHost: meeting.hostId === userId
+    }
 }
 
 export async function getWaitingUsers(meetingId:string){

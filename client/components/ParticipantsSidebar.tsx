@@ -27,6 +27,7 @@ export default function ParticipantsSidebar({meetingId}:ParticipantsPanelProps) 
     const participants = useParticipants();
     const [waitingRoomParticipants, setWaitingRoomParticipants] = useState<WaitingParticipant[]>([]);
     const toggleParticipants = useMeetingStore(state => state.toggleParticipants);
+    const isHost = useMeetingStore(state => state.isHost);
 
     const fetchWaitingRoom = async () => {
         try {
@@ -38,16 +39,16 @@ export default function ParticipantsSidebar({meetingId}:ParticipantsPanelProps) 
     };
 
     useEffect(() => {
-        fetchWaitingRoom();
+        isHost && fetchWaitingRoom();
 
-        socket.on('new-waiting-user', () => {
+        isHost && socket.on('new-waiting-user', () => {
             fetchWaitingRoom();
         });
 
         return () => {
             socket.off('new-waiting-user');
         };
-    }, [meetingId]);
+    }, [meetingId,isHost]);
 
     const handleApprove = async (participantId: string) => {
         try {

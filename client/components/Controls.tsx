@@ -18,8 +18,7 @@ export default function Controls({meetingId,onLeave}: ControlsProps ) {
     const isParticipantsOpen=useMeetingStore(store=>store.isParticipantsOpen)
 
     return(
-        <div className={'border-t bg-background/95 backdrop-blur-sm px-4 py-3'}>
-            <div className={'flex items-center justify-center gap-2'}>
+        <div className="flex items-center justify-center gap-2 p-1">
             {/*mic toggle */}
                 <TrackToggle
                     source={Track.Source.Microphone}
@@ -60,6 +59,5 @@ export default function Controls({meetingId,onLeave}: ControlsProps ) {
                 </DisconnectButton>
 
             </div>
-        </div>
     )
 }

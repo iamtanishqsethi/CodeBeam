@@ -14,23 +14,28 @@ export default function registerMeetingSocket(io:Server) {
 
     io.on('connection',(socket)=>{
 
-        socket.on('join-waiting-room',async ({meetingId})=>{
+        socket.on('join-meeting',async ({meetingId})=>{
             try{
                 socket.join(meetingId)
-                
-                // Only notify others if the joining user is actually a WAITING participant
-                const participant = await prisma.participant.findFirst({
-                    where: {
-                        meetingId,
-                        userId: socket.data.userId,
-                        status: 'WAITING',
+
+                const participant=await prisma.participant.findUnique({
+                    where:{
+                        meetingId_userId:{
+                            meetingId,
+                            userId:socket.data.userId
+                        },
                     },
                     include:{
-                        user:true
+                        user:true,
                     }
-                });
+                })
 
-                if (participant) {
+                if(!participant){
+                    throw new Error("Participant not found")
+                }
+
+                //check for waiting user
+                if(participant.status==="WAITING"){
                     socket.to(meetingId).emit('new-waiting-user', {
                         userName: participant.user.firstName,
                         userId:socket.data.userId,
@@ -57,7 +62,7 @@ export default function registerMeetingSocket(io:Server) {
 
                 await meetingService.approveParticipant(meetingId, participantId);
 
-                io.to(meetingId).emit('participant-approved', {participantId})
+                socket.to(meetingId).emit('participant-approved', {participantId})
             }
             catch (e){
                 socket.emit('meeting:error',{message:"Error approving user"})

@@ -31,6 +31,8 @@ export interface MeetingStore {
     meetingId:string|null
     setMeetingId:(meetingId:string)=>void
     clearMeetingId:()=>void
+    isHost:boolean
+    setHost:(v:boolean)=>void
 
     //chat
     chatMessages:ChatMessage[]

@@ -8,6 +8,7 @@ import {useRouter} from "next/navigation";
 import {createMeeting} from "@/services/api";
 import {ArrowRight, Loader2, Plus, Video} from "lucide-react";
 import {Input} from "@/components/ui/input";
+import {useMeetingStore} from "@/store/meetingStore";
 
 export default function Home() {
   const [meetingId,setMeetingId]=useState('')
@@ -15,12 +16,14 @@ export default function Home() {
   const [isCreating,setIsCreating]=useState(false)
   const [error,setError]=useState<string | null>(null)
   const router=useRouter()
+  const setHost=useMeetingStore(store=>store.setHost)
 
   const handleCreate=async ()=>{
     setError(null)
     setIsCreating(true)
     try{
       const meeting=await createMeeting(title||'Untitled Meeting')
+      setHost(true)
       router.push(`/meeting/${meeting.id}`)
     }
     catch (e){

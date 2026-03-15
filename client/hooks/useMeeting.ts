@@ -20,19 +20,16 @@ export function useMeeting(meetingId:string) {
             try{
                 const data=await joinMeeting(meetingId)
                 setMeetingId(meetingId)
+                socket.emit("join-meeting", {meetingId})
 
                 if(data.status==="WAITING"){
                     setStatus("waiting")
-                    socket.emit("join-waiting-room", {meetingId})
                 }
 
                 if(data.status==="APPROVED"){
                     const {token}=await getLiveKitToken(meetingId)
                     setToken(token)
                     setStatus("joined")
-                    // Host/Approved user also joins the room to hear waiting room events
-                    // but it will also give notification when a user approved in meet that "new user in waiting room" ? -> server side fix
-                    socket.emit("join-waiting-room", {meetingId})
                 }
                 if (data.status === "REJECTED") {
                     setStatus("rejected")

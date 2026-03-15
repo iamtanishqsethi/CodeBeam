@@ -4,15 +4,11 @@ import "@livekit/components-styles";
 import {useMeetingStore} from "@/store/meetingStore";
 import {useRouter} from "next/navigation";
 import {leaveMeeting} from "@/services/api";
-import {connectSocket, disconnectSocket, socket} from "@/lib/socket";
-import {LiveKitRoom, RoomAudioRenderer} from "@livekit/components-react";
-import LayoutManager from "@/components/LayoutManager";
-import Controls from "@/components/Controls";
-import ParticipantsSidebar from "@/components/ParticipantsSidebar";
-import ChatPanel from "@/components/ChatPanel";
+import {socket} from "@/lib/socket";
+import {LiveKitRoom} from "@livekit/components-react";
 import {toast} from "sonner";
 import {useEffect} from "react";
-import {useUser} from "@clerk/nextjs";
+import {RoomContent} from "@/components/RoomContent";
 
 interface MeetingLayoutProps {
     meetingId: string;
@@ -23,12 +19,45 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
 
     const token=useMeetingStore(store=>store.token)
     const clearToken=useMeetingStore(store=>store.clearToken)
-    const isChatOpen=useMeetingStore(store=>store.isChatOpen)
-    const isParticipantsOpen=useMeetingStore(store=>store.isParticipantsOpen)
+    const isHost=useMeetingStore(store=>store.isHost)
 
     const router=useRouter()
 
     const LIVEKIT_URL = process.env.NEXT_PUBLIC_LIVEKIT_URL;
+
+    const handleNewWaitingUser = (data: any) => {
+        if (isHost) {
+            toast.message("New user joined the waiting room");
+        }
+        console.log("new user waiting", data);
+    };
+
+    const handleUserLeaveEvent=(data:any)=>{
+        toast.message("User left the meeting");
+        console.log("user left",data)
+    }
+
+    useEffect(() => {
+        socket.on('new-waiting-user', handleNewWaitingUser);
+        socket.on('user-left',handleUserLeaveEvent)
+
+        return () => {
+            socket.off('new-waiting-user', handleNewWaitingUser);
+            socket.off('user-left',handleUserLeaveEvent)
+        };
+    }, [isHost, token]);
+
+    const handleLeave=async ()=>{
+        try{
+            await leaveMeeting(meetingId)
+            socket.emit('leave-meeting', {meetingId})
+            clearToken()
+            router.push('/')
+        }
+        catch (e){
+            console.error("Error Leaving meeting",e)
+        }
+    }
 
     if (!token || !LIVEKIT_URL) {
         return (
@@ -37,31 +66,6 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
             </div>
         );
     }
-
-    const handleLeave=async ()=>{
-        try{
-            await leaveMeeting(meetingId)
-            socket.emit('leave-meeting', {meetingId})
-            clearToken()
-            router.push('/dashboard')
-        }
-        catch (e){
-            console.error("Error Leaving meeting",e)
-        }
-    }
-
-    useEffect(() => {
-        const handleNewWaitingUser = (data: any) => {
-            toast.message("New user joined the waiting room");
-            console.log("new user waiting", data);
-        };
-
-        socket.on('new-waiting-user', handleNewWaitingUser);
-
-        return () => {
-            socket.off('new-waiting-user', handleNewWaitingUser);
-        };
-    }, []);
 
 
     return(
@@ -75,16 +79,7 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
            className="h-screen"
            dark-lk-theme="default"
        >
-           <div className={'h-full flex'}>
-               <div className={'flex-1 flex flex-col'}>
-                   <LayoutManager/>
-                   <Controls meetingId={meetingId} onLeave={handleLeave}/>
-               </div>
-               {isParticipantsOpen && <ParticipantsSidebar meetingId={meetingId}/>}
-               {isChatOpen && <ChatPanel meetingId={meetingId}/>}
-               <RoomAudioRenderer/>
-           </div>
-
+           <RoomContent handleLeave={handleLeave} meetingId={meetingId}/>
 
        </LiveKitRoom>
 
