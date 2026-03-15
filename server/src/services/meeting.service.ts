@@ -1,10 +1,12 @@
 import {prisma} from "@/lib/prisma.js";
 import {createLiveKitToken} from "@/services/livekit.service.js";
+import {nanoid} from "nanoid";
 
 
 export async function createMeeting(userId:string,title:string){
     return prisma.meeting.create({
         data:{
+            id:nanoid(8),
             title,
             hostId:userId,
             participants:{

@@ -45,7 +45,7 @@ model User {
 }
 
 model Meeting {
-  id     String        @id @default(uuid())
+  id     String        @id
   title  String?
   status MeetingStatus @default(ACTIVE)
 
