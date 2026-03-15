@@ -61,7 +61,7 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
 
     if (!token || !LIVEKIT_URL) {
         return (
-            <div className="h-screen flex items-center justify-center text-destructive">
+            <div className="h-full flex items-center justify-center text-destructive">
                 Missing connection details. Please rejoin the meeting.
             </div>
         );
@@ -70,18 +70,21 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
 
     return(
 
-       <LiveKitRoom
-           serverUrl={LIVEKIT_URL}
-           token={token}
-           video={true}
-           audio={true}
-           onDisconnected={handleLeave}
-           className="h-screen"
-           dark-lk-theme="default"
-       >
-           <RoomContent handleLeave={handleLeave} meetingId={meetingId}/>
+        <div className={'flex flex-col w-full h-screen overflow-hidden'}>
+            <LiveKitRoom
+                serverUrl={LIVEKIT_URL}
+                token={token}
+                video={true}
+                audio={true}
+                onDisconnected={handleLeave}
+                className="flex flex-col h-full w-full"
+                dark-lk-theme="default"
+            >
+                <RoomContent handleLeave={handleLeave} meetingId={meetingId}/>
 
-       </LiveKitRoom>
+            </LiveKitRoom>
+        </div>
+
 
     )
 

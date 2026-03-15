@@ -220,4 +220,3 @@ export async function getParticipants(req:Request,res:Response){
 
 
 }
-
