@@ -1,6 +1,5 @@
 'use client'
 
-import "@livekit/components-styles";
 import {useMeetingStore} from "@/store/meetingStore";
 import {useRouter} from "next/navigation";
 import {leaveMeeting} from "@/services/api";
@@ -20,6 +19,7 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
     const token=useMeetingStore(store=>store.token)
     const clearToken=useMeetingStore(store=>store.clearToken)
     const isHost=useMeetingStore(store=>store.isHost)
+    const mediaPreferences=useMeetingStore(store=>store.mediaPreferences)
 
     const router=useRouter()
 
@@ -67,6 +67,14 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
         );
     }
 
+    const videoInput = mediaPreferences.videoEnabled
+        ? (mediaPreferences.videoDeviceId ? {deviceId: mediaPreferences.videoDeviceId} : true)
+        : false
+
+    const audioInput = mediaPreferences.audioEnabled
+        ? (mediaPreferences.audioDeviceId ? {deviceId: mediaPreferences.audioDeviceId} : true)
+        : false
+
 
     return(
 
@@ -74,8 +82,8 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
             <LiveKitRoom
                 serverUrl={LIVEKIT_URL}
                 token={token}
-                video={true}
-                audio={true}
+                video={videoInput}
+                audio={audioInput}
                 onDisconnected={handleLeave}
                 className="flex flex-col h-full w-full"
                 dark-lk-theme="default"

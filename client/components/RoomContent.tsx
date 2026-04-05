@@ -55,11 +55,11 @@ export function RoomContent({handleLeave, meetingId}: { handleLeave: () => Promi
         {onlySubscribed: false}
     );
 
-    // Only render tracks with an actual publication — filters out blank placeholder tiles
+    // Keep camera placeholders so audio-only / camera-off participants still render a tile.
     const visibleTracks = useMemo(() =>
             tracks.filter(t =>
                 t.source === Track.Source.ScreenShare ||
-                (t.source === Track.Source.Camera && t.publication !== undefined)
+                t.source === Track.Source.Camera
             ),
         [tracks]
     );

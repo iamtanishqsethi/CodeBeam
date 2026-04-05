@@ -21,6 +21,14 @@ export interface WaitingRoomUser{
    status:string;
 }
 
+export interface MediaPreferences {
+    username: string;
+    audioEnabled: boolean;
+    videoEnabled: boolean;
+    audioDeviceId: string;
+    videoDeviceId: string;
+}
+
 export interface MeetingStore {
     //live kit
     token:string|null
@@ -33,6 +41,11 @@ export interface MeetingStore {
     clearMeetingId:()=>void
     isHost:boolean
     setHost:(v:boolean)=>void
+
+    //prejoin
+    mediaPreferences: MediaPreferences
+    setMediaPreferences:(preferences: Partial<MediaPreferences>)=>void
+    resetMediaPreferences:()=>void
 
     //chat
     chatMessages:ChatMessage[]
@@ -47,4 +60,3 @@ export interface MeetingStore {
     toggleParticipants:()=>void
 
 }
-

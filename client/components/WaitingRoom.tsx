@@ -1,22 +1,20 @@
 'use client'
 
 import { Loader2, Clock, User } from "lucide-react";
-import { useEffect, useState } from "react";
-import { PreJoin } from "@livekit/components-react";
+import { LocalUserChoices, PreJoin } from "@livekit/components-react";
+import { useMeetingStore } from "@/store/meetingStore";
 
 interface WaitingRoomProps {
     meetingId: string;
 }
 
 export default function WaitingRoom({ meetingId }: WaitingRoomProps) {
-    const [dots, setDots] = useState('')
+    const mediaPreferences = useMeetingStore(state => state.mediaPreferences);
+    const setMediaPreferences = useMeetingStore(state => state.setMediaPreferences);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setDots(prev => prev.length >= 3 ? '' : prev + '.');
-        }, 500);
-        return () => clearInterval(interval);
-    }, []);
+    const handlePreJoinSubmit = (values: LocalUserChoices) => {
+        setMediaPreferences(values);
+    };
 
     return (
         <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
@@ -26,12 +24,19 @@ export default function WaitingRoom({ meetingId }: WaitingRoomProps) {
                     <h2 className="text-2xl font-semibold mb-2">Check your audio and video</h2>
                     <div className="rounded-2xl overflow-hidden border bg-card shadow-xl">
                         <PreJoin
-                            onSubmit={() => {}}
+                            className="lk-prejoin prejoin-widget--hide-username"
+                            data-lk-theme="default"
+                            onSubmit={handlePreJoinSubmit}
                             onError={(err) => console.log('error', err)}
+                            onValidate={() => true}
+                            joinLabel="Save preferences"
+                            userLabel=""
                             defaults={{
-                                username: '',
-                                videoEnabled: true,
-                                audioEnabled: true,
+                                username: mediaPreferences.username,
+                                videoEnabled: mediaPreferences.videoEnabled,
+                                audioEnabled: mediaPreferences.audioEnabled,
+                                audioDeviceId: mediaPreferences.audioDeviceId,
+                                videoDeviceId: mediaPreferences.videoDeviceId,
                             }}
                         />
                     </div>
@@ -48,14 +53,14 @@ export default function WaitingRoom({ meetingId }: WaitingRoomProps) {
                             Ready to join?
                         </h2>
                         <p className="text-xl text-muted-foreground">
-                            You'll be able to join as soon as the host lets you in.
+                            You&apos;ll be able to join as soon as the host lets you in.
                         </p>
                     </div>
 
                     <div className="flex items-center gap-3 bg-muted/50 px-6 py-4 rounded-xl border w-full max-w-sm">
                         <Loader2 className="h-5 w-5 animate-spin text-primary shrink-0" />
                         <span className="font-medium text-foreground">
-                            Asking to join{dots}
+                            Asking to join...
                         </span>
                     </div>
 

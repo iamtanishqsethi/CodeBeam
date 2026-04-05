@@ -125,3 +125,96 @@
     @apply bg-background text-foreground;
   }
 }
+
+.prejoin-shell {
+  position: relative;
+  overflow: hidden;
+}
+
+.prejoin-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top left, color-mix(in oklch, var(--primary) 12%, transparent) 0, transparent 34%),
+    radial-gradient(circle at bottom right, color-mix(in oklch, var(--accent) 45%, transparent) 0, transparent 42%);
+  pointer-events: none;
+}
+
+.prejoin-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+.prejoin-widget[data-lk-theme="default"] {
+  --lk-bg: color-mix(in oklch, var(--foreground) 82%, transparent);
+  --lk-bg2: color-mix(in oklch, var(--foreground) 72%, var(--card) 28%);
+  --lk-bg3: color-mix(in oklch, var(--foreground) 62%, var(--card) 38%);
+  --lk-bg4: color-mix(in oklch, var(--foreground) 54%, var(--card) 46%);
+  --lk-bg5: color-mix(in oklch, var(--foreground) 48%, var(--card) 52%);
+  --lk-border-color: color-mix(in oklch, white 14%, transparent);
+  --lk-accent-bg: var(--primary);
+  --lk-accent2: color-mix(in oklch, var(--primary) 92%, white 8%);
+  --lk-accent3: color-mix(in oklch, var(--primary) 84%, white 16%);
+  --lk-accent4: color-mix(in oklch, var(--primary) 78%, white 22%);
+  --lk-danger: var(--destructive);
+  --lk-danger2: color-mix(in oklch, var(--destructive) 84%, white 16%);
+  --lk-danger3: color-mix(in oklch, var(--destructive) 76%, white 24%);
+  --lk-danger4: color-mix(in oklch, var(--destructive) 68%, white 32%);
+  --lk-font-family: var(--font-geist-sans), system-ui, sans-serif;
+  --lk-border-radius: 1rem;
+  --lk-box-shadow: 0 18px 48px color-mix(in srgb, black 16%, transparent);
+}
+
+.prejoin-widget.lk-prejoin {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  gap: 1.25rem;
+  background: transparent;
+}
+
+.prejoin-widget .lk-video-container {
+  border: 1px solid color-mix(in oklch, white 12%, transparent);
+  box-shadow: 0 20px 36px color-mix(in srgb, black 18%, transparent);
+}
+
+.prejoin-widget .lk-form-control,
+.prejoin-widget .lk-button,
+.prejoin-widget .lk-disconnect-button,
+.prejoin-widget .lk-start-audio-button {
+  min-height: 2.9rem;
+  font-weight: 600;
+}
+
+.prejoin-widget .lk-form-control {
+  width: 100%;
+}
+
+.prejoin-widget--hide-username .lk-username-container .lk-form-control {
+  display: none !important;
+}
+
+.prejoin-widget--hide-username .lk-username-container {
+  gap: 0;
+}
+
+.prejoin-widget .lk-button-group-container {
+  gap: 0.75rem;
+}
+
+.prejoin-widget .lk-join-button {
+  width: 100%;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .prejoin-widget .lk-button-group-container {
+    flex-wrap: wrap;
+  }
+
+  .prejoin-widget .lk-button-group-container > .lk-button-group {
+    width: 100%;
+  }
+}

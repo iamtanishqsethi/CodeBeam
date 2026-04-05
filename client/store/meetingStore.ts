@@ -1,7 +1,13 @@
 import {create} from 'zustand'
 import { MeetingStore} from "@/types/store.types";
 
-
+const defaultMediaPreferences = {
+    username: "CodeBeam",
+    audioEnabled: true,
+    videoEnabled: true,
+    audioDeviceId: "",
+    videoDeviceId: "",
+};
 
 export const useMeetingStore = create<MeetingStore>((set)=>({
     //live kit
@@ -15,6 +21,16 @@ export const useMeetingStore = create<MeetingStore>((set)=>({
     clearMeetingId:()=>set({meetingId:null}),
     isHost:false,
     setHost:(v)=>set({isHost:v}),
+
+    //prejoin
+    mediaPreferences: defaultMediaPreferences,
+    setMediaPreferences:(preferences)=>set((state)=>({
+        mediaPreferences:{
+            ...state.mediaPreferences,
+            ...preferences,
+        }
+    })),
+    resetMediaPreferences:()=>set({mediaPreferences: defaultMediaPreferences}),
 
     //chat
     chatMessages:[],
