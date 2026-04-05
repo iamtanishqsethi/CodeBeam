@@ -34,6 +34,12 @@ export async function getLiveKitToken(meetingId:string){
 
 export async function leaveMeeting(meetingId:string){
     const response=await apiClint.post(`/meetings/${meetingId}/leave`)
+    return response.data
+}
+
+export async function endMeeting(meetingId: string){
+    const response = await apiClint.post(`/meetings/${meetingId}/end`)
+    return response.data
 }
 
 export async function getParticipants(meetingId:string){

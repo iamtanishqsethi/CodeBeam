@@ -53,6 +53,7 @@ export default function ParticipantsSidebar({meetingId}:ParticipantsPanelProps) 
     const handleApprove = async (participantId: string) => {
         try {
             await approveParticipant(meetingId, participantId);
+            socket.emit('approve-user', {meetingId, participantId});
             toast.success("Participant approved");
             setWaitingRoomParticipants(prev => prev.filter(p => p.id !== participantId));
         } catch (error) {
@@ -63,6 +64,7 @@ export default function ParticipantsSidebar({meetingId}:ParticipantsPanelProps) 
     const handleReject = async (participantId: string) => {
         try {
             await rejectParticipant(meetingId, participantId);
+            socket.emit('reject-user', {meetingId, participantId});
             toast.success("Participant rejected");
             setWaitingRoomParticipants(prev => prev.filter(p => p.id !== participantId));
         } catch (error) {

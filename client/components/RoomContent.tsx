@@ -24,7 +24,15 @@ function formatRoomName(name: string): string {
     return name;
 }
 
-export function RoomContent({handleLeave, meetingId}: { handleLeave: () => Promise<void>, meetingId: string }) {
+export function RoomContent({
+    handleLeave,
+    handleEndMeeting,
+    meetingId
+}: {
+    handleLeave: () => Promise<void>,
+    handleEndMeeting: () => Promise<void>,
+    meetingId: string
+}) {
     const isChatOpen = useMeetingStore(store => store.isChatOpen);
     const isParticipantsOpen = useMeetingStore(store => store.isParticipantsOpen);
 
@@ -180,7 +188,7 @@ export function RoomContent({handleLeave, meetingId}: { handleLeave: () => Promi
                     </div>
                     <div className="flex-1 flex justify-center">
                         <div className="bg-muted/30 p-2 rounded-full border flex items-center gap-1 shadow-sm">
-                            <Controls meetingId={meetingId} onLeave={handleLeave}/>
+                            <Controls onLeave={handleLeave} onEndMeeting={handleEndMeeting}/>
                         </div>
                     </div>
                     <div className="w-1/3"/>

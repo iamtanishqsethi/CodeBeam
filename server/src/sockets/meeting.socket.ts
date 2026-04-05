@@ -13,6 +13,7 @@ export default function registerMeetingSocket(io:Server) {
     })
 
     io.on('connection',(socket)=>{
+        socket.join(`user:${socket.data.userId}`)
 
         socket.on('join-meeting',async ({meetingId})=>{
             try{
@@ -59,10 +60,18 @@ export default function registerMeetingSocket(io:Server) {
                     return;
                 }
 
-
                 await meetingService.approveParticipant(meetingId, participantId);
 
-                socket.to(meetingId).emit('participant-approved', {participantId})
+                const participant = await prisma.participant.findUnique({
+                    where: {id: participantId}
+                });
+
+                if (participant) {
+                    io.to(`user:${participant.userId}`).emit('participant-approved', {
+                        participantId,
+                        meetingId
+                    });
+                }
             }
             catch (e){
                 socket.emit('meeting:error',{message:"Error approving user"})
@@ -72,10 +81,43 @@ export default function registerMeetingSocket(io:Server) {
 
         })
 
-        socket.on('leave-meeting',({meetingId})=>{
+        socket.on('reject-user',async ({participantId,meetingId})=>{
+            try{
+                const userId=socket.data.userId
+                const meeting = await prisma.meeting.findUnique({ where: { id: meetingId } });
+                if (!meeting || meeting.hostId !== userId) {
+                    socket.emit('meeting:error', { message: 'Unauthorized' });
+                    return;
+                }
+
+                await meetingService.rejectParticipant(meetingId, participantId);
+
+                const participant = await prisma.participant.findUnique({
+                    where: {id: participantId}
+                });
+
+                if (participant) {
+                    io.to(`user:${participant.userId}`).emit('participant-rejected', {
+                        participantId,
+                        meetingId
+                    });
+                }
+            }
+            catch (e){
+                socket.emit('meeting:error',{message:"Error rejecting user"})
+                console.error(e)
+            }
+        })
+
+        socket.on('leave-meeting',({meetingId, meetingEnded})=>{
             try{
                 const userId=socket.data.userId
                 socket.leave(meetingId)
+                if (meetingEnded) {
+                    socket.to(meetingId).emit('meeting-ended', {meetingId})
+                    return
+                }
+
                 socket.to(meetingId).emit('user-left',{userId})
             }
             catch (e){
@@ -84,6 +126,24 @@ export default function registerMeetingSocket(io:Server) {
             }
 
 
+        })
+
+        socket.on('meeting-ended', async ({meetingId}) => {
+            try {
+                const userId = socket.data.userId;
+                const meeting = await prisma.meeting.findUnique({where: {id: meetingId}});
+
+                if (!meeting || meeting.hostId !== userId) {
+                    socket.emit('meeting:error', {message: 'Unauthorized'});
+                    return;
+                }
+
+                await meetingService.endMeeting(meetingId);
+                io.to(meetingId).emit('meeting-ended', {meetingId});
+            } catch (e) {
+                socket.emit('meeting:error', {message: 'Error ending meeting'});
+                console.error(e);
+            }
         })
     })
 }

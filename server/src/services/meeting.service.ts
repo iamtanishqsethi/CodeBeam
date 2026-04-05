@@ -2,6 +2,34 @@ import {prisma} from "@/lib/prisma.js";
 import {createLiveKitToken} from "@/services/livekit.service.js";
 import {nanoid} from "nanoid";
 
+export class MeetingServiceError extends Error {
+    statusCode: number;
+    code: string;
+
+    constructor(message: string, statusCode = 400, code = "MEETING_ERROR") {
+        super(message);
+        this.name = "MeetingServiceError";
+        this.statusCode = statusCode;
+        this.code = code;
+    }
+}
+
+function meetingNotFound() {
+    return new MeetingServiceError("Meeting not found", 404, "MEETING_NOT_FOUND");
+}
+
+function meetingEnded() {
+    return new MeetingServiceError("Meeting has already ended", 410, "MEETING_ENDED");
+}
+
+async function getMeetingOrThrow(meetingId: string) {
+    const meeting = await prisma.meeting.findUnique({where: {id: meetingId}});
+    if (!meeting) {
+        throw meetingNotFound();
+    }
+
+    return meeting;
+}
 
 export async function createMeeting(userId:string,title:string){
     return prisma.meeting.create({
@@ -21,16 +49,11 @@ export async function createMeeting(userId:string,title:string){
 }
 
 export async function joinMeeting(meetingId:string,userId:string){
-
-
-    const meeting = await prisma.meeting.findUnique({ where: { id: meetingId } });
-    if (!meeting) {
-        throw new Error('Meeting not found');
-    }
+    const meeting = await getMeetingOrThrow(meetingId);
     if (meeting.status === 'ENDED') {
-        throw new Error('Meeting has ended');
+        throw meetingEnded();
     }
-    
+
     const existingMeet=await prisma.participant.findUnique({
         where:{
             meetingId_userId:{
@@ -40,13 +63,36 @@ export async function joinMeeting(meetingId:string,userId:string){
     })
 
     if(existingMeet){
+        if (existingMeet.status === "LEFT") {
+            const rejoinedParticipant = await prisma.participant.update({
+                where: {
+                    meetingId_userId: {
+                        meetingId,
+                        userId
+                    }
+                },
+                data: {
+                    status: "APPROVED",
+                    joinedAt: new Date(),
+                    leftAt: null
+                }
+            });
+
+            return {
+                status: rejoinedParticipant.status,
+                isHost: meeting.hostId === userId,
+                participantId: rejoinedParticipant.id
+            };
+        }
+
         return {
             status:existingMeet.status,
-            isHost: meeting.hostId === userId
+            isHost: meeting.hostId === userId,
+            participantId: existingMeet.id
         }
     }
 
-    await prisma.participant.create({
+    const participant = await prisma.participant.create({
         data:{
             meetingId,
             userId,
@@ -57,7 +103,8 @@ export async function joinMeeting(meetingId:string,userId:string){
 
     return {
         status:"WAITING",
-        isHost: meeting.hostId === userId
+        isHost: meeting.hostId === userId,
+        participantId: participant.id
     }
 }
 
@@ -89,18 +136,86 @@ export async function rejectParticipant(meetingId:string,participantId:string){
 }
 
 export async function leaveMeeting(meetingId:string,userId:string){
-    await prisma.participant.update({
-        where:{
-            meetingId_userId:{
-                meetingId,
-                userId
-            }
-        },
-        data:{
-            status:"LEFT",
-            leftAt:new Date()
+    return prisma.$transaction(async (tx) => {
+        const meeting = await tx.meeting.findUnique({
+            where: {id: meetingId}
+        });
+
+        if (!meeting) {
+            throw meetingNotFound();
         }
-    })
+
+        if (meeting.status === "ENDED") {
+            return {meetingEnded: true};
+        }
+
+        await tx.participant.update({
+            where:{
+                meetingId_userId:{
+                    meetingId,
+                    userId
+                }
+            },
+            data:{
+                status:"LEFT",
+                leftAt:new Date()
+            }
+        });
+
+        const approvedParticipantsCount = await tx.participant.count({
+            where: {
+                meetingId,
+                status: "APPROVED"
+            }
+        });
+
+        if (approvedParticipantsCount === 0) {
+            await tx.meeting.update({
+                where: {id: meetingId},
+                data: {
+                    status: "ENDED",
+                    endedAt: new Date()
+                }
+            });
+
+            return {meetingEnded: true};
+        }
+
+        return {meetingEnded: false};
+    });
+}
+
+export async function endMeeting(meetingId: string) {
+    const meeting = await getMeetingOrThrow(meetingId);
+
+    if (meeting.status === "ENDED") {
+        return meeting;
+    }
+
+    const endedAt = new Date();
+
+    return prisma.$transaction(async (tx) => {
+        await tx.participant.updateMany({
+            where: {
+                meetingId,
+                status: {
+                    not: "LEFT"
+                }
+            },
+            data: {
+                status: "LEFT",
+                leftAt: endedAt
+            }
+        });
+
+        return tx.meeting.update({
+            where: {id: meetingId},
+            data: {
+                status: "ENDED",
+                endedAt
+            }
+        });
+    });
 }
 
 export async function getParticipants(meetingId:string){
@@ -116,7 +231,10 @@ export async function getParticipants(meetingId:string){
 }
 
 export async function generateToken(meetingId:string,userId:string){
-
+    const meeting = await getMeetingOrThrow(meetingId);
+    if (meeting.status === "ENDED") {
+        throw meetingEnded();
+    }
 
     const participant=await prisma.participant.findUnique({
         where:{
@@ -128,7 +246,7 @@ export async function generateToken(meetingId:string,userId:string){
     })
 
     if(!participant||participant.status!=="APPROVED"){
-        throw new Error("Not authorized to generate token")
+        throw new MeetingServiceError("Not authorized to generate token", 403, "TOKEN_FORBIDDEN")
     }
 
     return createLiveKitToken(meetingId,userId)

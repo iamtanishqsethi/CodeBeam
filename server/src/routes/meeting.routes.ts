@@ -18,6 +18,8 @@ router.post('/:meetingId/token',requireAuth(),meetingController.getLiveKitToken)
 
 router.post('/:meetingId/leave',requireAuth(),meetingController.leaveMeeting)
 
+router.post('/:meetingId/end',requireAuth(),meetingController.endMeeting)
+
 router.get('/:meetingId/participants',requireAuth(),meetingController.getParticipants)
 
 

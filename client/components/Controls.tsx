@@ -3,20 +3,21 @@ import { DisconnectButton, MediaDeviceSelect, TrackToggle} from "@livekit/compon
 import {useMeetingStore} from "@/store/meetingStore";
 import {Track} from "livekit-client";
 import {Button} from "@/components/ui/button";
-import { ChevronDown, ChevronUp, MessageCircle, PhoneOff, Users} from "lucide-react";
+import { ChevronDown, ChevronUp, LogOut, MessageCircle, PhoneOff, Users} from "lucide-react";
 import {useState} from "react";
 interface ControlsProps {
-    meetingId: string;
     onLeave: () => void;
+    onEndMeeting: () => void;
 }
 
 
-export default function Controls({meetingId,onLeave}: ControlsProps ) {
+export default function Controls({onLeave, onEndMeeting}: ControlsProps ) {
 
     const toggleChat=useMeetingStore(store=>store.toggleChat)
     const toggleParticipants=useMeetingStore(store=>store.toggleParticipants)
     const isChatOpen=useMeetingStore(store=>store.isChatOpen)
     const isParticipantsOpen=useMeetingStore(store=>store.isParticipantsOpen)
+    const isHost = useMeetingStore(store => store.isHost)
     const [isAudioDeviceSelectOpen,setIsAudioDeviceSelectOpen]=useState(false)
     const [isVideoDeviceSelectOpen,setIsVideoDeviceSelectOpen]=useState(false)
 
@@ -93,10 +94,22 @@ export default function Controls({meetingId,onLeave}: ControlsProps ) {
                 </Button>
                 {/* Leave */}
                 <DisconnectButton
+                    onClick={onLeave}
                     className="rounded-full h-10 w-10 flex items-center justify-center bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"
                 >
                     <PhoneOff className="h-4 w-4"/>
                 </DisconnectButton>
+                {isHost && (
+                    <Button
+                        variant="secondary"
+                        size="icon"
+                        className="rounded-full h-10 w-10"
+                        onClick={onEndMeeting}
+                        title="End meeting for everyone"
+                    >
+                        <LogOut className="h-4 w-4"/>
+                    </Button>
+                )}
 
             </div>
     )

@@ -8,7 +8,7 @@ import {Loader2} from "lucide-react";
 
 export default function MeetingPage({params}: { params: Promise<{ id: string }>}) {
     const {id}=use(params)
-    const {status}=useMeeting(id)
+    const {status, message}=useMeeting(id)
 
     return (
         <>
@@ -23,6 +23,13 @@ export default function MeetingPage({params}: { params: Promise<{ id: string }>}
             {status==='rejected' && (
                 <div className="h-screen flex flex-col items-center justify-center gap-4">
                     <p className="text-destructive font-medium text-lg">Your request to join was rejected.</p>
+                </div>
+            )}
+            {status==='ended' && (
+                <div className="h-screen flex flex-col items-center justify-center gap-4 px-6 text-center">
+                    <p className="text-destructive font-medium text-lg">
+                        {message || 'This meeting has already ended.'}
+                    </p>
                 </div>
             )}
         </>
