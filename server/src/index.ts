@@ -2,15 +2,15 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { clerkMiddleware} from '@clerk/express'
-import meetingRoutes from "@/routes/meeting.routes.js";
-import webhookService from "@/services/webhook.service.js";
+import meetingRoutes from "./routes/meeting.routes.js";
+import webhookService from "./services/webhook.service.js";
 import  http from "http";
 import {Server} from "socket.io";
-import registerMeetingSocket from "@/sockets/meeting.socket.js";
+import registerMeetingSocket from "./sockets/meeting.socket.js";
 
 dotenv.config()
 
-const port = process.env.PORT || 5051;
+const port = process.env.PORT || 5050;
 const app = express();
 
 const clientUrl=process.env.CLIENT_URL||"http://localhost:3000"

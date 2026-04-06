@@ -1,7 +1,7 @@
 import * as meetingService from '../services/meeting.service.js';
 import {type Request, type Response} from 'express';
 import {getAuth} from "@clerk/express";
-import {prisma} from "@/lib/prisma.js";
+import {prisma} from "../lib/prisma.js";
 
 function handleControllerError(res: Response, error: Error | any) {
     console.error(error);

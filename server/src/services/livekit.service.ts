@@ -1,5 +1,5 @@
 import {AccessToken} from "livekit-server-sdk";
-import {prisma} from "@/lib/prisma.js";
+import {prisma} from "../lib/prisma.js";
 
 export async function createLiveKitToken(meetingId:string,userId:string){
     if(!meetingId || !userId){

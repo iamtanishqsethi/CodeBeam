@@ -1,5 +1,5 @@
-import {prisma} from "@/lib/prisma.js";
-import {createLiveKitToken} from "@/services/livekit.service.js";
+import {prisma} from "../lib/prisma.js";
+import {createLiveKitToken} from "./livekit.service.js";
 import {nanoid} from "nanoid";
 
 export class MeetingServiceError extends Error {
@@ -54,58 +54,62 @@ export async function joinMeeting(meetingId:string,userId:string){
         throw meetingEnded();
     }
 
-    const existingMeet=await prisma.participant.findUnique({
-        where:{
-            meetingId_userId:{
-                meetingId,
-                userId
-            }}
-    })
+    return prisma.$transaction(async (tx)=>{
+        const existingMeet=await tx.participant.findUnique({
+            where:{
+                meetingId_userId:{
+                    meetingId,
+                    userId
+                }}
+        })
 
-    if(existingMeet){
-        if (existingMeet.status === "LEFT") {
-            const rejoinedParticipant = await prisma.participant.update({
-                where: {
-                    meetingId_userId: {
-                        meetingId,
-                        userId
+        if(existingMeet){
+            if (existingMeet.status === "LEFT") {
+                const rejoinedParticipant = await tx.participant.update({
+                    where: {
+                        meetingId_userId: {
+                            meetingId,
+                            userId
+                        }
+                    },
+                    data: {
+                        status: "APPROVED",
+                        joinedAt: new Date(),
+                        leftAt: null
                     }
-                },
-                data: {
-                    status: "APPROVED",
-                    joinedAt: new Date(),
-                    leftAt: null
-                }
-            });
+                });
+
+                return {
+                    status: rejoinedParticipant.status,
+                    isHost: meeting.hostId === userId,
+                    participantId: rejoinedParticipant.id
+                };
+            }
 
             return {
-                status: rejoinedParticipant.status,
+                status:existingMeet.status,
                 isHost: meeting.hostId === userId,
-                participantId: rejoinedParticipant.id
-            };
+                participantId: existingMeet.id
+            }
         }
+
+        const participant = await tx.participant.create({
+            data:{
+                meetingId,
+                userId,
+                role:"MEMBER",
+                status:"WAITING",
+            }
+        })
 
         return {
-            status:existingMeet.status,
-            isHost: meeting.hostId === userId,
-            participantId: existingMeet.id
-        }
-    }
-
-    const participant = await prisma.participant.create({
-        data:{
-            meetingId,
-            userId,
-            role:"MEMBER",
             status:"WAITING",
+            isHost: meeting.hostId === userId,
+            participantId: participant.id
         }
     })
 
-    return {
-        status:"WAITING",
-        isHost: meeting.hostId === userId,
-        participantId: participant.id
-    }
+
 }
 
 export async function getWaitingUsers(meetingId:string){

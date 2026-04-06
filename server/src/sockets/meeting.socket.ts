@@ -1,6 +1,6 @@
 import type {Server} from "socket.io";
-import {prisma} from "@/lib/prisma.js";
-import * as meetingService from "@/services/meeting.service.js";
+import {prisma} from "../lib/prisma.js";
+import * as meetingService from "../services/meeting.service.js";
 export default function registerMeetingSocket(io:Server) {
     //authentication middleware
     io.use((socket,next)=>{

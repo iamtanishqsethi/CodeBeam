@@ -4,3 +4,7 @@
 *.iml
 out
 gen
+
+# environment files
+.env
+!.env.example
