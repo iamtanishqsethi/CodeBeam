@@ -6,21 +6,11 @@ import {Show, SignInButton, SignUpButton, UserButton} from "@clerk/nextjs";
 import Link from "next/link";
 import {Video} from "lucide-react";
 import {usePathname} from "next/navigation";
-import {useEffect, useState} from "react";
 
 export default function Header() {
 
     const pathName=usePathname()
-    const [isDashboard,setIsDashboard]=useState(false)
-
-    useEffect(() => {
-        if(pathName==='/'){
-            setIsDashboard(true)
-        }
-        else{
-            setIsDashboard(false)
-        }
-    }, [pathName]);
+    const isDashboard = pathName === '/'
 
 
    return (

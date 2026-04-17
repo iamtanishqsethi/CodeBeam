@@ -128,6 +128,12 @@ export default function registerMeetingSocket(io:Server) {
 
         })
 
+        socket.on('chat-message', (data) => {
+            if (data.meetingId) {
+                socket.to(data.meetingId).emit('chat-message', data);
+            }
+        })
+
         socket.on('meeting-ended', async ({meetingId}) => {
             try {
                 const userId = socket.data.userId;

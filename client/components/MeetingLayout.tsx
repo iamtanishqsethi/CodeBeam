@@ -28,26 +28,26 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
 
     const LIVEKIT_URL = process.env.NEXT_PUBLIC_LIVEKIT_URL;
 
-    const handleNewWaitingUser = (data: any) => {
-        if (isHost) {
-            toast.message("New user joined the waiting room");
-        }
-        console.log("new user waiting", data);
-    };
-
-    const handleUserLeaveEvent=(data:any)=>{
-        toast.message("User left the meeting");
-        console.log("user left",data)
-    }
-
-    const handleMeetingEnded = () => {
-        clearToken()
-        setHost(false)
-        setMeetingEnded(true)
-        toast.message("This meeting has ended")
-    }
-
     useEffect(() => {
+        const handleNewWaitingUser = (data: unknown) => {
+            if (isHost) {
+                toast.message("New user joined the waiting room");
+            }
+            console.log("new user waiting", data);
+        };
+
+        const handleUserLeaveEvent=(data: unknown)=>{
+            toast.message("User left the meeting");
+            console.log("user left",data)
+        }
+
+        const handleMeetingEnded = () => {
+            clearToken()
+            setHost(false)
+            setMeetingEnded(true)
+            toast.message("This meeting has ended")
+        }
+
         socket.on('new-waiting-user', handleNewWaitingUser);
         socket.on('user-left',handleUserLeaveEvent)
         socket.on('meeting-ended', handleMeetingEnded)
@@ -57,7 +57,7 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
             socket.off('user-left',handleUserLeaveEvent)
             socket.off('meeting-ended', handleMeetingEnded)
         };
-    }, [isHost, token]);
+    }, [clearToken, isHost, setHost, token]);
 
     const handleLeave=async ()=>{
         if (isLeavingRef.current) {
@@ -133,7 +133,7 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
                 audio={audioInput}
                 onDisconnected={handleLeave}
                 className="flex flex-col h-full w-full"
-                dark-lk-theme="default"
+                data-lk-theme="default"
             >
                 <RoomContent handleLeave={handleLeave} handleEndMeeting={handleEndMeeting} meetingId={meetingId}/>
 

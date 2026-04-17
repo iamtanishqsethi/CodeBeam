@@ -1,13 +1,18 @@
-'use client'
+"use client";
 
 import {useParticipants} from "@livekit/components-react";
 import {useMeetingStore} from "@/store/meetingStore";
 import {Button} from "@/components/ui/button";
-import {X, Users, Mic, MicOff, Video, VideoOff, Check} from "lucide-react";
-import {useEffect, useState} from "react";
+import {Input} from "@/components/ui/input";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {Badge} from "@/components/ui/badge";
+import {ScrollArea} from "@/components/ui/scroll-area";
+import {Check, Crown, Hand, Mic, MicOff, Search, Users, Video, VideoOff, X} from "lucide-react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {socket} from "@/lib/socket";
 import {approveParticipant, getWaitingRoom, rejectParticipant} from "@/services/api";
 import {toast} from "sonner";
+import {cn} from "@/lib/utils";
 
 interface ParticipantsPanelProps {
     meetingId: string;
@@ -23,40 +28,49 @@ interface WaitingParticipant {
     };
 }
 
-export default function ParticipantsSidebar({meetingId}:ParticipantsPanelProps) {
+function initials(name: string) {
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    return (parts.length > 1 ? `${parts[0][0]}${parts[1][0]}` : name.slice(0, 2)).toUpperCase();
+}
+
+export default function ParticipantsSidebar({meetingId}: ParticipantsPanelProps) {
     const participants = useParticipants();
     const [waitingRoomParticipants, setWaitingRoomParticipants] = useState<WaitingParticipant[]>([]);
+    const [query, setQuery] = useState("");
     const toggleParticipants = useMeetingStore(state => state.toggleParticipants);
     const isHost = useMeetingStore(state => state.isHost);
 
-    const fetchWaitingRoom = async () => {
+    const fetchWaitingRoom = useCallback(async () => {
         try {
             const data = await getWaitingRoom(meetingId);
             setWaitingRoomParticipants(data);
         } catch (error) {
-            console.error('Error fetching waiting room:', error);
+            console.error("Error fetching waiting room:", error);
         }
-    };
+    }, [meetingId]);
 
     useEffect(() => {
-        isHost && fetchWaitingRoom();
+        if (!isHost) return;
+        queueMicrotask(() => void fetchWaitingRoom());
 
-        isHost && socket.on('new-waiting-user', () => {
-            fetchWaitingRoom();
-        });
-
-        return () => {
-            socket.off('new-waiting-user');
+        const handleWaitingUser = () => {
+            void fetchWaitingRoom();
         };
-    }, [meetingId,isHost]);
+
+        socket.on("new-waiting-user", handleWaitingUser);
+        return () => {
+            socket.off("new-waiting-user", handleWaitingUser);
+        };
+    }, [fetchWaitingRoom, isHost]);
 
     const handleApprove = async (participantId: string) => {
         try {
             await approveParticipant(meetingId, participantId);
-            socket.emit('approve-user', {meetingId, participantId});
+            socket.emit("approve-user", {meetingId, participantId});
             toast.success("Participant approved");
             setWaitingRoomParticipants(prev => prev.filter(p => p.id !== participantId));
         } catch (error) {
+            console.error(error);
             toast.error("Failed to approve participant");
         }
     };
@@ -64,129 +78,190 @@ export default function ParticipantsSidebar({meetingId}:ParticipantsPanelProps) 
     const handleReject = async (participantId: string) => {
         try {
             await rejectParticipant(meetingId, participantId);
-            socket.emit('reject-user', {meetingId, participantId});
+            socket.emit("reject-user", {meetingId, participantId});
             toast.success("Participant rejected");
             setWaitingRoomParticipants(prev => prev.filter(p => p.id !== participantId));
         } catch (error) {
+            console.error(error);
             toast.error("Failed to reject participant");
         }
     };
 
+    const filteredParticipants = useMemo(() => {
+        const q = query.trim().toLowerCase();
+        if (!q) return participants;
+        return participants.filter(p => (p.name || p.identity).toLowerCase().includes(q));
+    }, [participants, query]);
+
+    const filteredWaiting = useMemo(() => {
+        const q = query.trim().toLowerCase();
+        if (!q) return waitingRoomParticipants;
+        return waitingRoomParticipants.filter(p =>
+            `${p.user.firstName} ${p.user.lastName ?? ""}`.toLowerCase().includes(q)
+        );
+    }, [waitingRoomParticipants, query]);
 
     return (
-        <div className="w-80 border-l flex flex-col bg-background h-full">
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b">
+        <section className="flex h-full w-full flex-col bg-background">
+            <div className="flex items-center justify-between border-b px-4 py-3">
                 <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-muted-foreground"/>
-                    <h3 className="font-semibold text-sm">
-                        Participants ({participants.length + waitingRoomParticipants.length})
+                    <Users />
+                    <h3 className="text-sm font-semibold">
+                        Participants
                     </h3>
+                    <Badge variant="secondary">{participants.length + waitingRoomParticipants.length}</Badge>
                 </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={toggleParticipants}>
-                    <X className="h-4 w-4"/>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Close participants"
+                    className="size-8 rounded-soft transition-transform hover:-translate-y-0.5 active:scale-[0.97]"
+                    onClick={toggleParticipants}
+                >
+                    <X data-icon="inline-start" />
                 </Button>
             </div>
 
-            <div className="flex-1 overflow-y-auto">
-                {/* Waiting Room Section */}
-                {waitingRoomParticipants.length > 0 && (
-                    <div className="p-2 border-b bg-muted/30">
-                        <div className="px-2 py-1 mb-1">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                                Waiting Room ({waitingRoomParticipants.length})
-                            </span>
-                        </div>
-                        {waitingRoomParticipants.map((p) => (
-                            <div
-                                key={p.id}
-                                className="flex items-center justify-between px-2 py-2 rounded-lg"
-                            >
-                                <div className="flex items-center gap-2 overflow-hidden">
-                                    <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                        <span className="text-[10px] font-medium text-primary">
-                                            {p.user.firstName.charAt(0).toUpperCase()}
-                                        </span>
-                                    </div>
-                                    <span className="text-sm font-medium truncate">
-                                        {p.user.firstName} {p.user.lastName}
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-1 ml-2">
-                                    <Button 
-                                        size="icon" 
-                                        variant="ghost" 
-                                        className="h-7 w-7 text-green-600 hover:text-green-700 hover:bg-green-50"
-                                        onClick={() => handleApprove(p.id)}
-                                    >
-                                        <Check className="h-4 w-4"/>
-                                    </Button>
-                                    <Button 
-                                        size="icon" 
-                                        variant="ghost" 
-                                        className="h-7 w-7 text-destructive hover:bg-destructive/10"
-                                        onClick={() => handleReject(p.id)}
-                                    >
-                                        <X className="h-4 w-4"/>
-                                    </Button>
-                                </div>
+            <div className="border-b p-3">
+                <div className="relative">
+                    <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                        value={query}
+                        onChange={event => setQuery(event.target.value)}
+                        placeholder="Search people"
+                        aria-label="Search participants"
+                        className="h-10 rounded-soft pl-9"
+                    />
+                </div>
+            </div>
+
+            <ScrollArea className="min-h-0 flex-1">
+                <div className="flex flex-col gap-4 p-3">
+                    {isHost && filteredWaiting.length > 0 && (
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-center justify-between px-1">
+                                <span className="text-xs font-semibold uppercase text-muted-foreground">
+                                    Waiting room
+                                </span>
+                                <Badge variant="outline">{filteredWaiting.length}</Badge>
                             </div>
-                        ))}
-                    </div>
-                )}
+                            <div className="flex flex-col gap-1">
+                                {filteredWaiting.map((p) => {
+                                    const name = `${p.user.firstName} ${p.user.lastName ?? ""}`.trim();
 
-
-                {/* Active Participants List */}
-                <div className="p-2">
-                    {waitingRoomParticipants.length > 0 && (
-                        <div className="px-2 py-1 mb-1 mt-2">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                                In Meeting ({participants.length})
-                            </span>
+                                    return (
+                                        <div
+                                            key={p.id}
+                                            className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-muted"
+                                        >
+                                            <div className="flex min-w-0 items-center gap-3">
+                                                <Avatar className="size-9">
+                                                    {p.user.imageUrl && <AvatarImage src={p.user.imageUrl} alt="" />}
+                                                    <AvatarFallback>{initials(name)}</AvatarFallback>
+                                                </Avatar>
+                                                <div className="min-w-0">
+                                                    <p className="truncate text-sm font-medium">{name}</p>
+                                                    <p className="text-xs text-muted-foreground">Needs approval</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <Button
+                                                    type="button"
+                                                    size="icon"
+                                                    variant="ghost"
+                                                    aria-label={`Approve ${name}`}
+                                                    className="size-8 rounded-soft text-[var(--quality-good)] hover:bg-primary/10"
+                                                    onClick={() => handleApprove(p.id)}
+                                                >
+                                                    <Check data-icon="inline-start" />
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    size="icon"
+                                                    variant="ghost"
+                                                    aria-label={`Reject ${name}`}
+                                                    className="size-8 rounded-soft text-destructive hover:bg-destructive/10"
+                                                    onClick={() => handleReject(p.id)}
+                                                >
+                                                    <X data-icon="inline-start" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     )}
-                    {participants.map(p => {
-                    const isMicOn = p.isMicrophoneEnabled;
-                    const isCamOn = p.isCameraEnabled;
 
-                    return (
-                        <div
-                            key={p.identity}
-                            className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-muted transition-colors"
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                    <span className="text-xs font-medium text-primary">
-                                        {(p.name || p.identity || '?').charAt(0).toUpperCase()}
-                                    </span>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-medium">
-                                        {p.name || p.identity}
-                                    </span>
-                                    {p.isLocal && (
-                                        <span className="text-xs text-muted-foreground">(You)</span>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-1">
-                                {isMicOn ? (
-                                    <Mic className="h-3.5 w-3.5 text-muted-foreground"/>
-                                ) : (
-                                    <MicOff className="h-3.5 w-3.5 text-destructive"/>
-                                )}
-                                {isCamOn ? (
-                                    <Video className="h-3.5 w-3.5 text-muted-foreground"/>
-                                ) : (
-                                    <VideoOff className="h-3.5 w-3.5 text-destructive"/>
-                                )}
-                            </div>
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between px-1">
+                            <span className="text-xs font-semibold uppercase text-muted-foreground">
+                                In meeting
+                            </span>
+                            <Badge variant="outline">{filteredParticipants.length}</Badge>
                         </div>
-                    );
-                })}
-            </div>
-        </div>
-    </div>
+                        <div className="flex flex-col gap-1">
+                            {filteredParticipants.map(p => {
+                                const name = p.name || p.identity || "Guest";
+                                let metadata: Record<string, any> | null = null;
+                                try {
+                                    if (p.metadata) metadata = JSON.parse(p.metadata);
+                                } catch {}
+                                const isMicOn = p.isMicrophoneEnabled;
+                                const isCamOn = p.isCameraEnabled;
+                                const raisedHand = p.metadata?.toLowerCase().includes("hand");
+                                const showHost = isHost && p.isLocal;
+
+                                return (
+                                    <div
+                                        key={p.identity}
+                                        className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-muted"
+                                    >
+                                        <div className="flex min-w-0 items-center gap-3">
+                                            <div className="relative">
+                                                <Avatar className="size-9">
+                                                    {metadata?.imageUrl && <AvatarImage src={metadata.imageUrl} alt={name} />}
+                                                    <AvatarFallback>{initials(name)}</AvatarFallback>
+                                                </Avatar>
+                                                <span
+                                                    className={cn(
+                                                        "absolute right-0 bottom-0 size-2.5 rounded-pill ring-2 ring-background",
+                                                        p.isSpeaking ? "bg-[var(--quality-good)]" : "bg-muted-foreground/50"
+                                                    )}
+                                                    aria-label={p.isSpeaking ? "Speaking" : "Not speaking"}
+                                                />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <div className="flex min-w-0 items-center gap-1.5">
+                                                    <p className="truncate text-sm font-medium">
+                                                        {p.isLocal ? `${name} (You)` : name}
+                                                    </p>
+                                                    {showHost && (
+                                                        <Badge variant="secondary" className="gap-1">
+                                                            <Crown />
+                                                            Host
+                                                        </Badge>
+                                                    )}
+                                                    {raisedHand && <Hand className="raised-hand text-primary" aria-label="Raised hand" />}
+                                                </div>
+                                                <p className="text-xs text-muted-foreground">
+                                                    {p.isSpeaking ? "Speaking" : p.connectionQuality}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex shrink-0 items-center gap-1 text-muted-foreground">
+                                            {isMicOn ? <Mic aria-label="Microphone on" /> : <MicOff className="text-destructive" aria-label="Muted" />}
+                                            {isCamOn ? <Video aria-label="Camera on" /> : <VideoOff className="text-destructive" aria-label="Camera off" />}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            </ScrollArea>
+        </section>
     );
 }

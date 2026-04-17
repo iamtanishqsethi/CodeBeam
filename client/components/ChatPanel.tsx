@@ -1,112 +1,142 @@
-'use client'
+"use client";
 
 import {useMeetingStore} from "@/store/meetingStore";
 import {useEffect, useRef, useState} from "react";
 import {socket} from "@/lib/socket";
 import {ChatMessage} from "@/types/store.types";
 import {Button} from "@/components/ui/button";
-import {Send, X} from "lucide-react";
+import {Badge} from "@/components/ui/badge";
+import {ScrollArea} from "@/components/ui/scroll-area";
 import {Input} from "@/components/ui/input";
+import {Send, X} from "lucide-react";
+import {cn} from "@/lib/utils";
 
 interface ChatPanelProps {
     meetingId: string;
 }
 
-export default function ChatPanel({meetingId}: ChatPanelProps ) {
-    const messages=useMeetingStore(store=>store.chatMessages)
-    const addMessage=useMeetingStore(store=>store.setChatMessages)
-    const toggleChat=useMeetingStore(store=>store.toggleChat)
-
-    const [text,setText]=useState('')
-    const messageEndRef=useRef<HTMLDivElement>(null)
+export default function ChatPanel({meetingId}: ChatPanelProps) {
+    const messages = useMeetingStore(store => store.chatMessages);
+    const addMessage = useMeetingStore(store => store.setChatMessages);
+    const toggleChat = useMeetingStore(store => store.toggleChat);
+    const [text, setText] = useState("");
+    const messageEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const handleMessage=(message:ChatMessage)=>{
-            addMessage(message)
-        }
+        messageEndRef.current?.scrollIntoView({behavior: "smooth", block: "end"});
+    }, [messages.length]);
 
-        socket.on('chat-message',handleMessage)
+    function sendMessage(e?: React.FormEvent) {
+        e?.preventDefault();
+        const trimmed = text.trim();
+        if (!trimmed) return;
 
-        return () => {
-            socket.off('chat-message',handleMessage)
+        const msg: ChatMessage = {
+            id: `${socket.id ?? "local"}-${Date.now()}`,
+            text: trimmed,
+            userId: socket.id ?? "unknown",
+            timestamp: Date.now(),
         };
-    }, [addMessage]);
 
-
-
-    function sendMessage(e?:React.FormEvent){
-        e?.preventDefault()
-        if(!text.trim()) return
-
-
-        const msg:ChatMessage={
-            text,
-            userId:socket.id??'unknown',
-            timestamp:Date.now()
-        }
-
-        socket.emit('chat-message',{meetingId,...msg})
-        addMessage(msg) //added here to show message immediately
-        setText('')
+        socket.emit("chat-message", {meetingId, ...msg});
+        addMessage(msg);
+        setText("");
     }
 
-    return(
-
-        <div className={'w-80 border-l bg-background flex flex-col'}>
-        {/*Header*/}
-            <div className={'flex items-center justify-between px-4 py-3 border-b'}>
-                <h3 className={'text-sm font-semibold'}>
-                    Chat
-                </h3>
+    return (
+        <section className="flex h-full w-full flex-col bg-background">
+            <div className="flex items-center justify-between border-b px-4 py-3">
+                <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-semibold">Chat</h3>
+                    <Badge variant="secondary">{messages.length}</Badge>
+                </div>
                 <Button
+                    type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8"
+                    aria-label="Close chat"
+                    className="size-8 rounded-soft transition-transform hover:-translate-y-0.5 active:scale-[0.97]"
                     onClick={toggleChat}
                 >
-                    <X/>
+                    <X data-icon="inline-start" />
                 </Button>
-
             </div>
 
-        {/*Messages*/}
-            <div className={'flex-1 overflow-y-auto p-4 space-y-3'}>
-                {messages.length === 0 && (
-                    <p className="text-muted-foreground text-sm text-center mt-8">
-                        No messages yet. Say hello! 👋
-                    </p>
-                )}
-
-                {messages.map((m, i) => (
-                    <div key={i} className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium text-muted-foreground">
-                                {m.userName ?? m.userId.slice(0, 8)}
-                            </span>
-                            <span className="text-xs text-muted-foreground/60">
-                                {new Date(m.timestamp??Date.now()).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
-                            </span>
-                        </div>
-                        <p className="text-sm bg-muted px-3 py-2 rounded-lg w-fit max-w-[90%]">
-                            {m.text}
+            <ScrollArea className="min-h-0 flex-1">
+                <div className="flex flex-col gap-3 p-4">
+                    {messages.length === 0 && (
+                        <p className="mt-8 text-center text-sm text-muted-foreground">
+                            Say hello when the room opens.
                         </p>
-                    </div>
-                ))}
-                <div ref={messageEndRef}/>
-                {/* Input */}
-                <form onSubmit={sendMessage} className="p-3 border-t flex gap-2">
-                    <Input
-                        value={text}
-                        onChange={e => setText(e.target.value)}
-                        placeholder="Type a message..."
-                        className="flex-1"
-                    />
-                    <Button type="submit" size="icon" disabled={!text.trim()}>
-                        <Send className="h-4 w-4"/>
-                    </Button>
-                </form>
-            </div>
-        </div>
+                    )}
 
-    )
+                    {messages.map((m, i) => {
+                        const isSelf = m.userId === socket.id;
+                        const sender = m.userName ?? (isSelf ? "You" : m.userId.slice(0, 8));
+
+                        return (
+                            <div
+                                key={m.id ?? `${m.userId}-${m.timestamp}-${i}`}
+                                className={cn("group flex flex-col gap-1", isSelf ? "items-end" : "items-start")}
+                            >
+                                <div className={cn("flex items-center gap-2", isSelf && "flex-row-reverse")}>
+                                    <span className="text-xs font-medium text-muted-foreground">{sender}</span>
+                                    <span className="text-xs text-muted-foreground/70 opacity-0 transition-opacity group-hover:opacity-100">
+                                        {new Date(m.timestamp ?? 0).toLocaleTimeString([], {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                        })}
+                                    </span>
+                                </div>
+                                <div className={cn("flex items-end gap-2", isSelf && "flex-row-reverse")}>
+                                    <p
+                                        className={cn(
+                                            "max-w-[82%] rounded-lg px-3 py-2 text-sm leading-5 shadow-sm",
+                                            isSelf ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
+                                        )}
+                                    >
+                                        {m.text}
+                                    </p>
+                                    <div className="flex translate-y-1 gap-1 opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
+                                        {["👍", "❤️"].map((emoji) => (
+                                            <Button
+                                                key={emoji}
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                aria-label={`React ${emoji}`}
+                                                className="size-7 rounded-pill text-xs"
+                                            >
+                                                {emoji}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                    <div ref={messageEndRef} />
+                </div>
+            </ScrollArea>
+
+            <form onSubmit={sendMessage} className="flex gap-2 border-t p-3">
+                <Input
+                    value={text}
+                    onChange={e => setText(e.target.value)}
+                    placeholder="Message everyone"
+                    className="min-w-0 flex-1 rounded-soft"
+                    aria-label="Chat message"
+                />
+                <Button
+                    type="submit"
+                    size="icon"
+                    disabled={!text.trim()}
+                    aria-label="Send message"
+                    className="rounded-soft transition-transform hover:-translate-y-0.5 active:scale-[0.97]"
+                >
+                    <Send data-icon="inline-start" />
+                </Button>
+            </form>
+        </section>
+    );
 }

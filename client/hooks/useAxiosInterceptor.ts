@@ -10,11 +10,12 @@ export const useAxiosInterceptor = () => {
     //always keep ref up to date
     useEffect(() => {
         sessionRef.current = session;
-    }, []);
+    }, [session]);
     useEffect(()=>{
         const interceptorId=apiClient.interceptors.request.use(async (config)=>{
-            if(session){
-                const token=await session.getToken()
+            const activeSession = sessionRef.current;
+            if(activeSession){
+                const token=await activeSession.getToken()
                 if(token){
                     config.headers.Authorization=`Bearer ${token}`
                 }

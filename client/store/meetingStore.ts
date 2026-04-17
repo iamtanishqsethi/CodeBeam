@@ -40,6 +40,12 @@ export const useMeetingStore = create<MeetingStore>((set)=>({
     //sidebar visibility
     isChatOpen:false,
     isParticipantsOpen:false,
-    toggleChat:()=>set((state)=>({isChatOpen:!state.isChatOpen})),
-    toggleParticipants:()=>set((state)=>({isParticipantsOpen:!state.isParticipantsOpen}))
+    toggleChat:()=>set((state)=>({
+        isChatOpen:!state.isChatOpen,
+        isParticipantsOpen:!state.isChatOpen ? false : state.isParticipantsOpen
+    })),
+    toggleParticipants:()=>set((state)=>({
+        isParticipantsOpen:!state.isParticipantsOpen,
+        isChatOpen:!state.isParticipantsOpen ? false : state.isChatOpen
+    }))
 }))

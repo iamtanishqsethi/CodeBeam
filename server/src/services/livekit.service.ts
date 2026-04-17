@@ -15,7 +15,11 @@ export async function createLiveKitToken(meetingId:string,userId:string){
         throw new Error('User not found')
     }
 
-    const accessToken=new AccessToken(LiveKitApiKey,LiveKitApiSecret,{identity:user.firstName})
+    const accessToken=new AccessToken(LiveKitApiKey,LiveKitApiSecret,{
+        identity: user.id,
+        name: `${user.firstName} ${user.lastName || ''}`.trim(),
+        metadata: JSON.stringify({ imageUrl: user.imageUrl })
+    })
     accessToken.addGrant(({
         room:meetingId,
         canPublish:true,
