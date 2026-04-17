@@ -47,5 +47,12 @@ export const useMeetingStore = create<MeetingStore>((set)=>({
     toggleParticipants:()=>set((state)=>({
         isParticipantsOpen:!state.isParticipantsOpen,
         isChatOpen:!state.isParticipantsOpen ? false : state.isChatOpen
+    })),
+
+    // sidebar v2 (ui-meet)
+    activePanel: null,
+    setActivePanel: (panel) => set({activePanel: panel}),
+    togglePanel: (panel) => set((state) => ({
+        activePanel: state.activePanel === panel ? null : panel
     }))
 }))

@@ -4,46 +4,42 @@ import {ModeToggle} from "@/components/ModeToggle";
 import {Button} from "@/components/ui/button";
 import {Show, SignInButton, SignUpButton, UserButton} from "@clerk/nextjs";
 import Link from "next/link";
-import {Video} from "lucide-react";
+import {Zap} from "lucide-react";
 import {usePathname} from "next/navigation";
 
 export default function Header() {
+    const pathName = usePathname()
+    const isMeetingPage = pathName.startsWith('/meeting/')
 
-    const pathName=usePathname()
-    const isDashboard = pathName === '/'
+    if (isMeetingPage) return null;
 
+    return (
+        <header className="fixed top-0 left-0 right-0 z-50 flex h-16 w-full items-center justify-between border-b border-white/[0.06] bg-background/70 px-6 backdrop-blur-2xl">
+            <Link href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
+                <div className="flex size-8 items-center justify-center rounded-lg bg-primary/15">
+                    <Zap className="size-4 text-primary" />
+                </div>
+                <span className="text-lg font-bold tracking-tight">CodeBeam</span>
+            </Link>
 
-   return (
-       <>
-           {isDashboard ? (        <header className="flex w-full bg-accent justify-between items-center px-6 h-16 border-b fixed top-0 z-50">
-                   <Link href="/" className="flex items-center gap-2">
-                       <Video className="h-5 w-5 text-primary"/>
-                       <span className="font-bold text-lg">CodeBeam</span>
-                   </Link>
-
-                   <div className="flex items-center gap-3">
-                       <ModeToggle/>
-                       <Show when="signed-out">
-                           <SignInButton>
-                               <Button variant="ghost" className="font-medium text-sm cursor-pointer">
-                                   Sign In
-                               </Button>
-                           </SignInButton>
-                           <SignUpButton>
-                               <Button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm cursor-pointer">
-                                   Sign Up
-                               </Button>
-                           </SignUpButton>
-                       </Show>
-                       <Show when="signed-in">
-                           <Link href="/dashboard">
-                               <Button variant="ghost" size="sm">Dashboard</Button>
-                           </Link>
-                           <UserButton/>
-                       </Show>
-                   </div>
-               </header>
-           ): <div></div>}
-       </>
+            <div className="flex items-center gap-3">
+                <ModeToggle />
+                <Show when="signed-out">
+                    <SignInButton>
+                        <Button variant="ghost" className="cursor-pointer text-sm font-medium">
+                            Sign In
+                        </Button>
+                    </SignInButton>
+                    <SignUpButton>
+                        <Button className="cursor-pointer rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:shadow-primary/40">
+                            Sign Up
+                        </Button>
+                    </SignUpButton>
+                </Show>
+                <Show when="signed-in">
+                    <UserButton />
+                </Show>
+            </div>
+        </header>
     )
 }
