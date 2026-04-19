@@ -14,7 +14,7 @@ export default function Header() {
     if (isMeetingPage) return null;
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 flex h-16 w-full items-center justify-between border-b bg-background/82 px-4 backdrop-blur-xl sm:px-6">
+        <header className="fixed top-0 left-0 right-0 z-50 flex h-16 w-full items-center justify-between  bg-background/50 px-4 backdrop-blur-xl sm:px-6">
             <Link href="/" className="interactive-lift flex items-center gap-2.5">
                 <div className="flex size-8 items-center justify-center rounded-lg bg-primary/15">
                     <Zap className="text-primary" />

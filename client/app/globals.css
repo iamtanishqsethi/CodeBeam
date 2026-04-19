@@ -26,6 +26,7 @@
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
@@ -50,6 +51,15 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  --animate-shiny-text: shiny-text 8s infinite;
+  @keyframes shiny-text {
+  0%, 90%, 100% {
+    background-position: calc(-100% - var(--shiny-width)) 0;
+    }
+  30%, 60% {
+    background-position: calc(100% + var(--shiny-width)) 0;
+    }
+  }
 }
 
 :root {
@@ -63,7 +73,7 @@
   --card-foreground: oklch(0.17 0.008 230);
   --popover: oklch(0.996 0.002 210);
   --popover-foreground: oklch(0.17 0.008 230);
-  --primary: oklch(0.58 0.13 185);
+  --primary: oklch(0.68 0.13 185);
   --primary-foreground: oklch(0.99 0.004 185);
   --secondary: oklch(0.93 0.006 230);
   --secondary-foreground: oklch(0.21 0.01 230);
@@ -72,24 +82,25 @@
   --accent: oklch(0.74 0.13 80);
   --accent-foreground: oklch(0.19 0.02 80);
   --destructive: oklch(0.58 0.2 25);
+  --destructive-foreground: oklch(0.99 0.004 25);
   --border: oklch(0.87 0.006 230);
   --input: oklch(0.90 0.006 230);
-  --ring: oklch(0.60 0.12 185);
+  --ring: oklch(0.70 0.12 185);
   --tile-bg: oklch(0.18 0.01 230);
   --control-bar-bg: oklch(0.985 0.003 210 / 86%);
-  --speaking-ring: oklch(0.62 0.14 185);
+  --speaking-ring: oklch(0.72 0.14 185);
   --muted-overlay: oklch(0.16 0.008 230 / 72%);
   --quality-good: oklch(0.72 0.18 155);
   --quality-warn: oklch(0.82 0.14 85);
   --quality-poor: oklch(0.62 0.18 25);
-  --chart-1: oklch(0.58 0.13 185);
+  --chart-1: oklch(0.68 0.13 185);
   --chart-2: oklch(0.74 0.13 80);
   --chart-3: oklch(0.72 0.18 155);
   --chart-4: oklch(0.78 0.16 85);
   --chart-5: oklch(0.68 0.22 30);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.58 0.13 185);
+  --sidebar-primary: oklch(0.68 0.13 185);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
@@ -104,7 +115,7 @@
   --card-foreground: oklch(0.95 0.004 230);
   --popover: oklch(0.16 0.007 230);
   --popover-foreground: oklch(0.95 0.004 230);
-  --primary: oklch(0.70 0.13 185);
+  --primary: oklch(0.78 0.13 185);
   --primary-foreground: oklch(0.12 0.006 230);
   --secondary: oklch(0.23 0.008 230);
   --secondary-foreground: oklch(0.95 0.004 230);
@@ -113,24 +124,25 @@
   --accent: oklch(0.78 0.12 80);
   --accent-foreground: oklch(0.14 0.012 80);
   --destructive: oklch(0.66 0.19 25);
+  --destructive-foreground: oklch(0.99 0.004 25);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 14%);
-  --ring: oklch(0.70 0.13 185);
+  --ring: oklch(0.78 0.13 185);
   --tile-bg: oklch(0.14 0.007 230);
   --control-bar-bg: oklch(0.14 0.007 230 / 82%);
-  --speaking-ring: oklch(0.70 0.13 185);
+  --speaking-ring: oklch(0.78 0.13 185);
   --muted-overlay: oklch(0.08 0.004 230 / 76%);
   --quality-good: oklch(0.72 0.18 155);
   --quality-warn: oklch(0.82 0.14 85);
   --quality-poor: oklch(0.68 0.18 25);
-  --chart-1: oklch(0.70 0.13 185);
+  --chart-1: oklch(0.78 0.13 185);
   --chart-2: oklch(0.78 0.12 80);
   --chart-3: oklch(0.78 0.18 155);
   --chart-4: oklch(0.82 0.14 85);
   --chart-5: oklch(0.72 0.22 30);
   --sidebar: oklch(0.14 0.015 280);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.70 0.13 185);
+  --sidebar-primary: oklch(0.78 0.13 185);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.20 0.018 280);
   --sidebar-accent-foreground: oklch(0.985 0 0);
@@ -284,24 +296,51 @@
   z-index: 1;
 }
 
-.prejoin-widget[data-lk-theme="default"] {
-  --lk-bg: color-mix(in oklch, var(--foreground) 82%, transparent);
-  --lk-bg2: color-mix(in oklch, var(--foreground) 72%, var(--card) 28%);
-  --lk-bg3: color-mix(in oklch, var(--foreground) 62%, var(--card) 38%);
-  --lk-bg4: color-mix(in oklch, var(--foreground) 54%, var(--card) 46%);
-  --lk-bg5: color-mix(in oklch, var(--foreground) 48%, var(--card) 52%);
-  --lk-border-color: color-mix(in oklch, white 14%, transparent);
+[data-lk-theme="default"] {
+  color-scheme: light;
+  --lk-bg: var(--background);
+  --lk-bg2: var(--card);
+  --lk-bg3: var(--muted);
+  --lk-bg4: color-mix(in oklch, var(--muted) 84%, var(--foreground) 16%);
+  --lk-bg5: color-mix(in oklch, var(--muted) 74%, var(--foreground) 26%);
+  --lk-fg: var(--foreground);
+  --lk-fg2: color-mix(in oklch, var(--foreground) 92%, var(--background) 8%);
+  --lk-fg3: color-mix(in oklch, var(--foreground) 82%, var(--background) 18%);
+  --lk-fg4: color-mix(in oklch, var(--foreground) 68%, var(--background) 32%);
+  --lk-fg5: var(--muted-foreground);
+  --lk-border-color: var(--border);
+  --lk-control-fg: var(--foreground);
+  --lk-control-bg: var(--card);
+  --lk-control-hover-bg: var(--muted);
+  --lk-control-active-bg: var(--primary);
+  --lk-control-active-hover-bg: color-mix(in oklch, var(--primary) 90%, var(--foreground) 10%);
+  --lk-accent-fg: var(--primary-foreground);
   --lk-accent-bg: var(--primary);
   --lk-accent2: color-mix(in oklch, var(--primary) 92%, white 8%);
   --lk-accent3: color-mix(in oklch, var(--primary) 84%, white 16%);
   --lk-accent4: color-mix(in oklch, var(--primary) 78%, white 22%);
+  --lk-danger-fg: var(--destructive-foreground);
   --lk-danger: var(--destructive);
   --lk-danger2: color-mix(in oklch, var(--destructive) 84%, white 16%);
   --lk-danger3: color-mix(in oklch, var(--destructive) 76%, white 24%);
   --lk-danger4: color-mix(in oklch, var(--destructive) 68%, white 32%);
+  --lk-success-fg: var(--primary-foreground);
+  --lk-success: var(--quality-good);
   --lk-font-family: var(--font-geist-sans), system-ui, sans-serif;
   --lk-border-radius: 0.5rem;
   --lk-box-shadow: 0 14px 36px color-mix(in srgb, black 14%, transparent);
+}
+
+.dark [data-lk-theme="default"] {
+  color-scheme: dark;
+  --lk-bg3: color-mix(in oklch, var(--muted) 88%, white 12%);
+  --lk-bg4: color-mix(in oklch, var(--muted) 78%, white 22%);
+  --lk-bg5: color-mix(in oklch, var(--muted) 68%, white 32%);
+  --lk-fg2: color-mix(in oklch, var(--foreground) 94%, black 6%);
+  --lk-fg3: color-mix(in oklch, var(--foreground) 82%, black 18%);
+  --lk-fg4: color-mix(in oklch, var(--foreground) 70%, black 30%);
+  --lk-control-hover-bg: color-mix(in oklch, var(--muted) 88%, white 12%);
+  --lk-control-active-hover-bg: color-mix(in oklch, var(--primary) 88%, white 12%);
 }
 
 .prejoin-widget.lk-prejoin {
