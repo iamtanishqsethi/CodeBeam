@@ -18,7 +18,7 @@ export const AvatarCircles = ({
   avatarUrls,
 }: AvatarCirclesProps) => {
   return (
-    <div className={cn("z-10 flex -space-x-4 rtl:space-x-reverse", className)}>
+    <div className={cn("z-10 flex [&>*+*]:-ml-4", className)}>
       {avatarUrls.map((url, index) => (
         <a
           key={index}
@@ -28,7 +28,7 @@ export const AvatarCircles = ({
         >
           <img
             key={index}
-            className="h-10 w-10 rounded-full border-2 border-white dark:border-gray-800"
+            className="size-10 rounded-full border-2 border-background"
             src={url.imageUrl}
             width={40}
             height={40}
@@ -38,7 +38,7 @@ export const AvatarCircles = ({
       ))}
       {(numPeople ?? 0) > 0 && (
         <a
-          className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-black text-center text-xs font-medium text-white hover:bg-gray-600 dark:border-gray-800 dark:bg-white dark:text-black"
+          className="flex size-10 items-center justify-center rounded-full border-2 border-background bg-foreground text-center text-xs font-medium text-background hover:bg-foreground/80"
           href=""
         >
           +{numPeople}

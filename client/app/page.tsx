@@ -4,7 +4,6 @@ import {Button} from "@/components/ui/button";
 import {useRouter} from "next/navigation";
 import {ArrowRight, Plus, Shield, Users, Video, Zap} from "lucide-react";
 import {motion} from "framer-motion";
-import GradientText from "@/components/reactbits/GradientText";
 import ShinyText from "@/components/reactbits/ShinyText";
 import SpotlightCard from "@/components/reactbits/SpotlightCard";
 
@@ -41,123 +40,109 @@ export default function Home() {
 
     return (
         <div className="relative min-h-screen overflow-hidden bg-background pt-16">
-            {/* Ambient glow */}
-            <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                <div className="absolute -top-[35%] left-1/2 h-[60rem] w-[80rem] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,oklch(0.55_0.22_270_/_0.12),transparent_60%)]" />
-                <div className="absolute -bottom-[30%] right-0 h-[50rem] w-[60rem] rounded-full bg-[radial-gradient(ellipse_at_center,oklch(0.72_0.16_320_/_0.08),transparent_55%)]" />
-            </div>
+            <div className="interface-grid-bg pointer-events-none absolute inset-x-0 top-0 h-[28rem]" />
 
-            {/* Hero */}
             <motion.section
                 variants={stagger}
                 initial="hidden"
                 animate="show"
-                className="relative mx-auto flex max-w-5xl flex-col items-center gap-6 px-6 pb-20 pt-24 text-center"
+                className="section-shell relative flex min-h-[calc(100svh-4rem)] flex-col items-center justify-center gap-6 px-4 pb-20 pt-16 text-center sm:px-6"
             >
                 <motion.div variants={fadeUp}>
-                    <GradientText
-                        colors={["#7c3aed", "#c084fc", "#f472b6", "#7c3aed"]}
-                        animationSpeed={6}
-                        showBorder
-                        className="px-4 py-1.5 text-sm font-semibold"
-                    >
-                        ✨ Video meetings, reimagined
-                    </GradientText>
+                    <div className="rounded-lg border bg-background/70 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
+                        Production video rooms
+                    </div>
                 </motion.div>
 
                 <motion.h1
                     variants={fadeUp}
-                    className="max-w-3xl text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
+                    className="text-balance max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl"
                 >
-                    Where teams{" "}
+                    Start focused calls that stay{" "}
                     <ShinyText
-                        text="connect"
-                        speed={3}
-                        color="oklch(0.68 0.20 270)"
-                        shineColor="#e0cbff"
-                        className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
-                    />{" "}
-                    and build
+                        text="quiet, clear, and fast"
+                        speed={4}
+                        color="var(--foreground)"
+                        shineColor="var(--primary)"
+                        className="font-semibold tracking-tight"
+                    />
                 </motion.h1>
 
-                <motion.p variants={fadeUp} className="max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                    Focused video rooms for dev teams. No distractions. No clutter. Just seamless calls with real-time chat, screen sharing, and host controls.
+                <motion.p variants={fadeUp} className="max-w-2xl text-base leading-7 text-muted-foreground">
+                    CodeBeam keeps the first screen in the meeting, with fast room creation, guest-friendly joining, chat, reactions, screen sharing, and host approval.
                 </motion.p>
 
                 <motion.div variants={fadeUp} className="flex flex-wrap items-center justify-center gap-3 pt-2">
                     <Button
                         size="lg"
                         onClick={() => router.push("/create")}
-                        className="gap-2 rounded-full px-7 shadow-lg shadow-primary/25 transition-all hover:shadow-primary/40 hover:-translate-y-0.5 active:scale-[0.97]"
+                        className="interactive-lift px-6 shadow-sm shadow-primary/20"
                     >
-                        <Plus />
+                        <Plus data-icon="inline-start" />
                         New Meeting
                     </Button>
                     <Button
                         size="lg"
                         variant="outline"
                         onClick={() => router.push("/join")}
-                        className="gap-2 rounded-full border-white/[0.1] px-7 transition-all hover:-translate-y-0.5 active:scale-[0.97]"
+                        className="interactive-lift px-6"
                     >
-                        <ArrowRight />
+                        <ArrowRight data-icon="inline-end" />
                         Join Meeting
                     </Button>
                 </motion.div>
             </motion.section>
 
-            {/* Features */}
             <motion.section
                 variants={stagger}
                 initial="hidden"
                 whileInView="show"
                 viewport={{once: true, margin: "-80px"}}
-                className="relative mx-auto grid max-w-5xl gap-5 px-6 pb-24 sm:grid-cols-2 lg:grid-cols-3"
+                className="section-shell relative grid gap-4 px-4 pb-20 sm:grid-cols-2 sm:px-6 lg:grid-cols-3"
             >
                 {features.map((feature) => {
                     const Icon = feature.icon;
                     return (
                         <motion.div key={feature.title} variants={fadeUp}>
                             <SpotlightCard
-                                className="flex flex-col gap-4 rounded-2xl border border-white/[0.08] bg-card/80 p-7 shadow-xl backdrop-blur-xl"
-                                spotlightColor="rgba(124, 58, 237, 0.15)"
+                                className="surface-panel interactive-lift flex min-h-52 flex-col gap-4 p-5"
+                                spotlightColor="color-mix(in oklch, var(--primary) 16%, transparent)"
                             >
-                                <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10">
-                                    <Icon className="size-6 text-primary" />
+                                <div className="flex size-11 items-center justify-center rounded-lg bg-primary/10">
+                                    <Icon className="text-primary" />
                                 </div>
-                                <h3 className="text-lg font-semibold">{feature.title}</h3>
-                                <p className="text-sm leading-relaxed text-muted-foreground">{feature.description}</p>
+                                <h3 className="text-base font-semibold">{feature.title}</h3>
+                                <p className="text-sm leading-6 text-muted-foreground">{feature.description}</p>
                             </SpotlightCard>
                         </motion.div>
                     );
                 })}
             </motion.section>
 
-            {/* Bottom CTA */}
             <motion.section
                 initial={{opacity: 0, y: 24}}
                 whileInView={{opacity: 1, y: 0}}
                 viewport={{once: true}}
                 transition={{duration: 0.5}}
-                className="relative mx-auto flex max-w-3xl flex-col items-center gap-5 px-6 pb-24 text-center"
+                className="relative mx-auto flex max-w-3xl flex-col items-center gap-5 px-4 pb-20 text-center sm:px-6"
             >
-                <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10">
-                    <Zap className="size-7 text-primary" />
+                <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+                    <Zap className="text-primary" />
                 </div>
-                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Start your meeting in seconds</h2>
+                <h2 className="text-balance text-2xl font-semibold tracking-tight sm:text-3xl">Start your meeting in seconds</h2>
                 <p className="text-muted-foreground">No downloads. No signups for guests. Just share the link.</p>
                 <Button
                     size="lg"
                     onClick={() => router.push("/create")}
-                    className="gap-2 rounded-full px-8 shadow-lg shadow-primary/25 transition-all hover:shadow-primary/40 hover:-translate-y-0.5 active:scale-[0.97]"
+                    className="interactive-lift px-7 shadow-sm shadow-primary/20"
                 >
-                    <Video />
+                    <Video data-icon="inline-start" />
                     Create Meeting
                 </Button>
             </motion.section>
 
-            {/* Footer */}
-            <footer className="border-t border-white/[0.06] py-8 text-center text-sm text-muted-foreground">
-                <p>© {new Date().getFullYear()} CodeBeam. Built with Next.js, LiveKit, and ❤️</p>
+            <footer className="border-t py-8 text-center text-sm text-muted-foreground">
+                <p>© {new Date().getFullYear()} CodeBeam. Built with Next.js and LiveKit.</p>
             </footer>
         </div>
     );

@@ -38,7 +38,7 @@ export default function InviteDialog({open, onOpenChange, meetingId}: InviteDial
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-md border-white/[0.08] bg-background/95 backdrop-blur-2xl sm:rounded-2xl">
+            <DialogContent className="max-w-md bg-background/95 backdrop-blur-2xl sm:rounded-lg">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Link2 />
@@ -50,11 +50,10 @@ export default function InviteDialog({open, onOpenChange, meetingId}: InviteDial
                 </DialogHeader>
 
                 <div className="flex flex-col gap-4 pt-2">
-                    {/* Meeting ID */}
                     <div className="flex flex-col gap-2">
                         <span className="text-xs font-medium text-muted-foreground">Meeting ID</span>
                         <div className="flex items-center gap-2">
-                            <code className="flex-1 rounded-xl bg-muted/50 px-4 py-3 font-mono text-sm tracking-[0.15em]">
+                            <code className="flex-1 rounded-lg bg-muted/50 px-4 py-3 font-mono text-sm tracking-[0.15em]">
                                 {meetingId}
                             </code>
                             <Button
@@ -62,7 +61,7 @@ export default function InviteDialog({open, onOpenChange, meetingId}: InviteDial
                                 variant="outline"
                                 size="icon"
                                 onClick={() => copyToClipboard(meetingId)}
-                                className="shrink-0 rounded-xl border-white/[0.08]"
+                                className="interactive-lift shrink-0"
                                 aria-label="Copy meeting ID"
                             >
                                 {copied ? <Check data-icon="inline-start" /> : <Copy data-icon="inline-start" />}
@@ -70,11 +69,10 @@ export default function InviteDialog({open, onOpenChange, meetingId}: InviteDial
                         </div>
                     </div>
 
-                    {/* Meeting Link */}
                     <div className="flex flex-col gap-2">
                         <span className="text-xs font-medium text-muted-foreground">Meeting link</span>
                         <div className="flex items-center gap-2">
-                            <code className="flex-1 truncate rounded-xl bg-muted/50 px-4 py-3 text-xs">
+                            <code className="flex-1 truncate rounded-lg bg-muted/50 px-4 py-3 text-xs">
                                 {meetingUrl}
                             </code>
                             <Button
@@ -82,7 +80,7 @@ export default function InviteDialog({open, onOpenChange, meetingId}: InviteDial
                                 variant="outline"
                                 size="icon"
                                 onClick={() => copyToClipboard(meetingUrl)}
-                                className="shrink-0 rounded-xl border-white/[0.08]"
+                                className="interactive-lift shrink-0"
                                 aria-label="Copy meeting link"
                             >
                                 <Copy data-icon="inline-start" />

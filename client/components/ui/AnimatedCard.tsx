@@ -40,20 +40,20 @@ export function AnimatedCard({
       whileHover={{ y: -8 }}
       className="group relative"
     >
-      <div className="absolute -inset-0 rounded-2xl bg-gradient-to-r from-primary/20 via-primary/10 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
+      <div className="absolute -inset-0 rounded-lg bg-primary/10 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
       
-      <div className="relative border rounded-2xl p-6 bg-card shadow-sm flex flex-col gap-4 items-center text-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="relative flex flex-col items-center gap-4 overflow-hidden rounded-lg border bg-card p-6 text-center shadow-sm">
+        <div className="absolute inset-0 bg-primary/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         
         <motion.div
-          className="relative h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center"
+          className="relative flex size-12 items-center justify-center rounded-lg bg-primary/10"
           whileHover={{ scale: 1.1, rotate: 5 }}
           transition={{ type: 'spring', stiffness: 400, damping: 10 }}
         >
-          <Icon className="h-6 w-6 text-primary" />
+          <Icon className="text-primary" />
         </motion.div>
 
-        <div className="relative space-y-2">
+        <div className="relative flex flex-col gap-2">
           <h2 className="text-xl font-semibold group-hover:text-primary transition-colors">
             {title}
           </h2>
@@ -68,7 +68,7 @@ export function AnimatedCard({
           className="relative mt-2 w-full overflow-hidden group/button"
         >
           <span className="relative z-10 flex items-center">
-            {ButtonIcon && <ButtonIcon className="h-4 w-4 mr-2" />}
+            {ButtonIcon && <ButtonIcon data-icon="inline-start" />}
             {buttonText}
           </span>
           <motion.div

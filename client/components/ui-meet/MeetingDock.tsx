@@ -1,6 +1,6 @@
 "use client";
 
-import {MediaDeviceSelect, useLocalParticipant, useRoomContext} from "@livekit/components-react";
+import {useLocalParticipant, useRoomContext} from "@livekit/components-react";
 import {AnimatePresence, motion} from "framer-motion";
 import {
     Loader2,
@@ -8,7 +8,6 @@ import {
     MessageCircle,
     Mic,
     MicOff,
-    MoreHorizontal,
     PhoneOff,
     ScreenShare,
     ScreenShareOff,
@@ -77,8 +76,6 @@ export default function MeetingDock({
     onTogglePanel,
     activePanel,
     unreadCount,
-    layoutMode,
-    onLayoutModeChange,
     isHost,
 }: MeetingDockProps) {
     const room = useRoomContext();
@@ -115,7 +112,7 @@ export default function MeetingDock({
 
     const reactionItems = ["👍", "👏", "🔥", "❤️", "😂", "🎉"];
 
-    const controlBtnClass = "rounded-full transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.97]";
+    const controlBtnClass = "rounded-lg transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98]";
 
     return (
         <motion.div
@@ -128,7 +125,7 @@ export default function MeetingDock({
                 iconMagnification={58}
                 iconDistance={120}
                 direction="bottom"
-                className="mx-auto h-[62px] gap-1.5 rounded-2xl border border-white/[0.12] bg-background/60 px-3 py-2 shadow-2xl backdrop-blur-2xl"
+                className="mx-auto h-[62px] gap-1.5 rounded-lg border bg-control-bar-bg px-3 py-2 shadow-lg backdrop-blur-2xl"
             >
                 {/* Mic */}
                 <DockIcon className={cn(controlBtnClass, !isMicrophoneEnabled && "bg-destructive/90 text-white")}>
@@ -194,7 +191,7 @@ export default function MeetingDock({
                                 </button>
                             </PopoverTrigger>
                         </DockTooltip>
-                        <PopoverContent side="top" className="w-fit rounded-xl border-white/10 bg-background/80 p-2 backdrop-blur-2xl">
+                        <PopoverContent side="top" className="w-fit rounded-lg bg-background/86 p-2 backdrop-blur-2xl">
                             <div className="flex gap-1">
                                 {reactionItems.map((emoji) => (
                                     <Button
@@ -204,7 +201,7 @@ export default function MeetingDock({
                                         size="icon"
                                         aria-label={`React ${emoji}`}
                                         onClick={() => onReaction(emoji)}
-                                        className="size-10 rounded-xl text-lg transition-transform hover:-translate-y-0.5 active:scale-[0.97]"
+                                        className="interactive-lift size-10 text-lg"
                                     >
                                         {emoji}
                                     </Button>
@@ -262,7 +259,7 @@ export default function MeetingDock({
                 </DockIcon>
 
                 {/* Leave */}
-                <DockIcon className="rounded-full bg-destructive text-white shadow-lg shadow-destructive/25 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-destructive/40 active:scale-[0.97]">
+                <DockIcon className="rounded-lg bg-destructive text-white shadow-sm shadow-destructive/25 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-destructive/40 active:scale-[0.98]">
                     <DockTooltip label="Leave call">
                         <button
                             type="button"

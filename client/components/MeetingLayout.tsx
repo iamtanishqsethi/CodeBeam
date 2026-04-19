@@ -8,6 +8,8 @@ import {LiveKitRoom} from "@livekit/components-react";
 import {toast} from "sonner";
 import {useEffect, useRef, useState} from "react";
 import {RoomContent} from "@/components/RoomContent";
+import {playMeetingSound, warmMeetingSounds} from "@/lib/meeting-sounds";
+import MeetingEndedScreen from "@/components/MeetingEndedScreen";
 
 interface MeetingLayoutProps {
     meetingId: string;
@@ -24,27 +26,36 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
 
     const router=useRouter()
     const isLeavingRef = useRef(false)
+    const meetingEndedRef = useRef(false)
     const [meetingEnded, setMeetingEnded] = useState(false)
 
     const LIVEKIT_URL = process.env.NEXT_PUBLIC_LIVEKIT_URL;
 
     useEffect(() => {
+        void warmMeetingSounds();
+    }, []);
+
+    useEffect(() => {
         const handleNewWaitingUser = (data: unknown) => {
             if (isHost) {
+                playMeetingSound("waiting");
                 toast.message("New user joined the waiting room");
             }
             console.log("new user waiting", data);
         };
 
         const handleUserLeaveEvent=(data: unknown)=>{
+            playMeetingSound("left");
             toast.message("User left the meeting");
             console.log("user left",data)
         }
 
         const handleMeetingEnded = () => {
+            meetingEndedRef.current = true
             clearToken()
             setHost(false)
             setMeetingEnded(true)
+            playMeetingSound("ended")
             toast.message("This meeting has ended")
         }
 
@@ -60,6 +71,10 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
     }, [clearToken, isHost, setHost, token]);
 
     const handleLeave=async ()=>{
+        if (meetingEndedRef.current) {
+            return
+        }
+
         if (isLeavingRef.current) {
             return
         }
@@ -89,6 +104,7 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
         try {
             await endMeeting(meetingId)
             socket.emit('meeting-ended', {meetingId})
+            meetingEndedRef.current = true
             clearToken()
             setHost(false)
             setMeetingEnded(true)
@@ -99,11 +115,7 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
     }
 
     if (meetingEnded) {
-        return (
-            <div className="h-full flex items-center justify-center text-destructive px-6 text-center">
-                This meeting has already ended.
-            </div>
-        );
+        return <MeetingEndedScreen message="This meeting has already ended." />;
     }
 
     if (!token || !LIVEKIT_URL) {
@@ -131,6 +143,7 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
                 token={token}
                 video={videoInput}
                 audio={audioInput}
+                onConnected={() => playMeetingSound("joined")}
                 onDisconnected={handleLeave}
                 className="flex flex-col h-full w-full"
                 data-lk-theme="default"

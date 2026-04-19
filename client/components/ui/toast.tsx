@@ -17,19 +17,19 @@ interface ToastProps {
 const toastConfig = {
   success: {
     icon: CheckCircle,
-    className: 'bg-green-500/10 border-green-500/50 text-green-600 dark:text-green-400',
+    className: 'bg-primary/10 border-primary/40 text-primary',
   },
   error: {
     icon: XCircle,
-    className: 'bg-red-500/10 border-red-500/50 text-red-600 dark:text-red-400',
+    className: 'bg-destructive/10 border-destructive/40 text-destructive',
   },
   warning: {
     icon: AlertCircle,
-    className: 'bg-yellow-500/10 border-yellow-500/50 text-yellow-600 dark:text-yellow-400',
+    className: 'bg-accent/10 border-accent/40 text-accent',
   },
   info: {
     icon: Info,
-    className: 'bg-blue-500/10 border-blue-500/50 text-blue-600 dark:text-blue-400',
+    className: 'bg-muted border-border text-foreground',
   },
 }
 
@@ -52,14 +52,14 @@ export function Toast({ type, message, isVisible, onClose, duration = 5000 }: To
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.9 }}
           transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-          className={`fixed bottom-6 right-6 z-[100] flex items-center gap-3 rounded-xl border px-4 py-3 shadow-lg backdrop-blur-sm ${config.className}`}
+          className={`fixed bottom-6 right-6 z-[100] flex items-center gap-3 rounded-lg border px-4 py-3 shadow-sm backdrop-blur-sm ${config.className}`}
         >
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 500, damping: 25, delay: 0.1 }}
           >
-            <Icon className="h-5 w-5" />
+            <Icon />
           </motion.div>
 
           <motion.p
@@ -75,9 +75,9 @@ export function Toast({ type, message, isVisible, onClose, duration = 5000 }: To
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={onClose}
-            className="ml-2 p-1 rounded-full hover:bg-black/10 transition-colors"
+            className="ml-2 rounded-lg p-1 transition-colors hover:bg-black/10"
           >
-            <X className="h-4 w-4" />
+            <X />
           </motion.button>
         </motion.div>
       )}

@@ -116,7 +116,7 @@ export default function ParticipantsSidebar({meetingId}: ParticipantsPanelProps)
                     variant="ghost"
                     size="icon"
                     aria-label="Close participants"
-                    className="size-8 rounded-soft transition-transform hover:-translate-y-0.5 active:scale-[0.97]"
+                    className="interactive-lift size-8"
                     onClick={toggleParticipants}
                 >
                     <X data-icon="inline-start" />
@@ -131,7 +131,7 @@ export default function ParticipantsSidebar({meetingId}: ParticipantsPanelProps)
                         onChange={event => setQuery(event.target.value)}
                         placeholder="Search people"
                         aria-label="Search participants"
-                        className="h-10 rounded-soft pl-9"
+                        className="h-10 pl-9"
                     />
                 </div>
             </div>
@@ -171,7 +171,7 @@ export default function ParticipantsSidebar({meetingId}: ParticipantsPanelProps)
                                                     size="icon"
                                                     variant="ghost"
                                                     aria-label={`Approve ${name}`}
-                                                    className="size-8 rounded-soft text-[var(--quality-good)] hover:bg-primary/10"
+                                                    className="size-8 text-primary hover:bg-primary/10"
                                                     onClick={() => handleApprove(p.id)}
                                                 >
                                                     <Check data-icon="inline-start" />
@@ -181,7 +181,7 @@ export default function ParticipantsSidebar({meetingId}: ParticipantsPanelProps)
                                                     size="icon"
                                                     variant="ghost"
                                                     aria-label={`Reject ${name}`}
-                                                    className="size-8 rounded-soft text-destructive hover:bg-destructive/10"
+                                                    className="size-8 text-destructive hover:bg-destructive/10"
                                                     onClick={() => handleReject(p.id)}
                                                 >
                                                     <X data-icon="inline-start" />
@@ -204,7 +204,7 @@ export default function ParticipantsSidebar({meetingId}: ParticipantsPanelProps)
                         <div className="flex flex-col gap-1">
                             {filteredParticipants.map(p => {
                                 const name = p.name || p.identity || "Guest";
-                                let metadata: Record<string, any> | null = null;
+                                let metadata: Record<string, unknown> | null = null;
                                 try {
                                     if (p.metadata) metadata = JSON.parse(p.metadata);
                                 } catch {}
@@ -221,13 +221,13 @@ export default function ParticipantsSidebar({meetingId}: ParticipantsPanelProps)
                                         <div className="flex min-w-0 items-center gap-3">
                                             <div className="relative">
                                                 <Avatar className="size-9">
-                                                    {metadata?.imageUrl && <AvatarImage src={metadata.imageUrl} alt={name} />}
+                                                    {typeof metadata?.imageUrl === "string" && <AvatarImage src={metadata.imageUrl} alt={name} />}
                                                     <AvatarFallback>{initials(name)}</AvatarFallback>
                                                 </Avatar>
                                                 <span
                                                     className={cn(
-                                                        "absolute right-0 bottom-0 size-2.5 rounded-pill ring-2 ring-background",
-                                                        p.isSpeaking ? "bg-[var(--quality-good)]" : "bg-muted-foreground/50"
+                                                        "absolute right-0 bottom-0 size-2.5 rounded-full ring-2 ring-background",
+                                                        p.isSpeaking ? "bg-primary" : "bg-muted-foreground/50"
                                                     )}
                                                     aria-label={p.isSpeaking ? "Speaking" : "Not speaking"}
                                                 />

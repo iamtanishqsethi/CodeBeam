@@ -9,6 +9,7 @@ import {ScrollArea} from "@/components/ui/scroll-area";
 import {Input} from "@/components/ui/input";
 import {Send} from "lucide-react";
 import {cn} from "@/lib/utils";
+import {playMeetingSound} from "@/lib/meeting-sounds";
 
 interface ChatTabProps {
     meetingId: string;
@@ -38,6 +39,7 @@ export default function ChatTab({meetingId}: ChatTabProps) {
 
         socket.emit("chat-message", {meetingId, ...msg});
         addMessage(msg);
+        playMeetingSound("sent");
         setText("");
     }
 
@@ -47,7 +49,7 @@ export default function ChatTab({meetingId}: ChatTabProps) {
                 <div className="flex flex-col gap-3 p-4">
                     {messages.length === 0 && (
                         <div className="mt-12 flex flex-col items-center gap-2 text-center">
-                            <div className="flex size-12 items-center justify-center rounded-full bg-muted">
+                            <div className="flex size-12 items-center justify-center rounded-lg bg-muted">
                                 <Send className="text-muted-foreground" />
                             </div>
                             <p className="text-sm text-muted-foreground">
@@ -77,10 +79,10 @@ export default function ChatTab({meetingId}: ChatTabProps) {
                                 <div className={cn("flex items-end gap-2", isSelf && "flex-row-reverse")}>
                                     <p
                                         className={cn(
-                                            "max-w-[82%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed shadow-sm",
+                                            "max-w-[82%] rounded-lg px-3.5 py-2 text-sm leading-6 shadow-sm",
                                             isSelf
-                                                ? "bg-primary text-primary-foreground rounded-br-md"
-                                                : "bg-muted text-foreground rounded-bl-md"
+                                                ? "bg-primary text-primary-foreground"
+                                                : "bg-muted text-foreground"
                                         )}
                                     >
                                         {m.text}
@@ -93,7 +95,7 @@ export default function ChatTab({meetingId}: ChatTabProps) {
                                                 variant="ghost"
                                                 size="icon"
                                                 aria-label={`React ${emoji}`}
-                                                className="size-6 rounded-full text-xs"
+                                                className="size-6 text-xs"
                                             >
                                                 {emoji}
                                             </Button>
@@ -107,12 +109,12 @@ export default function ChatTab({meetingId}: ChatTabProps) {
                 </div>
             </ScrollArea>
 
-            <form onSubmit={sendMessage} className="flex gap-2 border-t border-white/[0.08] p-3">
+            <form onSubmit={sendMessage} className="flex gap-2 border-t p-3">
                 <Input
                     value={text}
                     onChange={e => setText(e.target.value)}
                     placeholder="Type a message..."
-                    className="min-w-0 flex-1 rounded-xl border-white/[0.08] bg-muted/50"
+                    className="min-w-0 flex-1 bg-muted/50"
                     aria-label="Chat message"
                 />
                 <Button
@@ -120,7 +122,7 @@ export default function ChatTab({meetingId}: ChatTabProps) {
                     size="icon"
                     disabled={!text.trim()}
                     aria-label="Send message"
-                    className="rounded-xl transition-transform hover:-translate-y-0.5 active:scale-[0.97]"
+                    className="interactive-lift"
                 >
                     <Send data-icon="inline-start" />
                 </Button>

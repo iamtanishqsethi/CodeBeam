@@ -103,7 +103,7 @@ export default function ParticipantsTab({meetingId}: ParticipantsTabProps) {
     return (
         <div className="flex h-full flex-col">
             {/* Search */}
-            <div className="border-b border-white/[0.08] p-3">
+            <div className="border-b p-3">
                 <div className="relative">
                     <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                     <Input
@@ -111,7 +111,7 @@ export default function ParticipantsTab({meetingId}: ParticipantsTabProps) {
                         onChange={event => setQuery(event.target.value)}
                         placeholder="Search people"
                         aria-label="Search participants"
-                        className="h-9 rounded-xl border-white/[0.08] bg-muted/50 pl-9"
+                        className="h-9 bg-muted/50 pl-9"
                     />
                 </div>
             </div>
@@ -125,7 +125,7 @@ export default function ParticipantsTab({meetingId}: ParticipantsTabProps) {
                                 <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                     Waiting room
                                 </span>
-                                <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-400">
+                                <Badge variant="outline" className="border-accent/30 bg-accent/10 text-accent">
                                     {filteredWaiting.length}
                                 </Badge>
                             </div>
@@ -135,7 +135,7 @@ export default function ParticipantsTab({meetingId}: ParticipantsTabProps) {
                                     return (
                                         <div
                                             key={p.id}
-                                            className="flex items-center justify-between gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-muted/50"
+                                            className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-muted/50"
                                         >
                                             <div className="flex min-w-0 items-center gap-3">
                                                 <Avatar className="size-9 border border-white/10">
@@ -144,7 +144,7 @@ export default function ParticipantsTab({meetingId}: ParticipantsTabProps) {
                                                 </Avatar>
                                                 <div className="min-w-0">
                                                     <p className="truncate text-sm font-medium">{name}</p>
-                                                    <p className="text-xs text-amber-400/80">Waiting for approval</p>
+                                                    <p className="text-xs text-accent">Waiting for approval</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-1">
@@ -153,7 +153,7 @@ export default function ParticipantsTab({meetingId}: ParticipantsTabProps) {
                                                     size="icon"
                                                     variant="ghost"
                                                     aria-label={`Approve ${name}`}
-                                                    className="size-8 rounded-lg text-emerald-400 hover:bg-emerald-500/10"
+                                                    className="size-8 text-primary hover:bg-primary/10"
                                                     onClick={() => handleApprove(p.id)}
                                                 >
                                                     <Check data-icon="inline-start" />
@@ -189,7 +189,7 @@ export default function ParticipantsTab({meetingId}: ParticipantsTabProps) {
                         <div className="flex flex-col gap-1">
                             {filteredParticipants.map(p => {
                                 const name = p.name || p.identity || "Guest";
-                                let metadata: Record<string, any> | null = null;
+                                let metadata: Record<string, unknown> | null = null;
                                 try {
                                     if (p.metadata) metadata = JSON.parse(p.metadata);
                                 } catch {}
@@ -200,19 +200,19 @@ export default function ParticipantsTab({meetingId}: ParticipantsTabProps) {
 
                                 return (
                                     <div
-                                        key={p.identity}
-                                        className="flex items-center justify-between gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-muted/50"
-                                    >
+                                            key={p.identity}
+                                            className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-muted/50"
+                                        >
                                         <div className="flex min-w-0 items-center gap-3">
                                             <div className="relative">
                                                 <Avatar className="size-9 border border-white/10">
-                                                    {metadata?.imageUrl && <AvatarImage src={metadata.imageUrl} alt={name} />}
+                                                    {typeof metadata?.imageUrl === "string" && <AvatarImage src={metadata.imageUrl} alt={name} />}
                                                     <AvatarFallback>{initials(name)}</AvatarFallback>
                                                 </Avatar>
                                                 <span
                                                     className={cn(
                                                         "absolute right-0 bottom-0 size-2.5 rounded-full ring-2 ring-background transition-colors",
-                                                        p.isSpeaking ? "bg-emerald-400" : "bg-muted-foreground/40"
+                                                        p.isSpeaking ? "bg-primary" : "bg-muted-foreground/40"
                                                     )}
                                                     aria-label={p.isSpeaking ? "Speaking" : "Not speaking"}
                                                 />

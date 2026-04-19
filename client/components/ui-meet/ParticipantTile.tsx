@@ -72,7 +72,7 @@ function TileActionButton({
                         event.stopPropagation();
                         onClick?.();
                     }}
-                    className="size-8 rounded-lg border border-white/10 bg-background/60 backdrop-blur-xl transition-transform hover:-translate-y-0.5 active:scale-[0.97]"
+                    className="interactive-lift size-8 border bg-background/70 backdrop-blur-xl"
                 >
                     {children}
                 </Button>
@@ -120,8 +120,8 @@ export default function ParticipantTile({
             transition={{type: "spring", stiffness: 260, damping: 24, duration: 0.25}}
             onDoubleClick={togglePin}
             className={cn(
-                "group relative flex size-full min-h-40 overflow-hidden rounded-xl border border-white/[0.08] bg-tile text-primary-foreground shadow-lg outline-none transition-all duration-200",
-                "hover:border-white/[0.15] hover:shadow-xl",
+                "group relative flex size-full min-h-40 overflow-hidden rounded-lg border bg-tile text-primary-foreground shadow-sm outline-none transition-all duration-200",
+                "hover:border-primary/35 hover:shadow-md",
                 "focus-visible:ring-[3px] focus-visible:ring-ring/50",
                 participant.isSpeaking && "speaking-ring border-speaking-ring",
                 className
@@ -137,7 +137,7 @@ export default function ParticipantTile({
                 />
             ) : (
                 <div className="relative flex size-full items-center justify-center overflow-hidden bg-tile">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,color-mix(in_oklch,var(--primary)_20%,transparent),transparent_40%),radial-gradient(circle_at_70%_70%,color-mix(in_oklch,var(--accent)_15%,transparent),transparent_45%)]" />
+                    <div className="absolute inset-0 bg-[linear-gradient(135deg,color-mix(in_oklch,var(--primary)_18%,transparent),transparent_44%),linear-gradient(315deg,color-mix(in_oklch,var(--accent)_12%,transparent),transparent_48%)]" />
                     <Avatar className="size-24 border-2 border-white/10 bg-background/12 backdrop-blur">
                         {metadata?.imageUrl && <AvatarImage src={metadata.imageUrl} alt={displayName} />}
                         <AvatarFallback className="bg-transparent text-2xl font-semibold text-primary-foreground">
@@ -153,11 +153,11 @@ export default function ParticipantTile({
             {/* Bottom-left: name + mute indicator */}
             <div className="absolute left-3 bottom-3 flex max-w-[calc(100%-6rem)] items-center gap-2">
                 {isMuted && (
-                    <span className="flex size-7 items-center justify-center rounded-full bg-red-500/80 text-white backdrop-blur">
+                    <span className="flex size-7 items-center justify-center rounded-lg bg-destructive/85 text-white backdrop-blur">
                         <MicOff aria-label="Muted" />
                     </span>
                 )}
-                <div className="min-w-0 rounded-full bg-black/50 px-3 py-1 text-xs font-medium text-white backdrop-blur-lg">
+                <div className="min-w-0 rounded-lg bg-black/55 px-3 py-1 text-xs font-medium text-white backdrop-blur-lg">
                     <span className="block truncate">
                         {participant.isLocal ? `${displayName} (You)` : displayName}
                     </span>
@@ -167,7 +167,7 @@ export default function ParticipantTile({
             {/* Top-right: badges + quality */}
             <div className="absolute top-3 right-3 flex items-center gap-2">
                 {isScreenShare && (
-                    <Badge variant="secondary" className="border border-white/10 bg-background/60 backdrop-blur-xl">
+                    <Badge variant="secondary" className="border bg-background/70 backdrop-blur-xl">
                         <ScreenShare />
                         Screen
                     </Badge>
@@ -179,7 +179,7 @@ export default function ParticipantTile({
                     </Badge>
                 )}
                 <div
-                    className="flex items-end gap-0.5 rounded-full bg-black/50 px-2 py-1 backdrop-blur-lg"
+                    className="flex items-end gap-0.5 rounded-lg bg-black/55 px-2 py-1 backdrop-blur-lg"
                     aria-label={`Network quality ${participant.connectionQuality ?? "unknown"}`}
                 >
                     {[0, 1, 2].map((dot) => (

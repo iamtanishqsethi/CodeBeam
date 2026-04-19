@@ -120,14 +120,14 @@ export default function Controls({
         onEndMeeting();
     };
 
-    const controlClass = "size-11 rounded-pill transition-all duration-fast hover:-translate-y-0.5 active:scale-[0.97]";
+    const controlClass = "interactive-lift size-11 rounded-lg";
     const reactionItems = ["👍", "👏", "🔥", "❤️", "😂", "🎉"];
 
     return (
         <motion.div
             initial={{opacity: 0, y: 12}}
             animate={{opacity: 1, y: 0}}
-            className="flex max-w-[calc(100vw-1.5rem)] items-center justify-center gap-1 overflow-x-auto rounded-pill border bg-control-bar px-2 py-2 shadow-lg backdrop-blur-xl"
+            className="flex max-w-[calc(100vw-1.5rem)] items-center justify-center gap-1 overflow-x-auto rounded-lg border bg-control-bar-bg px-2 py-2 shadow-lg backdrop-blur-xl"
         >
             <ControlTooltip label={isMicrophoneEnabled ? "Mute microphone" : "Unmute microphone"}>
                 <Toggle
@@ -207,7 +207,7 @@ export default function Controls({
                                 size="icon"
                                 aria-label={`React ${emoji}`}
                                 onClick={() => onReaction(emoji)}
-                                className="size-10 rounded-soft text-lg transition-transform hover:-translate-y-0.5 active:scale-[0.97]"
+                                className="interactive-lift size-10 text-lg"
                             >
                                 {emoji}
                             </Button>
@@ -262,13 +262,13 @@ export default function Controls({
                                 <Settings />
                                 Layout
                             </div>
-                            <div className="flex rounded-pill bg-muted p-1">
+                            <div className="flex rounded-lg bg-muted p-1">
                                 <Button
                                     type="button"
                                     size="sm"
                                     variant={layoutMode === "grid" ? "secondary" : "ghost"}
                                     onClick={() => onLayoutModeChange("grid")}
-                                    className="rounded-pill"
+                                    className="interactive-lift"
                                 >
                                     Grid
                                 </Button>
@@ -277,7 +277,7 @@ export default function Controls({
                                     size="sm"
                                     variant={layoutMode === "speaker" ? "secondary" : "ghost"}
                                     onClick={() => onLayoutModeChange("speaker")}
-                                    className="rounded-pill"
+                                    className="interactive-lift"
                                 >
                                     Speaker
                                 </Button>
@@ -286,11 +286,11 @@ export default function Controls({
 
                         <div className="flex flex-col gap-2">
                             <span className="text-xs font-medium text-muted-foreground">Microphone</span>
-                            <MediaDeviceSelect kind="audioinput" className="rounded-soft border bg-background px-3 py-2 text-sm" />
+                            <MediaDeviceSelect kind="audioinput" className="rounded-lg border bg-background px-3 py-2 text-sm" />
                         </div>
                         <div className="flex flex-col gap-2">
                             <span className="text-xs font-medium text-muted-foreground">Camera</span>
-                            <MediaDeviceSelect kind="videoinput" className="rounded-soft border bg-background px-3 py-2 text-sm" />
+                            <MediaDeviceSelect kind="videoinput" className="rounded-lg border bg-background px-3 py-2 text-sm" />
                         </div>
                         <div className="flex flex-col gap-2">
                             <div className="flex items-center justify-between gap-3 text-xs font-medium text-muted-foreground">
@@ -316,7 +316,7 @@ export default function Controls({
                 aria-label="Leave call"
                 disabled={pendingAction === "leave"}
                 onClick={leave}
-                className="ml-1 h-11 min-w-14 rounded-pill px-5 transition-all duration-fast hover:-translate-y-0.5 active:scale-[0.97]"
+                className="interactive-lift ml-1 h-11 min-w-14 px-5"
             >
                 {pendingAction === "leave" ? <Loader2 data-icon="inline-start" className="animate-spin" /> : <PhoneOff data-icon="inline-start" />}
             </Button>

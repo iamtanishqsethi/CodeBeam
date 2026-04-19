@@ -9,7 +9,6 @@ import {Sheet, SheetContent, SheetDescription, SheetTitle} from "@/components/ui
 import {useEffect, useState} from "react";
 import ChatTab from "@/components/ui-meet/ChatTab";
 import ParticipantsTab from "@/components/ui-meet/ParticipantsTab";
-import {cn} from "@/lib/utils";
 
 interface TabbedSidebarProps {
     meetingId: string;
@@ -45,8 +44,7 @@ export default function TabbedSidebar({
             onValueChange={(v) => onTabChange(v as "chat" | "participants")}
             className="flex h-full flex-col"
         >
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-white/[0.08] px-3 py-2">
+            <div className="flex items-center justify-between border-b px-3 py-2">
                 <TabsList className="h-9 w-full">
                     <TabsTrigger value="chat" className="flex-1 gap-1.5">
                         <MessageCircle />
@@ -68,13 +66,12 @@ export default function TabbedSidebar({
                     size="icon"
                     aria-label="Close panel"
                     onClick={onClose}
-                    className="ml-2 size-8 shrink-0 rounded-lg transition-transform hover:-translate-y-0.5 active:scale-[0.97]"
+                    className="interactive-lift ml-2 size-8 shrink-0"
                 >
                     <X data-icon="inline-start" />
                 </Button>
             </div>
 
-            {/* Content */}
             <TabsContent value="chat" className="mt-0 min-h-0 flex-1">
                 <ChatTab meetingId={meetingId} />
             </TabsContent>
@@ -84,7 +81,6 @@ export default function TabbedSidebar({
         </Tabs>
     );
 
-    /* Mobile: Sheet */
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -97,7 +93,6 @@ export default function TabbedSidebar({
         );
     }
 
-    /* Desktop: Animated aside */
     return (
         <AnimatePresence>
             {isOpen && (
@@ -106,7 +101,7 @@ export default function TabbedSidebar({
                     animate={{width: 352, opacity: 1}}
                     exit={{width: 0, opacity: 0}}
                     transition={{duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94]}}
-                    className="hidden shrink-0 overflow-hidden border-l border-white/[0.08] bg-background md:flex"
+                    className="hidden shrink-0 overflow-hidden border-l bg-background md:flex"
                 >
                     <div className="flex h-full w-[352px] flex-col">
                         {sidebarContent}

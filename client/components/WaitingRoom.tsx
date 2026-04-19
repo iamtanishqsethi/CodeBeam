@@ -126,7 +126,7 @@ export default function WaitingRoom({meetingId}: WaitingRoomProps) {
 
     return (
         <div className="min-h-screen bg-background px-6 py-10">
-            <div className="mx-auto grid min-h-[calc(100vh-5rem)] w-full max-w-6xl gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(20rem,0.9fr)] lg:items-center">
+            <div className="mx-auto grid min-h-[calc(100svh-5rem)] w-full max-w-6xl gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(20rem,0.9fr)] lg:items-center">
                 <section className="flex flex-col gap-5">
                     <div className="flex flex-col gap-2">
                         <p className="text-sm font-medium uppercase text-muted-foreground">Waiting room</p>
@@ -153,7 +153,7 @@ export default function WaitingRoom({meetingId}: WaitingRoomProps) {
                                         {user?.firstName ? user.firstName.slice(0, 2).toUpperCase() : "CB"}
                                     </AvatarFallback>
                                 </Avatar>
-                                <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-pill bg-muted-overlay px-3 py-1 text-sm font-medium text-primary-foreground backdrop-blur">
+                                <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-lg bg-muted-overlay px-3 py-1 text-sm font-medium text-primary-foreground backdrop-blur">
                                     <VideoOff />
                                     Camera off
                                 </div>
@@ -164,7 +164,7 @@ export default function WaitingRoom({meetingId}: WaitingRoomProps) {
 
                 <section className="flex flex-col gap-5 rounded-lg border bg-card p-5 shadow-sm">
                     <div className="flex items-center gap-3">
-                        <div className="flex size-12 items-center justify-center rounded-soft bg-primary/10 text-primary">
+                        <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
                             <Clock />
                         </div>
                         <div>
@@ -242,7 +242,7 @@ export default function WaitingRoom({meetingId}: WaitingRoomProps) {
                             {[0, 1, 2, 3, 4, 5].map(index => (
                                 <span
                                     key={index}
-                                    className="meter-bar h-8 flex-1 rounded-pill bg-primary"
+                                    className="meter-bar h-8 flex-1 rounded-full bg-primary"
                                     style={{
                                         transform: `scaleY(${Math.max(0.12, micLevel * (0.45 + index * 0.12))})`,
                                         animationDelay: `${index * 70}ms`,
@@ -256,7 +256,7 @@ export default function WaitingRoom({meetingId}: WaitingRoomProps) {
                         type="button"
                         size="lg"
                         disabled
-                        className="h-12 rounded-soft transition-transform hover:scale-[1.02] active:scale-[0.97]"
+                        className="interactive-lift h-12"
                     >
                         <Loader2 data-icon="inline-start" className="animate-spin" />
                         Waiting for host
@@ -267,7 +267,7 @@ export default function WaitingRoom({meetingId}: WaitingRoomProps) {
                             <User />
                             Meeting ID
                         </p>
-                        <code className="block rounded-soft bg-muted px-4 py-3 text-sm font-medium tracking-[0.2em]">
+                        <code className="block rounded-lg bg-muted px-4 py-3 text-sm font-medium tracking-[0.2em]">
                             {meetingId}
                         </code>
                     </div>

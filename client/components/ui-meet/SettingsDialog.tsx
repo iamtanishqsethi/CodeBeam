@@ -11,7 +11,7 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Slider} from "@/components/ui/slider";
 import {Switch} from "@/components/ui/switch";
 import {Button} from "@/components/ui/button";
-import {Headphones, Mic, Monitor, Settings, Video, Volume2} from "lucide-react";
+import {Mic, Monitor, Settings, Video, Volume2} from "lucide-react";
 import {useState} from "react";
 
 interface SettingsDialogProps {
@@ -32,7 +32,7 @@ export default function SettingsDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-lg border-white/[0.08] bg-background/95 backdrop-blur-2xl sm:rounded-2xl">
+            <DialogContent className="max-w-lg bg-background/95 backdrop-blur-2xl sm:rounded-lg">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Settings />
@@ -62,7 +62,7 @@ export default function SettingsDialog({
                                 <span className="text-xs font-medium text-muted-foreground">Microphone</span>
                                 <MediaDeviceSelect
                                     kind="audioinput"
-                                    className="rounded-xl border border-white/[0.08] bg-muted/50 px-3 py-2.5 text-sm"
+                                    className="rounded-lg border bg-muted/50 px-3 py-2.5 text-sm"
                                 />
                             </div>
 
@@ -83,7 +83,7 @@ export default function SettingsDialog({
                                 />
                             </div>
 
-                            <label className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.08] p-3 text-sm">
+                            <label className="control-row text-sm">
                                 Noise suppression
                                 <Switch
                                     checked={noiseSuppression}
@@ -100,7 +100,7 @@ export default function SettingsDialog({
                                 <span className="text-xs font-medium text-muted-foreground">Camera</span>
                                 <MediaDeviceSelect
                                     kind="videoinput"
-                                    className="rounded-xl border border-white/[0.08] bg-muted/50 px-3 py-2.5 text-sm"
+                                    className="rounded-lg border bg-muted/50 px-3 py-2.5 text-sm"
                                 />
                             </div>
                         </div>
@@ -113,13 +113,13 @@ export default function SettingsDialog({
                                     <p className="text-sm font-medium">Layout mode</p>
                                     <p className="text-xs text-muted-foreground">Choose how participants are displayed</p>
                                 </div>
-                                <div className="flex rounded-xl bg-muted p-1">
+                                <div className="flex rounded-lg bg-muted p-1">
                                     <Button
                                         type="button"
                                         size="sm"
                                         variant={layoutMode === "grid" ? "secondary" : "ghost"}
                                         onClick={() => onLayoutModeChange("grid")}
-                                        className="rounded-lg"
+                                        className="interactive-lift"
                                     >
                                         Grid
                                     </Button>
@@ -128,7 +128,7 @@ export default function SettingsDialog({
                                         size="sm"
                                         variant={layoutMode === "speaker" ? "secondary" : "ghost"}
                                         onClick={() => onLayoutModeChange("speaker")}
-                                        className="rounded-lg"
+                                        className="interactive-lift"
                                     >
                                         Speaker
                                     </Button>

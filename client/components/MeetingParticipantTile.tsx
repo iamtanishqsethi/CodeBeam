@@ -72,7 +72,7 @@ function ControlIconButton({
                         event.stopPropagation();
                         onClick?.();
                     }}
-                    className="size-8 rounded-soft bg-background/82 backdrop-blur transition-transform hover:-translate-y-0.5 active:scale-[0.97]"
+                    className="interactive-lift size-8 bg-background/82 backdrop-blur"
                 >
                     {children}
                 </Button>
@@ -120,7 +120,7 @@ export default function MeetingParticipantTile({
             transition={{type: "spring", stiffness: 260, damping: 24, duration: 0.25}}
             onDoubleClick={togglePin}
             className={cn(
-                "group relative flex size-full min-h-40 overflow-hidden rounded-lg border bg-tile text-primary-foreground shadow-sm outline-none transition-transform duration-fast hover:-translate-y-0.5 focus-visible:ring-[3px] focus-visible:ring-ring/50",
+                "group relative flex size-full min-h-40 overflow-hidden rounded-lg border bg-tile text-primary-foreground shadow-sm outline-none transition-transform duration-200 hover:-translate-y-0.5 focus-visible:ring-[3px] focus-visible:ring-ring/50",
                 participant.isSpeaking && "speaking-ring border-speaking-ring",
                 className
             )}
@@ -134,7 +134,7 @@ export default function MeetingParticipantTile({
                 />
             ) : (
                 <div className="relative flex size-full items-center justify-center overflow-hidden bg-tile">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,color-mix(in_oklch,var(--primary)_30%,transparent),transparent_36%),radial-gradient(circle_at_70%_70%,color-mix(in_oklch,var(--accent)_25%,transparent),transparent_40%)] blur-xl" />
+                    <div className="absolute inset-0 bg-[linear-gradient(135deg,color-mix(in_oklch,var(--primary)_18%,transparent),transparent_44%),linear-gradient(315deg,color-mix(in_oklch,var(--accent)_12%,transparent),transparent_48%)]" />
                     <Avatar className="size-24 border border-border/40 bg-background/12 backdrop-blur">
                         {metadata?.imageUrl && <AvatarImage src={metadata.imageUrl} alt={displayName} />}
                         <AvatarFallback className="bg-transparent text-2xl font-semibold text-primary-foreground">
@@ -148,11 +148,11 @@ export default function MeetingParticipantTile({
 
             <div className="absolute left-3 bottom-3 flex max-w-[calc(100%-6rem)] items-center gap-2">
                 {isMuted && (
-                    <span className="flex size-7 items-center justify-center rounded-pill bg-muted-overlay text-primary-foreground">
+                    <span className="flex size-7 items-center justify-center rounded-lg bg-muted-overlay text-primary-foreground">
                         <MicOff aria-label="Muted" />
                     </span>
                 )}
-                <div className="min-w-0 rounded-pill bg-muted-overlay px-3 py-1 text-xs font-medium text-primary-foreground backdrop-blur">
+                <div className="min-w-0 rounded-lg bg-muted-overlay px-3 py-1 text-xs font-medium text-primary-foreground backdrop-blur">
                     <span className="block truncate">{participant.isLocal ? `${displayName} (You)` : displayName}</span>
                 </div>
             </div>
@@ -171,14 +171,14 @@ export default function MeetingParticipantTile({
                     </Badge>
                 )}
                 <div
-                    className="flex items-end gap-0.5 rounded-pill bg-muted-overlay px-2 py-1 backdrop-blur"
+                    className="flex items-end gap-0.5 rounded-lg bg-muted-overlay px-2 py-1 backdrop-blur"
                     aria-label={`Network quality ${participant.connectionQuality ?? "unknown"}`}
                 >
                     {[0, 1, 2].map((dot) => (
                         <span
                             key={dot}
                             className={cn(
-                                "block w-1.5 rounded-pill",
+                                "block w-1.5 rounded-full",
                                 dot === 0 && "h-2",
                                 dot === 1 && "h-3",
                                 dot === 2 && "h-4",
@@ -189,7 +189,7 @@ export default function MeetingParticipantTile({
                 </div>
             </div>
 
-            <div className="absolute top-3 left-3 flex translate-y-1 items-center gap-2 opacity-0 transition-all duration-fast group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100">
+            <div className="absolute top-3 left-3 flex translate-y-1 items-center gap-2 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100">
                 <ControlIconButton label={isPinned ? "Unpin participant" : "Pin participant"} onClick={togglePin}>
                     {isPinned ? <PinOff data-icon="inline-start" /> : <Pin data-icon="inline-start" />}
                 </ControlIconButton>

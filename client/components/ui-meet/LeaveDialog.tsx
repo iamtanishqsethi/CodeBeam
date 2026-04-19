@@ -28,7 +28,7 @@ export default function LeaveDialog({
 }: LeaveDialogProps) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-sm border-white/[0.08] bg-background/95 backdrop-blur-2xl sm:rounded-2xl">
+            <DialogContent className="max-w-sm bg-background/95 backdrop-blur-2xl sm:rounded-lg">
                 <DialogHeader>
                     <DialogTitle>Leave meeting?</DialogTitle>
                     <DialogDescription>
@@ -46,7 +46,7 @@ export default function LeaveDialog({
                             onLeave();
                             onOpenChange(false);
                         }}
-                        className="w-full gap-2 rounded-xl"
+                        className="interactive-lift w-full gap-2"
                     >
                         <PhoneOff data-icon="inline-start" />
                         Leave meeting
@@ -59,7 +59,7 @@ export default function LeaveDialog({
                                 onEndMeeting();
                                 onOpenChange(false);
                             }}
-                            className="w-full gap-2 rounded-xl border-destructive/30 text-destructive hover:bg-destructive/10"
+                            className="interactive-lift w-full gap-2 border-destructive/30 text-destructive hover:bg-destructive/10"
                         >
                             <LogOut data-icon="inline-start" />
                             End for everyone
@@ -69,7 +69,7 @@ export default function LeaveDialog({
                         type="button"
                         variant="ghost"
                         onClick={() => onOpenChange(false)}
-                        className="w-full rounded-xl"
+                        className="interactive-lift w-full"
                     >
                         Cancel
                     </Button>

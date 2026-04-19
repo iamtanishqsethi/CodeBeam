@@ -12,7 +12,6 @@ import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {toast} from "sonner";
 import {useMeetingStore} from "@/store/meetingStore";
 import {getMeetingTrackId} from "@/components/ui-meet/ParticipantTile";
-import {getFormatedTime} from "@/utils/getFormatedTime";
 import {socket} from "@/lib/socket";
 import {ChatMessage} from "@/types/store.types";
 
@@ -21,8 +20,8 @@ import BentoVideoGrid from "@/components/ui-meet/BentoVideoGrid";
 import MeetingDock from "@/components/ui-meet/MeetingDock";
 import TabbedSidebar from "@/components/ui-meet/TabbedSidebar";
 import SettingsDialog from "@/components/ui-meet/SettingsDialog";
-import InviteDialog from "@/components/ui-meet/InviteDialog";
 import {ReactionsOverlay, type ReactionItem} from "@/components/ui-meet/ReactionsOverlay";
+import {playMeetingSound} from "@/lib/meeting-sounds";
 
 export function RoomContent({
     handleLeave,
@@ -111,15 +110,17 @@ export function RoomContent({
     useEffect(() => {
         const handleParticipant = (participant: Participant, action: "joined" | "left") => {
             const name = participant.name || participant.identity || "Guest";
-            let metadata: Record<string, any> | null = null;
+            let metadata: Record<string, unknown> | null = null;
             try {
                 if (participant.metadata) metadata = JSON.parse(participant.metadata);
             } catch {}
 
+            playMeetingSound(action);
+
             toast(
                 <div className="flex items-center gap-3">
                     <Avatar className="size-8">
-                        {metadata?.imageUrl && <AvatarImage src={metadata.imageUrl} alt={name} />}
+                        {typeof metadata?.imageUrl === "string" && <AvatarImage src={metadata.imageUrl} alt={name} />}
                         <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <span className="text-sm font-medium">{name} {action} the meeting</span>
@@ -148,6 +149,7 @@ export function RoomContent({
         const handleMessage = (message: ChatMessage) => {
             if (message.userId === socket.id) return;
             addMessage(message);
+            playMeetingSound("message");
             if (activePanel !== "chat") {
                 setUnreadCount(count => count + 1);
             }
@@ -183,7 +185,7 @@ export function RoomContent({
     if (room.state === "connecting" || room.state === "reconnecting") {
         return (
             <div className="flex h-full flex-col items-center justify-center gap-4 bg-background">
-                <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                <div className="size-8 animate-spin rounded-lg border-2 border-primary border-t-transparent" />
                 <p className="animate-pulse font-medium text-muted-foreground">
                     {room.state === "connecting" ? "Joining the meeting..." : "Reconnecting..."}
                 </p>
@@ -194,9 +196,7 @@ export function RoomContent({
     return (
         <MotionConfig reducedMotion="user">
             <div className="flex h-full w-full overflow-hidden bg-background">
-                {/* Main area */}
                 <div className="relative flex min-w-0 flex-1 flex-col">
-                    {/* Top bar overlay */}
                     <MeetingTopBar
                         duration={duration}
                         roomName={room.name}
@@ -204,8 +204,7 @@ export function RoomContent({
                         meetingId={meetingId}
                     />
 
-                    {/* Video grid */}
-                    <main className="relative min-h-0 flex-1 overflow-hidden p-3 pt-16 pb-24">
+                    <main className="relative min-h-0 flex-1 overflow-hidden p-3 pb-24 pt-16 sm:p-4 sm:pb-24 sm:pt-16">
                         <BentoVideoGrid
                             tracks={visibleTracks}
                             spotlightTrack={spotlightTrack}
@@ -215,10 +214,8 @@ export function RoomContent({
                         />
                     </main>
 
-                    {/* Reactions */}
                     <ReactionsOverlay reactions={reactions} />
 
-                    {/* Dock */}
                     <div className="absolute inset-x-0 bottom-0 z-30 flex justify-center px-3 pb-4">
                         <MeetingDock
                             onLeave={handleLeave}
@@ -235,7 +232,6 @@ export function RoomContent({
                     </div>
                 </div>
 
-                {/* Sidebar */}
                 <TabbedSidebar
                     meetingId={meetingId}
                     activePanel={activePanel}
@@ -244,7 +240,6 @@ export function RoomContent({
                     unreadCount={visibleUnreadCount}
                 />
 
-                {/* Modals */}
                 <SettingsDialog
                     open={settingsOpen}
                     onOpenChange={setSettingsOpen}

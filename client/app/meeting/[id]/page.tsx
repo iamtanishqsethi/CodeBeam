@@ -4,9 +4,10 @@ import {useMeeting} from "@/hooks/useMeeting";
 import MeetingLobby from "@/components/ui-meet/MeetingLobby";
 import MeetingLayout from "@/components/MeetingLayout";
 import {use} from "react";
-import {Loader2, PhoneOff, ShieldX} from "lucide-react";
+import {Loader2, ShieldX} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
+import MeetingEndedScreen from "@/components/MeetingEndedScreen";
 
 export default function MeetingPage({params}: { params: Promise<{ id: string }> }) {
     const {id} = use(params)
@@ -16,8 +17,8 @@ export default function MeetingPage({params}: { params: Promise<{ id: string }> 
         <>
             {status === 'loading' && (
                 <div className="flex h-screen flex-col items-center justify-center gap-4 bg-background">
-                    <div className="flex size-16 items-center justify-center rounded-2xl bg-primary/10">
-                        <Loader2 className="size-8 animate-spin text-primary"/>
+                    <div className="flex size-14 items-center justify-center rounded-lg bg-primary/10">
+                        <Loader2 className="size-7 animate-spin text-primary"/>
                     </div>
                     <p className="font-medium text-muted-foreground">Joining meeting...</p>
                 </div>
@@ -26,31 +27,19 @@ export default function MeetingPage({params}: { params: Promise<{ id: string }> 
             {status === 'joined' && <MeetingLayout meetingId={id}/>}
             {status === 'rejected' && (
                 <div className="flex h-screen flex-col items-center justify-center gap-4 bg-background px-6 text-center">
-                    <div className="flex size-16 items-center justify-center rounded-2xl bg-destructive/10">
-                        <ShieldX className="size-8 text-destructive"/>
+                    <div className="flex size-14 items-center justify-center rounded-lg bg-destructive/10">
+                        <ShieldX className="size-7 text-destructive"/>
                     </div>
                     <p className="text-lg font-semibold text-destructive">Your request to join was rejected.</p>
                     <p className="max-w-sm text-sm text-muted-foreground">
                         The host did not approve your request. Try contacting them directly.
                     </p>
                     <Link href="/">
-                        <Button variant="outline" className="mt-2 rounded-xl">Back to home</Button>
+                        <Button variant="outline" className="interactive-lift mt-2">Back to home</Button>
                     </Link>
                 </div>
             )}
-            {status === 'ended' && (
-                <div className="flex h-screen flex-col items-center justify-center gap-4 bg-background px-6 text-center">
-                    <div className="flex size-16 items-center justify-center rounded-2xl bg-muted">
-                        <PhoneOff className="size-8 text-muted-foreground"/>
-                    </div>
-                    <p className="text-lg font-semibold">
-                        {message || 'This meeting has ended.'}
-                    </p>
-                    <Link href="/">
-                        <Button variant="outline" className="mt-2 rounded-xl">Back to home</Button>
-                    </Link>
-                </div>
-            )}
+            {status === 'ended' && <MeetingEndedScreen message={message || "This meeting has ended."} />}
         </>
     )
 }

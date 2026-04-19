@@ -53,8 +53,7 @@ export default function BentoVideoGrid({
         <div className="relative h-full min-h-0">
             <AnimatePresence mode="popLayout">
                 {spotlightTrack ? (
-                    /* Spotlight layout: big left + strip right */
-                    <div className="grid h-full min-h-0 gap-2 lg:grid-cols-[minmax(0,0.72fr)_minmax(14rem,0.28fr)]">
+                    <div className="grid h-full min-h-0 gap-3 lg:grid-cols-[minmax(0,0.72fr)_minmax(14rem,0.28fr)]">
                         <ParticipantTile
                             trackRef={spotlightTrack}
                             isPinned={pinnedTrackId === getMeetingTrackId(spotlightTrack)}
@@ -62,7 +61,7 @@ export default function BentoVideoGrid({
                             onTogglePin={onTogglePin}
                             className="min-h-[22rem]"
                         />
-                        <div className="grid min-h-0 grid-cols-2 gap-2 overflow-y-auto lg:grid-cols-1">
+                        <div className="grid min-h-0 grid-cols-2 gap-3 overflow-y-auto lg:grid-cols-1">
                             {gridTracks.map(trackRef => {
                                 const trackId = getMeetingTrackId(trackRef);
                                 return (
@@ -79,9 +78,8 @@ export default function BentoVideoGrid({
                         </div>
                     </div>
                 ) : (
-                    /* Bento grid layout */
                     <div className={cn(
-                        "grid h-full min-h-0 gap-2 auto-rows-fr",
+                        "grid h-full min-h-0 auto-rows-fr gap-3",
                         getGridClass(pagedGridTracks.length)
                     )}>
                         {pagedGridTracks.map(trackRef => {
@@ -102,14 +100,14 @@ export default function BentoVideoGrid({
 
             {/* Pagination */}
             {pageCount > 1 && !spotlightTrack && (
-                <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-background/60 px-3 py-1.5 shadow-lg backdrop-blur-xl">
+                <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-lg border bg-background/72 px-3 py-1.5 shadow-sm backdrop-blur-xl">
                     <Button
                         type="button"
                         variant="ghost"
                         size="icon"
                         aria-label="Previous participant page"
                         disabled={safeGridPage === 0}
-                        className="size-7 rounded-full"
+                        className="size-7"
                         onClick={() => setGridPage(page => Math.max(0, page - 1))}
                     >
                         <ChevronLeft data-icon="inline-start" />
@@ -123,7 +121,7 @@ export default function BentoVideoGrid({
                         size="icon"
                         aria-label="Next participant page"
                         disabled={safeGridPage >= pageCount - 1}
-                        className="size-7 rounded-full"
+                        className="size-7"
                         onClick={() => setGridPage(page => Math.min(pageCount - 1, page + 1))}
                     >
                         <ChevronRight data-icon="inline-start" />

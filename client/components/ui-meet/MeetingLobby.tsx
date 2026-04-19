@@ -1,6 +1,6 @@
 "use client";
 
-import {Camera, Clock, Loader2, Mic, MicOff, User, VideoOff} from "lucide-react";
+import {Camera, Clock, Loader2, Mic, User, VideoOff} from "lucide-react";
 import {useEffect, useRef, useState} from "react";
 import {useMeetingStore} from "@/store/meetingStore";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/select";
 import {Switch} from "@/components/ui/switch";
 import {motion} from "framer-motion";
-import {cn} from "@/lib/utils";
 
 interface MeetingLobbyProps {
     meetingId: string;
@@ -128,14 +127,14 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
     ]);
 
     return (
-        <div className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-10">
+        <div className="app-shell pt-8 sm:pt-10">
+            <div className="interface-grid-bg pointer-events-none absolute inset-x-0 top-0 h-[24rem]" />
             <motion.div
                 initial={{opacity: 0, y: 20}}
                 animate={{opacity: 1, y: 0}}
                 transition={{duration: 0.4, ease: "easeOut"}}
-                className="mx-auto grid min-h-[calc(100vh-5rem)] w-full max-w-6xl gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(20rem,0.9fr)] lg:items-center"
+                className="section-shell relative grid min-h-[calc(100svh-5rem)] gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(20rem,0.9fr)] lg:items-center"
             >
-                {/* Left: Video preview */}
                 <motion.section
                     initial={{opacity: 0, x: -20}}
                     animate={{opacity: 1, x: 0}}
@@ -146,13 +145,13 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
                         <Badge variant="outline" className="w-fit border-primary/30 bg-primary/10 text-primary">
                             Waiting room
                         </Badge>
-                        <h1 className="text-3xl font-bold tracking-tight">Check your setup</h1>
+                        <h1 className="text-balance text-3xl font-semibold tracking-tight">Check your setup</h1>
                         <p className="max-w-2xl text-muted-foreground">
                             The host will let you in from here.
                         </p>
                     </div>
 
-                    <div className="relative aspect-video overflow-hidden rounded-2xl border border-white/[0.08] bg-tile shadow-2xl">
+                    <div className="relative aspect-video overflow-hidden rounded-lg border bg-tile shadow-sm">
                         {mediaPreferences.videoEnabled ? (
                             <video
                                 ref={videoRef}
@@ -163,15 +162,15 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
                             />
                         ) : (
                             <div className="flex size-full items-center justify-center">
-                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,color-mix(in_oklch,var(--primary)_15%,transparent),transparent_40%),radial-gradient(circle_at_70%_70%,color-mix(in_oklch,var(--accent)_12%,transparent),transparent_45%)]" />
+                                <div className="absolute inset-0 bg-[linear-gradient(135deg,color-mix(in_oklch,var(--primary)_14%,transparent),transparent_44%),linear-gradient(315deg,color-mix(in_oklch,var(--accent)_10%,transparent),transparent_48%)]" />
                                 <Avatar className="size-28 border-2 border-white/10 bg-background/12">
                                     {user?.imageUrl && <AvatarImage src={user.imageUrl} />}
                                     <AvatarFallback className="bg-transparent text-3xl font-semibold text-primary-foreground">
                                         {user?.firstName ? user.firstName.slice(0, 2).toUpperCase() : "CB"}
                                     </AvatarFallback>
                                 </Avatar>
-                                <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-black/50 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-lg">
-                                    <VideoOff />
+                                <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-lg bg-black/55 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-lg">
+                                    <VideoOff data-icon="inline-start" />
                                     Camera off
                                 </div>
                             </div>
@@ -179,26 +178,24 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
                     </div>
                 </motion.section>
 
-                {/* Right: Controls panel */}
                 <motion.section
                     initial={{opacity: 0, x: 20}}
                     animate={{opacity: 1, x: 0}}
                     transition={{duration: 0.4, delay: 0.2}}
-                    className="flex flex-col gap-5 rounded-2xl border border-white/[0.08] bg-card/80 p-5 shadow-2xl backdrop-blur-xl"
+                    className="surface-panel flex flex-col gap-5 p-5"
                 >
                     <div className="flex items-center gap-3">
-                        <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        <div className="flex size-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
                             <Clock />
                         </div>
                         <div>
-                            <h2 className="text-lg font-semibold">Ready when the host is</h2>
+                            <h2 className="text-base font-semibold">Ready when the host is</h2>
                             <p className="text-sm text-muted-foreground">Your request is already in the queue.</p>
                         </div>
                     </div>
 
                     <div className="flex flex-col gap-4">
-                        {/* Camera toggle */}
-                        <label className="flex items-center justify-between gap-4 rounded-xl border border-white/[0.08] p-3 transition-colors hover:bg-muted/30">
+                        <label className="control-row">
                             <span className="flex items-center gap-2 text-sm font-medium">
                                 <Camera />
                                 Camera
@@ -215,7 +212,7 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
                             onValueChange={value => setMediaPreferences({videoDeviceId: value === "default" ? "" : value})}
                             disabled={!mediaPreferences.videoEnabled}
                         >
-                            <SelectTrigger className="w-full rounded-xl border-white/[0.08]">
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Camera device" />
                             </SelectTrigger>
                             <SelectContent>
@@ -230,8 +227,7 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
                             </SelectContent>
                         </Select>
 
-                        {/* Mic toggle */}
-                        <label className="flex items-center justify-between gap-4 rounded-xl border border-white/[0.08] p-3 transition-colors hover:bg-muted/30">
+                        <label className="control-row">
                             <span className="flex items-center gap-2 text-sm font-medium">
                                 <Mic />
                                 Microphone
@@ -248,7 +244,7 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
                             onValueChange={value => setMediaPreferences({audioDeviceId: value === "default" ? "" : value})}
                             disabled={!mediaPreferences.audioEnabled}
                         >
-                            <SelectTrigger className="w-full rounded-xl border-white/[0.08]">
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Microphone device" />
                             </SelectTrigger>
                             <SelectContent>
@@ -263,8 +259,7 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
                             </SelectContent>
                         </Select>
 
-                        {/* Mic level meter */}
-                        <div className="flex items-end gap-1 rounded-xl border border-white/[0.08] p-3" aria-label="Microphone level">
+                        <div className="flex items-end gap-1 rounded-lg border bg-background/60 p-3" aria-label="Microphone level">
                             {[0, 1, 2, 3, 4, 5].map(index => (
                                 <span
                                     key={index}
@@ -282,18 +277,18 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
                         type="button"
                         size="lg"
                         disabled
-                        className="h-12 rounded-xl transition-transform hover:scale-[1.02] active:scale-[0.97]"
+                        className="h-11 interactive-lift"
                     >
                         <Loader2 data-icon="inline-start" className="animate-spin" />
                         Waiting for host
                     </Button>
 
-                    <div className="flex flex-col gap-2 border-t border-white/[0.08] pt-4">
+                    <div className="flex flex-col gap-2 border-t pt-4">
                         <p className="flex items-center gap-2 text-sm text-muted-foreground">
                             <User />
                             Meeting ID
                         </p>
-                        <code className="block rounded-xl bg-muted/50 px-4 py-3 text-sm font-medium tracking-[0.2em]">
+                        <code className="block rounded-lg bg-muted/50 px-4 py-3 text-sm font-medium tracking-[0.2em]">
                             {meetingId}
                         </code>
                     </div>

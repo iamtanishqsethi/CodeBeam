@@ -4,6 +4,7 @@ import {useMeetingStore} from "@/store/meetingStore";
 import {useEffect, useRef, useState} from "react";
 import {socket} from "@/lib/socket";
 import {ChatMessage} from "@/types/store.types";
+import {playMeetingSound} from "@/lib/meeting-sounds";
 import {Button} from "@/components/ui/button";
 import {Badge} from "@/components/ui/badge";
 import {ScrollArea} from "@/components/ui/scroll-area";
@@ -40,6 +41,7 @@ export default function ChatPanel({meetingId}: ChatPanelProps) {
 
         socket.emit("chat-message", {meetingId, ...msg});
         addMessage(msg);
+        playMeetingSound("sent");
         setText("");
     }
 
@@ -55,7 +57,7 @@ export default function ChatPanel({meetingId}: ChatPanelProps) {
                     variant="ghost"
                     size="icon"
                     aria-label="Close chat"
-                    className="size-8 rounded-soft transition-transform hover:-translate-y-0.5 active:scale-[0.97]"
+                    className="interactive-lift size-8"
                     onClick={toggleChat}
                 >
                     <X data-icon="inline-start" />
@@ -105,7 +107,7 @@ export default function ChatPanel({meetingId}: ChatPanelProps) {
                                                 variant="ghost"
                                                 size="icon"
                                                 aria-label={`React ${emoji}`}
-                                                className="size-7 rounded-pill text-xs"
+                                                className="size-7 text-xs"
                                             >
                                                 {emoji}
                                             </Button>
@@ -124,7 +126,7 @@ export default function ChatPanel({meetingId}: ChatPanelProps) {
                     value={text}
                     onChange={e => setText(e.target.value)}
                     placeholder="Message everyone"
-                    className="min-w-0 flex-1 rounded-soft"
+                    className="min-w-0 flex-1"
                     aria-label="Chat message"
                 />
                 <Button
@@ -132,7 +134,7 @@ export default function ChatPanel({meetingId}: ChatPanelProps) {
                     size="icon"
                     disabled={!text.trim()}
                     aria-label="Send message"
-                    className="rounded-soft transition-transform hover:-translate-y-0.5 active:scale-[0.97]"
+                    className="interactive-lift"
                 >
                     <Send data-icon="inline-start" />
                 </Button>

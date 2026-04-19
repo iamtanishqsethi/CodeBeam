@@ -25,9 +25,9 @@ export function Skeleton({ className }: SkeletonProps) {
 
 export function CardSkeleton() {
   return (
-    <div className="border rounded-2xl p-6 bg-card shadow-sm flex flex-col gap-4 items-center text-center">
-      <Skeleton className="h-12 w-12 rounded-xl" />
-      <div className="space-y-2 w-full">
+    <div className="flex flex-col items-center gap-4 rounded-lg border bg-card p-6 text-center shadow-sm">
+      <Skeleton className="size-12 rounded-lg" />
+      <div className="flex w-full flex-col gap-2">
         <Skeleton className="h-6 w-3/4 mx-auto" />
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-2/3 mx-auto" />
@@ -39,9 +39,9 @@ export function CardSkeleton() {
 
 export function InputSkeleton() {
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col gap-2">
       <Skeleton className="h-4 w-24" />
-      <Skeleton className="h-12 w-full rounded-xl" />
+      <Skeleton className="h-12 w-full rounded-lg" />
     </div>
   )
 }
@@ -55,15 +55,15 @@ export function PageSkeleton() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-background pt-20 px-6"
+      className="min-h-screen bg-background px-6 pt-20"
     >
-      <div className="max-w-4xl mx-auto py-12 space-y-8">
-        <div className="text-center space-y-2">
+      <div className="mx-auto flex max-w-4xl flex-col gap-8 py-12">
+        <div className="flex flex-col gap-2 text-center">
           <Skeleton className="h-10 w-48 mx-auto" />
           <Skeleton className="h-5 w-64 mx-auto" />
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid gap-6 md:grid-cols-2">
           <CardSkeleton />
           <CardSkeleton />
         </div>

@@ -14,12 +14,12 @@ export default function Header() {
     if (isMeetingPage) return null;
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 flex h-16 w-full items-center justify-between border-b border-white/[0.06] bg-background/70 px-6 backdrop-blur-2xl">
-            <Link href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
+        <header className="fixed top-0 left-0 right-0 z-50 flex h-16 w-full items-center justify-between border-b bg-background/82 px-4 backdrop-blur-xl sm:px-6">
+            <Link href="/" className="interactive-lift flex items-center gap-2.5">
                 <div className="flex size-8 items-center justify-center rounded-lg bg-primary/15">
-                    <Zap className="size-4 text-primary" />
+                    <Zap className="text-primary" />
                 </div>
-                <span className="text-lg font-bold tracking-tight">CodeBeam</span>
+                <span className="text-lg font-semibold tracking-tight">CodeBeam</span>
             </Link>
 
             <div className="flex items-center gap-3">
@@ -31,7 +31,7 @@ export default function Header() {
                         </Button>
                     </SignInButton>
                     <SignUpButton>
-                        <Button className="cursor-pointer rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:shadow-primary/40">
+                        <Button className="interactive-lift cursor-pointer px-5 text-sm font-semibold shadow-sm shadow-primary/20">
                             Sign Up
                         </Button>
                     </SignUpButton>

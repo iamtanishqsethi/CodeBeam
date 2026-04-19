@@ -19,7 +19,7 @@ export function ReactionsOverlay({reactions}: {reactions: ReactionItem[]}) {
                         animate={{opacity: [0, 1, 1, 0], y: -170, x: reaction.x, scale: [0.7, 1.1, 1]}}
                         exit={{opacity: 0}}
                         transition={{duration: 0.8, ease: "easeOut"}}
-                        className="absolute rounded-full bg-background/72 px-3 py-2 text-3xl shadow-lg backdrop-blur"
+                        className="absolute rounded-lg bg-background/72 px-3 py-2 text-3xl shadow-sm backdrop-blur"
                     >
                         {reaction.emoji}
                     </motion.div>
