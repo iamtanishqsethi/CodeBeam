@@ -15,6 +15,7 @@ import {PlusIcon} from "@/components/ui/plus";
 import GlassSurface from "@/components/GlassSurface";
 import FeaturesSectionDemo from "@/components/features-section-demo-2";
 import {TextHoverEffect} from "@/components/ui/text-hover-effect";
+import {MacbookScroll} from "@/components/ui/macbook-scroll";
 
 const stagger = {
     hidden: {},
@@ -30,81 +31,56 @@ export default function Home() {
     const router = useRouter()
 
     return (
-        <div className="relative min-h-screen overflow-hidden bg-background ">
-            <motion.section
-                variants={stagger}
-                initial="hidden"
-                animate="show"
-                className="relative flex min-h-[calc(100svh)] flex-col items-center justify-center overflow-hidden px-4 pb-24 pt-20 text-center sm:px-6">
-                <div
-                    className="pointer-events-none absolute inset-0 z-0"
-                    style={{
-                        maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
-                        WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
-                    }}
-                >
-                    <Prism
-                        animationType="rotate"
-                        timeScale={0.5}
-                        height={3.5}
-                        baseWidth={5.5}
-                        scale={3.6}
-                        hueShift={0}
-                        colorFrequency={1}
-                        noise={0}
-                        glow={1}
-                    />
-                </div>
+        <div className="relative min-h-screen overflow-hidden bg-background">
+            <div
+                className="pointer-events-none absolute inset-0 z-0 h-screen"
+            >
+                <Prism
+                    animationType="rotate"
+                    timeScale={0.5}
+                    height={3.5}
+                    baseWidth={5.5}
+                    scale={3.6}
+                    hueShift={0}
+                    colorFrequency={1}
+                    noise={0}
+                    glow={1}
+                />
+            </div>
 
-                <div className="section-shell relative z-10 flex flex-col items-center justify-center gap-6">
-                    <motion.div variants={fadeUp}>
-                        <div
-                            className={cn(
-                                "group rounded-full border border-black/5 bg-neutral-100/50 text-base text-white transition-all ease-in-out hover:cursor-pointer hover:bg-neutral-200/50 dark:border-white/5 dark:bg-neutral-900/50 dark:hover:bg-neutral-800/50"
-                            )}
-                        >
-                        <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-in-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400">
-                            <LayersIcon size={20} className={'mr-1'}/>   Production video rooms
-                        </AnimatedShinyText>
+            <div className="relative ">
+                <MacbookScroll
+                    title={
+                        <div className="flex flex-col items-center justify-center gap-6">
+                            <motion.div variants={fadeUp}>
+                                <div
+                                    className={cn(
+                                        "group rounded-full border border-black/5 bg-neutral-100/50 text-base text-white transition-all ease-in-out hover:cursor-pointer hover:bg-neutral-200/50 dark:border-white/5 dark:bg-neutral-900/50 dark:hover:bg-neutral-800/50"
+                                    )}
+                                >
+                                    <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-in-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400">
+                                        <LayersIcon size={20} className={'mr-1'}/>   Production video rooms
+                                    </AnimatedShinyText>
+                                </div>
+                            </motion.div>
+
+                            <h1 className="text-balance max-w-5xl text-4xl tracking-wide sm:text-5xl md:text-7xl font-extrabold font-(family-name:--font-share-tech) uppercase">
+                                Start focused calls that stay quiet, clear, and fast
+                            </h1>
                         </div>
+                    }
+                    src={`/linear.webp`}
+                    showGradient={false}
+                />
+            </div>
 
-                    </motion.div>
-
-                    <motion.h1
-                        variants={fadeUp}
-                        className="text-balance max-w-5xl text-4xl tracking-wide sm:text-5xl md:text-7xl font-extrabold font-(family-name:--font-share-tech) uppercase"
-                    >
-                        Start focused calls that stay quiet, clear, and fast
-                    </motion.h1>
-
-                    <motion.p variants={fadeUp} className="max-w-2xl text-base leading-7 text-muted-foreground font-bold">
-                        CodeBeam keeps the first screen in the meeting, with fast room creation, guest-friendly joining, chat, reactions, screen sharing, and host approval.
-                    </motion.p>
-
-                    <motion.div variants={fadeUp} className="flex flex-wrap items-center justify-center gap-6 pt-2">
-
-                            <Button
-
-                                onClick={() => router.push("/create")}
-                                className="relative z-10  rounded-full shadow-sm shadow-primary/20 cursor-pointer transition ease-in-out"
-                            >
-                                <PlusIcon size={20} />
-                                New Meeting
-                            </Button>
-                        <InteractiveHoverButton
-                            className={' py-3'}
-                            onClick={() => router.push("/join")}>
-                            Join Meeting
-                        </InteractiveHoverButton>
-                    </motion.div>
-                </div>
-            </motion.section>
+            <div className="h-[150vh]" />
 
             <motion.section
                 initial="hidden"
                 whileInView="show"
                 viewport={{once: true, margin: "-80px"}}
-                className="section-shell relative px-4 pb-20 sm:px-6 pt-12"
+                className="section-shell relative px-4 pb-20 sm:px-6"
             >
                 <div className="mb-12 text-center">
                     <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
