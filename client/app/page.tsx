@@ -13,9 +13,10 @@ import {cn} from "@/lib/utils";
 import {InteractiveHoverButton} from "@/components/ui/interactive-hover-button";
 import {PlusIcon} from "@/components/ui/plus";
 import GlassSurface from "@/components/GlassSurface";
-import FeaturesSectionDemo from "@/components/features-section-demo-2";
+import { FeatureSection } from "@/components/feature-section";
 import {TextHoverEffect} from "@/components/ui/text-hover-effect";
 import {MacbookScroll} from "@/components/ui/macbook-scroll";
+import SplitButton from "@/components/ui/split-button";
 
 const stagger = {
     hidden: {},
@@ -34,6 +35,10 @@ export default function Home() {
         <div className="relative min-h-screen overflow-hidden bg-background">
             <div
                 className="pointer-events-none absolute inset-0 z-0 h-screen"
+                style={{
+                    maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+                }}
             >
                 <Prism
                     animationType="rotate"
@@ -67,6 +72,14 @@ export default function Home() {
                             <h1 className="text-balance max-w-5xl text-4xl tracking-wide sm:text-5xl md:text-7xl font-extrabold font-(family-name:--font-share-tech) uppercase">
                                 Start focused calls that stay quiet, clear, and fast
                             </h1>
+                            <SplitButton
+                                label="Get Started"
+                                actions={[
+                                    { label: 'New Meeting', onClick: () => router.push('/create') },
+                                    { label: 'Join Meeting', onClick: () => router.push('/join') },
+
+                                ]}
+                            />
                         </div>
                     }
                     src={`/linear.webp`}
@@ -90,7 +103,7 @@ export default function Home() {
                         Everything you need for seamless collaboration, and more tools on the way.
                     </p>
                 </div>
-                <FeaturesSectionDemo />
+                <FeatureSection />
             </motion.section>
 
 
