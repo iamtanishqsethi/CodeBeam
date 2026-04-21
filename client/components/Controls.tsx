@@ -3,7 +3,6 @@
 import {MediaDeviceSelect, useLocalParticipant, useRoomContext} from "@livekit/components-react";
 import {AnimatePresence, motion} from "framer-motion";
 import {
-    Loader2,
     LogOut,
     MessageCircle,
     Mic,
@@ -29,6 +28,7 @@ import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Badge} from "@/components/ui/badge";
 import {useMeetingStore} from "@/store/meetingStore";
 import {cn} from "@/lib/utils";
+import {Spinner} from "@/components/kibo-ui/spinner";
 
 interface ControlsProps {
     onLeave: () => void;
@@ -138,7 +138,7 @@ export default function Controls({
                     className={cn(controlClass, !isMicrophoneEnabled && "bg-destructive text-destructive-foreground")}
                 >
                     {pendingAction === "mic" ? (
-                        <Loader2 data-icon="inline-start" className="animate-spin" />
+                        <Spinner variant={'bars'} size={18} />
                     ) : (
                         <IconSwap
                             active={isMicrophoneEnabled}
@@ -158,7 +158,7 @@ export default function Controls({
                     className={cn(controlClass, !isCameraEnabled && "bg-destructive text-destructive-foreground")}
                 >
                     {pendingAction === "camera" ? (
-                        <Loader2 data-icon="inline-start" className="animate-spin" />
+                        <Spinner variant={'bars'} size={18} />
                     ) : (
                         <IconSwap
                             active={isCameraEnabled}
@@ -178,7 +178,7 @@ export default function Controls({
                     className={cn(controlClass, isScreenShareEnabled && "bg-primary text-primary-foreground")}
                 >
                     {pendingAction === "screen" ? (
-                        <Loader2 data-icon="inline-start" className="animate-spin" />
+                        <Spinner variant={'bars'} size={18} />
                     ) : (
                         <IconSwap
                             active={isScreenShareEnabled}
@@ -318,7 +318,7 @@ export default function Controls({
                 onClick={leave}
                 className="interactive-lift ml-1 h-11 min-w-14 px-5"
             >
-                {pendingAction === "leave" ? <Loader2 data-icon="inline-start" className="animate-spin" /> : <PhoneOff data-icon="inline-start" />}
+                {pendingAction === "leave" ? <Spinner variant={'bars'} size={18} /> : <PhoneOff data-icon="inline-start" />}
             </Button>
 
             {isHost && (
@@ -332,7 +332,7 @@ export default function Controls({
                         onClick={endMeeting}
                         className={controlClass}
                     >
-                        {pendingAction === "end" ? <Loader2 data-icon="inline-start" className="animate-spin" /> : <LogOut data-icon="inline-start" />}
+                        {pendingAction === "end" ? <Spinner variant={'bars'} size={18} /> : <LogOut data-icon="inline-start" />}
                     </Button>
                 </ControlTooltip>
             )}

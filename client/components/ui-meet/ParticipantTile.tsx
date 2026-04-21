@@ -114,33 +114,35 @@ export default function ParticipantTile({
             ref={tileRef}
             layout
             layoutId={trackId}
-            initial={{opacity: 0, scale: 0.85}}
+            initial={{opacity: 0, scale: 0.9}}
             animate={{opacity: 1, scale: 1}}
-            exit={{opacity: 0, scale: 0.92}}
-            transition={{type: "spring", stiffness: 260, damping: 24, duration: 0.25}}
+            exit={{opacity: 0, scale: 0.95}}
+            transition={{type: "spring", stiffness: 300, damping: 28}}
             onDoubleClick={togglePin}
             className={cn(
-                "group relative flex size-full min-h-40 overflow-hidden rounded-lg border bg-tile text-primary-foreground shadow-sm outline-none transition-all duration-200",
-                "hover:border-primary/35 hover:shadow-md",
-                "focus-visible:ring-[3px] focus-visible:ring-ring/50",
-                participant.isSpeaking && "speaking-ring border-speaking-ring",
+                "group relative flex size-full min-h-40 overflow-hidden rounded-xl border border-white/10 bg-white/5 text-primary-foreground shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-md outline-none transition-all duration-300",
+                "hover:border-white/30 hover:shadow-2xl",
+                "focus-visible:ring-[3px] focus-visible:ring-primary/50",
+                participant.isSpeaking && "ring-2 ring-primary/60 border-primary/50 shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)]",
                 className
             )}
             tabIndex={0}
             aria-label={`${displayName}${isMuted ? ", muted" : ""}`}
         >
+            {/* Glass Inner Glow */}
+            <div className="absolute inset-0 pointer-events-none rounded-[inherit] ring-1 ring-inset ring-white/10" />
             {/* Video or avatar */}
             {hasPlayableVideo ? (
                 <VideoTrack
                     trackRef={trackRef as Exclude<TrackRef, {publication?: never}>}
-                    className={cn("size-full object-cover", isCameraOff && "blur-sm")}
+                    className={cn("size-full object-cover transition-transform duration-700 group-hover:scale-[1.02]", isCameraOff && "blur-xl scale-110")}
                 />
             ) : (
-                <div className="relative flex size-full items-center justify-center overflow-hidden bg-tile">
-                    <div className="absolute inset-0 bg-[linear-gradient(135deg,color-mix(in_oklch,var(--primary)_18%,transparent),transparent_44%),linear-gradient(315deg,color-mix(in_oklch,var(--accent)_12%,transparent),transparent_48%)]" />
-                    <Avatar className="size-24 border-2 border-white/10 bg-background/12 backdrop-blur">
+                <div className="relative flex size-full items-center justify-center overflow-hidden bg-zinc-900/50">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0%,transparent_70%)]" />
+                    <Avatar className="size-24 border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl">
                         {metadata?.imageUrl && <AvatarImage src={metadata.imageUrl} alt={displayName} />}
-                        <AvatarFallback className="bg-transparent text-2xl font-semibold text-primary-foreground">
+                        <AvatarFallback className="bg-transparent text-2xl font-semibold text-white/90">
                             {getInitials(displayName)}
                         </AvatarFallback>
                     </Avatar>
@@ -148,16 +150,20 @@ export default function ParticipantTile({
             )}
 
             {/* Bottom gradient scrim */}
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60" />
 
             {/* Bottom-left: name + mute indicator */}
-            <div className="absolute left-3 bottom-3 flex max-w-[calc(100%-6rem)] items-center gap-2">
+            <div className="absolute left-3 bottom-3 flex max-w-[calc(100%-6rem)] items-center gap-2 z-10">
                 {isMuted && (
-                    <span className="flex size-7 items-center justify-center rounded-lg bg-destructive/85 text-white backdrop-blur">
-                        <MicOff aria-label="Muted" />
-                    </span>
+                    <motion.span 
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="flex size-7 items-center justify-center rounded-full bg-red-500/20 text-red-400 backdrop-blur-xl border border-red-500/30 shadow-lg"
+                    >
+                        <MicOff className="size-3.5" aria-label="Muted" />
+                    </motion.span>
                 )}
-                <div className="min-w-0 rounded-lg bg-black/55 px-3 py-1 text-xs font-medium text-white backdrop-blur-lg">
+                <div className="min-w-0 rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-[11px] font-bold tracking-wider uppercase text-white/90 backdrop-blur-2xl shadow-xl">
                     <span className="block truncate">
                         {participant.isLocal ? `${displayName} (You)` : displayName}
                     </span>
@@ -165,32 +171,32 @@ export default function ParticipantTile({
             </div>
 
             {/* Top-right: badges + quality */}
-            <div className="absolute top-3 right-3 flex items-center gap-2">
+            <div className="absolute top-3 right-3 flex items-center gap-2 z-10">
                 {isScreenShare && (
-                    <Badge variant="secondary" className="border bg-background/70 backdrop-blur-xl">
-                        <ScreenShare />
+                    <Badge variant="secondary" className="rounded-full border border-white/10 bg-white/5 backdrop-blur-xl text-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-xl">
+                        <ScreenShare className="size-3 mr-1.5 opacity-70" />
                         Screen
                     </Badge>
                 )}
                 {isPinned && (
-                    <Badge className="bg-primary/90 backdrop-blur">
-                        <Pin />
+                    <Badge className="rounded-full bg-primary/20 text-primary border border-primary/30 backdrop-blur-xl px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-xl">
+                        <Pin className="size-3 mr-1.5" />
                         Pinned
                     </Badge>
                 )}
                 <div
-                    className="flex items-end gap-0.5 rounded-lg bg-black/55 px-2 py-1 backdrop-blur-lg"
+                    className="flex items-end gap-0.5 rounded-full bg-white/5 border border-white/10 px-2.5 py-1.5 backdrop-blur-xl shadow-xl"
                     aria-label={`Network quality ${participant.connectionQuality ?? "unknown"}`}
                 >
                     {[0, 1, 2].map((dot) => (
                         <span
                             key={dot}
                             className={cn(
-                                "block w-1.5 rounded-full transition-colors",
-                                dot === 0 && "h-2",
-                                dot === 1 && "h-3",
-                                dot === 2 && "h-4",
-                                dot < qualityDots ? getQualityClass(participant.connectionQuality) : "bg-white/30"
+                                "block w-1.5 rounded-full transition-all duration-500",
+                                dot === 0 && "h-1.5",
+                                dot === 1 && "h-2.5",
+                                dot === 2 && "h-3.5",
+                                dot < qualityDots ? getQualityClass(participant.connectionQuality) : "bg-white/10"
                             )}
                         />
                     ))}
@@ -198,18 +204,13 @@ export default function ParticipantTile({
             </div>
 
             {/* Top-left: hover controls */}
-            <div className="absolute top-3 left-3 flex translate-y-1 items-center gap-2 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100">
+            <div className="absolute top-3 left-3 flex items-center gap-2 opacity-0 transition-all duration-300 translate-y-2 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 z-20">
                 <TileActionButton label={isPinned ? "Unpin participant" : "Pin participant"} onClick={togglePin}>
-                    {isPinned ? <PinOff data-icon="inline-start" /> : <Pin data-icon="inline-start" />}
+                    {isPinned ? <PinOff className="size-4" /> : <Pin className="size-4" />}
                 </TileActionButton>
                 <TileActionButton label="Fullscreen tile" onClick={requestFullscreen}>
-                    <Maximize2 data-icon="inline-start" />
+                    <Maximize2 className="size-4" />
                 </TileActionButton>
-                {isHost && !participant.isLocal && (
-                    <TileActionButton label="Host mute requires moderator access" disabled>
-                        <MicOff data-icon="inline-start" />
-                    </TileActionButton>
-                )}
             </div>
         </motion.div>
     );

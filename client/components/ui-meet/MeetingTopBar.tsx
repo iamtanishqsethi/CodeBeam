@@ -6,6 +6,7 @@ import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Copy, Grid2X2, Radio} from "lucide-react";
 import {toast} from "sonner";
 import {getFormatedTime} from "@/utils/getFormatedTime";
+import {motion} from "framer-motion";
 
 interface MeetingTopBarProps {
     duration: number;
@@ -29,28 +30,35 @@ export function MeetingTopBar({duration, roomName, layoutMode, meetingId}: Meeti
     };
 
     return (
-        <div className="pointer-events-none absolute top-0 left-0 right-0 z-20 flex items-start justify-between p-3 sm:p-4">
+        <motion.div 
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="pointer-events-none absolute top-0 left-0 right-0 z-40 flex items-start justify-between p-3 sm:p-4"
+        >
             <div className="pointer-events-auto flex flex-wrap items-center gap-2">
                 <Badge
                     variant="secondary"
-                    className="gap-2 border bg-background/72 px-3 py-1.5 font-mono shadow-sm backdrop-blur-xl"
+                    className="gap-2 border border-white/10 bg-white/5 px-3 py-1.5 font-mono shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-2xl text-white/90"
                 >
-                    <Radio className="animate-pulse text-destructive" />
+                    <Radio className="animate-pulse text-red-400 size-4" />
                     {getFormatedTime(duration)}
                 </Badge>
                 <Badge
                     variant="secondary"
-                    className="max-w-48 border bg-background/72 px-3 py-1.5 shadow-sm backdrop-blur-xl"
+                    className="max-w-48 border border-white/10 bg-white/5 px-3 py-1.5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-2xl text-white/90"
                     title={roomName}
                 >
                     <span className="truncate">{displayName}</span>
                 </Badge>
                 <Badge
                     variant="outline"
-                    className="bg-background/72 px-3 py-1.5 shadow-sm backdrop-blur-xl"
+                    className="bg-white/5 border-white/10 px-3 py-1.5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-2xl text-white/90"
                 >
-                    <Grid2X2 />
-                    {layoutMode === "speaker" ? "Speaker" : "Grid"}
+                    <Grid2X2 className="size-4 mr-2 opacity-70" />
+                    <span className="text-xs uppercase tracking-widest font-bold">
+                        {layoutMode === "speaker" ? "Speaker" : "Grid"}
+                    </span>
                 </Badge>
             </div>
 
@@ -62,15 +70,15 @@ export function MeetingTopBar({duration, roomName, layoutMode, meetingId}: Meeti
                             variant="ghost"
                             size="sm"
                             onClick={copyMeetingId}
-                            className="interactive-lift gap-2 border bg-background/72 shadow-sm backdrop-blur-xl"
+                            className="interactive-lift gap-2 border border-white/10 bg-white/5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-2xl text-white/90 hover:bg-white/10"
                         >
-                            <Copy data-icon="inline-start" />
-                            <span className="hidden sm:inline">Invite</span>
+                            <Copy className="size-4" />
+                            <span className="hidden sm:inline text-xs uppercase tracking-widest font-bold">Invite</span>
                         </Button>
                     </TooltipTrigger>
-                    <TooltipContent>Copy meeting ID</TooltipContent>
+                    <TooltipContent className="bg-zinc-900 border-white/10 text-white">Copy meeting ID</TooltipContent>
                 </Tooltip>
             </div>
-        </div>
+        </motion.div>
     );
 }

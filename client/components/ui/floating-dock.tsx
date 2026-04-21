@@ -6,7 +6,7 @@
  **/
 
 import { cn } from "@/lib/utils";
-import { PanelBottomClose } from "lucide-react";
+import { IconLayoutNavbarCollapse } from "@tabler/icons-react";
 import {
   AnimatePresence,
   MotionValue,
@@ -23,7 +23,13 @@ export const FloatingDock = ({
   desktopClassName,
   mobileClassName,
 }: {
-  items: { title: string; icon: React.ReactNode; href: string }[];
+  items: {
+    title: string;
+    icon: React.ReactNode;
+    href?: string;
+    onClick?: () => void;
+    className?: string;
+  }[];
   desktopClassName?: string;
   mobileClassName?: string;
 }) => {
@@ -39,7 +45,13 @@ const FloatingDockMobile = ({
   items,
   className,
 }: {
-  items: { title: string; icon: React.ReactNode; href: string }[];
+  items: {
+    title: string;
+    icon: React.ReactNode;
+    href?: string;
+    onClick?: () => void;
+    className?: string;
+  }[];
   className?: string;
 }) => {
   const [open, setOpen] = useState(false);
@@ -68,13 +80,39 @@ const FloatingDockMobile = ({
                 }}
                 transition={{ delay: (items.length - 1 - idx) * 0.05 }}
               >
-                <a
-                  href={item.href}
-                  key={item.title}
-                  className="flex size-10 items-center justify-center rounded-lg bg-card"
-                >
-                  <div>{item.icon}</div>
-                </a>
+                {item.href ? (
+                  <a
+                    href={item.href}
+                    key={item.title}
+                    className={cn(
+                      "flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900",
+                      item.className
+                    )}
+                  >
+                    <div className="h-4 w-4">{item.icon}</div>
+                  </a>
+                ) : item.onClick ? (
+                  <button
+                    onClick={item.onClick}
+                    key={item.title}
+                    className={cn(
+                      "flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900",
+                      item.className
+                    )}
+                  >
+                    <div className="h-4 w-4">{item.icon}</div>
+                  </button>
+                ) : (
+                  <div
+                    key={item.title}
+                    className={cn(
+                      "flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900",
+                      item.className
+                    )}
+                  >
+                    <div className="h-4 w-4">{item.icon}</div>
+                  </div>
+                )}
               </motion.div>
             ))}
           </motion.div>
@@ -82,9 +120,9 @@ const FloatingDockMobile = ({
       </AnimatePresence>
       <button
         onClick={() => setOpen(!open)}
-        className="flex size-10 items-center justify-center rounded-lg bg-card"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-800"
       >
-        <PanelBottomClose className="text-muted-foreground" />
+        <IconLayoutNavbarCollapse className="h-5 w-5 text-neutral-500 dark:text-neutral-400" />
       </button>
     </div>
   );
@@ -94,16 +132,22 @@ const FloatingDockDesktop = ({
   items,
   className,
 }: {
-  items: { title: string; icon: React.ReactNode; href: string }[];
+  items: {
+    title: string;
+    icon: React.ReactNode;
+    href?: string;
+    onClick?: () => void;
+    className?: string;
+  }[];
   className?: string;
 }) => {
-  const mouseX = useMotionValue(Infinity);
+  let mouseX = useMotionValue(Infinity);
   return (
     <motion.div
       onMouseMove={(e) => mouseX.set(e.pageX)}
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
-        "mx-auto hidden h-16 items-end gap-4 rounded-lg bg-card px-4 pb-3 md:flex",
+        "mx-auto hidden h-16 items-end gap-4 rounded-2xl bg-gray-50 px-4 pb-3 md:flex dark:bg-neutral-900",
         className,
       )}
     >
@@ -119,82 +163,85 @@ function IconContainer({
   title,
   icon,
   href,
+  onClick,
+  className,
 }: {
   mouseX: MotionValue;
   title: string;
   icon: React.ReactNode;
-  href: string;
+  href?: string;
+  onClick?: () => void;
+  className?: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
+  let ref = useRef<HTMLDivElement>(null);
 
-  const distance = useTransform(mouseX, (val) => {
-    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
+  let distance = useTransform(mouseX, (val) => {
+    let bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
 
     return val - bounds.x - bounds.width / 2;
   });
 
-  const widthTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-  const heightTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
+  let widthTransform = useTransform(distance, [-150, 0, 150], [40, 52, 40]);
+  let heightTransform = useTransform(distance, [-150, 0, 150], [40, 52, 40]);
 
-  const widthTransformIcon = useTransform(distance, [-150, 0, 150], [20, 40, 20]);
-  const heightTransformIcon = useTransform(
+  let widthTransformIcon = useTransform(distance, [-150, 0, 150], [20, 26, 20]);
+  let heightTransformIcon = useTransform(
     distance,
     [-150, 0, 150],
-    [20, 40, 20],
+    [20, 26, 20],
   );
 
-  const width = useSpring(widthTransform, {
+  let width = useSpring(widthTransform, {
     mass: 0.1,
     stiffness: 150,
     damping: 12,
   });
-  const height = useSpring(heightTransform, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
-
-  const widthIcon = useSpring(widthTransformIcon, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
-  const heightIcon = useSpring(heightTransformIcon, {
+  let height = useSpring(heightTransform, {
     mass: 0.1,
     stiffness: 150,
     damping: 12,
   });
 
-  const [hovered, setHovered] = useState(false);
+  let widthIcon = useSpring(widthTransformIcon, {
+    mass: 0.1,
+    stiffness: 150,
+    damping: 12,
+  });
+  let heightIcon = useSpring(heightTransformIcon, {
+    mass: 0.1,
+    stiffness: 150,
+    damping: 12,
+  });
 
-  return (
-    <a href={href}>
+  const content = (
+    <motion.div
+      ref={ref}
+      style={{ width, height }}
+      className={cn(
+        "relative flex aspect-square items-center justify-center rounded-full bg-gray-200 dark:bg-neutral-800",
+        className,
+      )}
+    >
       <motion.div
-        ref={ref}
-        style={{ width, height }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        className="relative flex aspect-square items-center justify-center rounded-lg bg-muted"
+        style={{ width: widthIcon, height: heightIcon }}
+        className="flex items-center justify-center"
       >
-        <AnimatePresence>
-          {hovered && (
-            <motion.div
-              initial={{ opacity: 0, y: 10, x: "-50%" }}
-              animate={{ opacity: 1, y: 0, x: "-50%" }}
-              exit={{ opacity: 0, y: 2, x: "-50%" }}
-              className="absolute -top-8 left-1/2 w-fit rounded-md border bg-popover px-2 py-0.5 text-xs whitespace-pre text-popover-foreground"
-            >
-              {title}
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <motion.div
-          style={{ width: widthIcon, height: heightIcon }}
-          className="flex items-center justify-center"
-        >
-          {icon}
-        </motion.div>
+        {icon}
       </motion.div>
-    </a>
+    </motion.div>
   );
+
+  if (href) {
+    return <a href={href}>{content}</a>;
+  }
+
+  if (onClick) {
+    return (
+      <button onClick={onClick} className="focus:outline-none">
+        {content}
+      </button>
+    );
+  }
+
+  return content;
 }

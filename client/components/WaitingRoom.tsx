@@ -1,6 +1,6 @@
 "use client";
 
-import {Camera, Clock, Loader2, Mic, User, VideoOff} from "lucide-react";
+import {Camera, Clock, Mic, User, VideoOff} from "lucide-react";
 import {useEffect, useRef, useState} from "react";
 import {useMeetingStore} from "@/store/meetingStore";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
@@ -15,6 +15,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import {Switch} from "@/components/ui/switch";
+import {Spinner} from "@/components/kibo-ui/spinner";
 
 interface WaitingRoomProps {
     meetingId: string;
@@ -256,9 +257,9 @@ export default function WaitingRoom({meetingId}: WaitingRoomProps) {
                         type="button"
                         size="lg"
                         disabled
-                        className="interactive-lift h-12"
+                        className="interactive-lift h-12 bg-primary/20 text-primary border-primary/30"
                     >
-                        <Loader2 data-icon="inline-start" className="animate-spin" />
+                        <Spinner variant={'bars'} size={18} className="mr-2" />
                         Waiting for host
                     </Button>
 

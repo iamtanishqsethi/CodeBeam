@@ -22,6 +22,8 @@ import TabbedSidebar from "@/components/ui-meet/TabbedSidebar";
 import SettingsDialog from "@/components/ui-meet/SettingsDialog";
 import {ReactionsOverlay, type ReactionItem} from "@/components/ui-meet/ReactionsOverlay";
 import {playMeetingSound} from "@/lib/meeting-sounds";
+import {Spinner} from "@/components/kibo-ui/spinner";
+import {motion} from "framer-motion";
 
 export function RoomContent({
     handleLeave,
@@ -185,10 +187,21 @@ export function RoomContent({
     if (room.state === "connecting" || room.state === "reconnecting") {
         return (
             <div className="flex h-full flex-col items-center justify-center gap-4 bg-background">
-                <div className="size-8 animate-spin rounded-lg border-2 border-primary border-t-transparent" />
-                <p className="animate-pulse font-medium text-muted-foreground">
-                    {room.state === "connecting" ? "Joining the meeting..." : "Reconnecting..."}
-                </p>
+                <motion.div
+                    initial={{opacity: 0, scale: 0.95}}
+                    animate={{opacity: 1, scale: 1}}
+                    className={'flex flex-col items-center justify-center gap-4'}
+                >
+                    <Spinner variant={'bars'} size={40} />
+                    <div className="text-center">
+                        <h2 className="text-2xl font-bold tracking-wide font-(family-name:--font-share-tech) uppercase text-white/90">
+                            {room.state === "connecting" ? "Entering Room" : "Reconnecting"}
+                        </h2>
+                        <p className="text-muted-foreground mt-2 text-sm">
+                            {room.state === "connecting" ? "Preparing your secure session..." : "Restoring your connection..."}
+                        </p>
+                    </div>
+                </motion.div>
             </div>
         );
     }

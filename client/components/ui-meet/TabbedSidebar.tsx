@@ -44,19 +44,19 @@ export default function TabbedSidebar({
             onValueChange={(v) => onTabChange(v as "chat" | "participants")}
             className="flex h-full flex-col"
         >
-            <div className="flex items-center justify-between border-b px-3 py-2">
-                <TabsList className="h-9 w-full">
-                    <TabsTrigger value="chat" className="flex-1 gap-1.5">
-                        <MessageCircle />
+            <div className="flex items-center justify-between border-b border-white/10 px-3 py-2">
+                <TabsList className="h-9 w-full bg-white/5 border border-white/10 p-1">
+                    <TabsTrigger value="chat" className="flex-1 gap-1.5 data-[state=active]:bg-white/10 data-[state=active]:text-white">
+                        <MessageCircle size={16} />
                         Chat
                         {unreadCount > 0 && (
-                            <Badge className="ml-1 min-w-5 px-1 text-[10px]">
+                            <Badge className="ml-1 min-w-5 px-1 text-[10px] bg-primary text-white border-none">
                                 {unreadCount > 9 ? "9+" : unreadCount}
                             </Badge>
                         )}
                     </TabsTrigger>
-                    <TabsTrigger value="participants" className="flex-1 gap-1.5">
-                        <Users />
+                    <TabsTrigger value="participants" className="flex-1 gap-1.5 data-[state=active]:bg-white/10 data-[state=active]:text-white">
+                        <Users size={16} />
                         People
                     </TabsTrigger>
                 </TabsList>
@@ -66,9 +66,9 @@ export default function TabbedSidebar({
                     size="icon"
                     aria-label="Close panel"
                     onClick={onClose}
-                    className="interactive-lift ml-2 size-8 shrink-0"
+                    className="interactive-lift ml-2 size-8 shrink-0 hover:bg-white/10 text-white/70"
                 >
-                    <X data-icon="inline-start" />
+                    <X className="size-4" />
                 </Button>
             </div>
 
@@ -84,7 +84,7 @@ export default function TabbedSidebar({
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-                <SheetContent side="right" showCloseButton={false} className="w-full p-0 sm:max-w-none">
+                <SheetContent side="right" showCloseButton={false} className="w-full p-0 sm:max-w-none bg-white/5 backdrop-blur-2xl border-white/10 shadow-[-8px_0_32px_rgba(0,0,0,0.37)]">
                     <SheetTitle className="sr-only">Meeting Panel</SheetTitle>
                     <SheetDescription className="sr-only">Chat and participants panel</SheetDescription>
                     {sidebarContent}
@@ -97,13 +97,16 @@ export default function TabbedSidebar({
         <AnimatePresence>
             {isOpen && (
                 <motion.aside
-                    initial={{width: 0, opacity: 0}}
-                    animate={{width: 352, opacity: 1}}
-                    exit={{width: 0, opacity: 0}}
-                    transition={{duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94]}}
-                    className="hidden shrink-0 overflow-hidden border-l bg-background md:flex"
+                    initial={{ width: 0, opacity: 0 }}
+                    animate={{ width: 352, opacity: 1 }}
+                    exit={{ width: 0, opacity: 0 }}
+                    transition={{
+                        width: { type: "spring", damping: 30, stiffness: 300, restDelta: 0.5 },
+                        opacity: { duration: 0.2, ease: "easeInOut" }
+                    }}
+                    className="hidden md:flex shrink-0 flex-col border-l border-white/10 bg-white/5 backdrop-blur-2xl relative z-40 overflow-hidden"
                 >
-                    <div className="flex h-full w-[352px] flex-col">
+                    <div className="h-full w-[352px] flex flex-col shadow-[-8px_0_32px_rgba(0,0,0,0.37)]">
                         {sidebarContent}
                     </div>
                 </motion.aside>

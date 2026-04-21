@@ -209,16 +209,6 @@
   border: 1px solid var(--border);
 }
 
-/* Dock glow effect for destructive actions */
-.dock-leave-glow {
-  box-shadow: 0 0 20px color-mix(in oklch, var(--destructive) 25%, transparent),
-              0 0 40px color-mix(in oklch, var(--destructive) 10%, transparent);
-}
-
-.dock-leave-glow:hover {
-  box-shadow: 0 0 24px color-mix(in oklch, var(--destructive) 35%, transparent),
-              0 0 48px color-mix(in oklch, var(--destructive) 15%, transparent);
-}
 
 @keyframes speaking-ring {
   0% {
@@ -346,25 +336,107 @@
   max-width: none;
   margin: 0;
   padding: 0;
-  gap: 1.25rem;
+  gap: 2rem;
   background: transparent;
 }
 
 .prejoin-widget .lk-video-container {
-  border: 1px solid color-mix(in oklch, white 12%, transparent);
-  box-shadow: 0 20px 36px color-mix(in srgb, black 18%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 24px 48px -12px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  overflow: hidden;
+  background: black;
+}
+
+.prejoin-widget .lk-audio-bar {
+  background: var(--primary);
+  box-shadow: 0 0 12px var(--primary);
 }
 
 .prejoin-widget .lk-form-control,
 .prejoin-widget .lk-button,
 .prejoin-widget .lk-disconnect-button,
 .prejoin-widget .lk-start-audio-button {
-  min-height: 2.9rem;
-  font-weight: 600;
+  min-height: 3.25rem;
+  font-weight: 700;
+  border-radius: 14px;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.prejoin-widget .lk-button {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.05),
+    0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.prejoin-widget .lk-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.1),
+    0 12px 20px -8px rgba(0, 0, 0, 0.3);
+}
+
+.prejoin-widget .lk-button:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.prejoin-widget .lk-button[aria-pressed="true"] {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.prejoin-widget .lk-join-button {
+  width: 100%;
+  justify-content: center;
+  background: var(--primary) !important;
+  color: white !important;
+  position: relative;
+  overflow: hidden;
+  border: none !important;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 12px 28px -6px color-mix(in oklch, var(--primary) 50%, transparent) !important;
+}
+
+.prejoin-widget .lk-join-button::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.prejoin-widget .lk-join-button:hover::after {
+  opacity: 1;
+}
+
+.prejoin-widget .lk-join-button:hover {
+  background: var(--primary) !important;
+  transform: translateY(-2px) scale(1.01);
+  filter: brightness(1.1);
+  box-shadow: 0 16px 32px -8px color-mix(in oklch, var(--primary) 60%, transparent) !important;
 }
 
 .prejoin-widget .lk-form-control {
   width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
 .prejoin-widget--hide-username .lk-username-container .lk-form-control {
@@ -376,12 +448,30 @@
 }
 
 .prejoin-widget .lk-button-group-container {
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
-.prejoin-widget .lk-join-button {
-  width: 100%;
-  justify-content: center;
+.prejoin-widget .lk-device-menu {
+  background: rgba(15, 15, 15, 0.8) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 16px !important;
+  padding: 0.5rem !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+.prejoin-widget .lk-device-menu-item {
+  border-radius: 8px !important;
+  transition: all 0.2s !important;
+  padding: 0.75rem 1rem !important;
+}
+
+.prejoin-widget .lk-device-menu-item:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.mirror {
+  transform: rotateY(180deg);
 }
 
 @media (max-width: 768px) {
