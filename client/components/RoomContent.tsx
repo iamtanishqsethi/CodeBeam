@@ -214,6 +214,7 @@ export function RoomContent({
                         duration={duration}
                         roomName={room.name}
                         layoutMode={layoutMode}
+                        onLayoutModeChange={setLayoutMode}
                         meetingId={meetingId}
                     />
 

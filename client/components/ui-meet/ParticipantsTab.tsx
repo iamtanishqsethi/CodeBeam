@@ -13,6 +13,7 @@ import {socket} from "@/lib/socket";
 import {approveParticipant, getWaitingRoom, rejectParticipant} from "@/services/api";
 import {toast} from "sonner";
 import {cn} from "@/lib/utils";
+import GlassSurface from "@/components/GlassSurface";
 
 interface ParticipantsTabProps {
     meetingId: string;
@@ -103,17 +104,26 @@ export default function ParticipantsTab({meetingId}: ParticipantsTabProps) {
     return (
         <div className="flex h-full flex-col">
             {/* Search */}
-            <div className="border-b p-3">
-                <div className="relative">
-                    <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                        value={query}
-                        onChange={event => setQuery(event.target.value)}
-                        placeholder="Search people"
-                        aria-label="Search participants"
-                        className="h-9 bg-muted/50 pl-9"
-                    />
-                </div>
+            <div className="border-b border-white/10 p-3">
+                <GlassSurface
+                    borderRadius={999}
+                    width="100%"
+                    height={36}
+                    backgroundOpacity={0.05}
+                    blur={20}
+                    contentClassName="p-0"
+                >
+                    <div className="relative w-full h-full flex items-center">
+                        <Search className="pointer-events-none absolute left-3 text-white/40 size-4" />
+                        <Input
+                            value={query}
+                            onChange={event => setQuery(event.target.value)}
+                            placeholder="Search people"
+                            aria-label="Search participants"
+                            className="h-full w-full bg-transparent border-none pl-9 text-xs font-medium text-white/90 placeholder:text-white/30 focus-visible:ring-0 focus-visible:ring-offset-0"
+                        />
+                    </div>
+                </GlassSurface>
             </div>
 
             <ScrollArea className="min-h-0 flex-1">
@@ -129,22 +139,32 @@ export default function ParticipantsTab({meetingId}: ParticipantsTabProps) {
                                     {filteredWaiting.length}
                                 </Badge>
                             </div>
-                            <div className="flex flex-col gap-1">
+                            <div className="flex flex-col gap-2">
                                 {filteredWaiting.map((p) => {
                                     const name = `${p.user.firstName} ${p.user.lastName ?? ""}`.trim();
                                     return (
-                                        <div
+                                        <GlassSurface
                                             key={p.id}
-                                            className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-muted/50"
+                                            borderRadius={999}
+                                            width="100%"
+                                            height="auto"
+                                            backgroundOpacity={0.03}
+                                            blur={10}
+                                            className="border border-white/5"
+                                            contentClassName="flex items-center justify-between gap-3 p-3 "
                                         >
                                             <div className="flex min-w-0 items-center gap-3">
-                                                <Avatar className="size-9 border border-white/10">
-                                                    {p.user.imageUrl && <AvatarImage src={p.user.imageUrl} alt="" />}
-                                                    <AvatarFallback>{initials(name)}</AvatarFallback>
-                                                </Avatar>
+                                                <div className="relative">
+                                                    <Avatar className="size-10 border border-white/10 shadow-lg">
+                                                        {p.user.imageUrl && <AvatarImage src={p.user.imageUrl} alt="" />}
+                                                        <AvatarFallback className="bg-white/5 text-xs font-bold">{initials(name)}</AvatarFallback>
+                                                    </Avatar>
+                                                    <span className="absolute -bottom-0.5 -right-0.5 flex size-3.5 items-center justify-center rounded-full bg-background p-0.5">
+                                                        <span className="size-full rounded-full bg-accent animate-pulse" />
+                                                    </span>
+                                                </div>
                                                 <div className="min-w-0">
-                                                    <p className="truncate text-sm font-medium">{name}</p>
-                                                    <p className="text-xs text-accent">Waiting for approval</p>
+                                                    <p className="truncate text-sm font-bold text-white/90">{name}</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-1">
@@ -153,23 +173,23 @@ export default function ParticipantsTab({meetingId}: ParticipantsTabProps) {
                                                     size="icon"
                                                     variant="ghost"
                                                     aria-label={`Approve ${name}`}
-                                                    className="size-8 text-primary hover:bg-primary/10"
+                                                    className="size-8 rounded-full text-primary hover:bg-primary/20 hover:text-primary transition-all active:scale-90"
                                                     onClick={() => handleApprove(p.id)}
                                                 >
-                                                    <Check data-icon="inline-start" />
+                                                    <Check size={16} />
                                                 </Button>
                                                 <Button
                                                     type="button"
                                                     size="icon"
                                                     variant="ghost"
                                                     aria-label={`Reject ${name}`}
-                                                    className="size-8 rounded-lg text-destructive hover:bg-destructive/10"
+                                                    className="size-8 rounded-full text-destructive hover:bg-destructive/20 hover:text-destructive transition-all active:scale-90"
                                                     onClick={() => handleReject(p.id)}
                                                 >
-                                                    <X data-icon="inline-start" />
+                                                    <X size={16} />
                                                 </Button>
                                             </div>
-                                        </div>
+                                        </GlassSurface>
                                     );
                                 })}
                             </div>
@@ -186,7 +206,7 @@ export default function ParticipantsTab({meetingId}: ParticipantsTabProps) {
                                 {filteredParticipants.length}
                             </Badge>
                         </div>
-                        <div className="flex flex-col gap-1">
+                        <div className="flex flex-col gap-2">
                             {filteredParticipants.map(p => {
                                 const name = p.name || p.identity || "Guest";
                                 let metadata: Record<string, unknown> | null = null;
@@ -201,52 +221,55 @@ export default function ParticipantsTab({meetingId}: ParticipantsTabProps) {
                                 return (
                                     <div
                                             key={p.identity}
-                                            className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-muted/50"
+                                            className="flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 transition-all hover:bg-white/5 group"
                                         >
                                         <div className="flex min-w-0 items-center gap-3">
                                             <div className="relative">
-                                                <Avatar className="size-9 border border-white/10">
+                                                <Avatar className="size-10 border border-white/10 shadow-md group-hover:border-white/20 transition-colors">
                                                     {typeof metadata?.imageUrl === "string" && <AvatarImage src={metadata.imageUrl} alt={name} />}
-                                                    <AvatarFallback>{initials(name)}</AvatarFallback>
+                                                    <AvatarFallback className="bg-white/5 text-xs font-bold">{initials(name)}</AvatarFallback>
                                                 </Avatar>
                                                 <span
                                                     className={cn(
-                                                        "absolute right-0 bottom-0 size-2.5 rounded-full ring-2 ring-background transition-colors",
-                                                        p.isSpeaking ? "bg-primary" : "bg-muted-foreground/40"
+                                                        "absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full border-2 border-background transition-all duration-500",
+                                                        p.isSpeaking ? "bg-primary scale-110 shadow-[0_0_10px_rgba(var(--primary-rgb),0.5)]" : "bg-muted-foreground/40 scale-100"
                                                     )}
                                                     aria-label={p.isSpeaking ? "Speaking" : "Not speaking"}
                                                 />
                                             </div>
                                             <div className="min-w-0">
-                                                <div className="flex min-w-0 items-center gap-1.5">
-                                                    <p className="truncate text-sm font-medium">
+                                                <div className="flex min-w-0 items-center gap-2">
+                                                    <p className="truncate text-sm font-bold text-white/90">
                                                         {p.isLocal ? `${name} (You)` : name}
                                                     </p>
                                                     {showHost && (
-                                                        <Badge variant="secondary" className="gap-1 text-xs">
-                                                            <Crown />
+                                                        <Badge variant="secondary" className="h-4 px-1.5 text-[9px] font-bold uppercase tracking-wider bg-white/10 text-white border-none">
                                                             Host
                                                         </Badge>
                                                     )}
                                                     {raisedHand && (
-                                                        <Hand className="raised-hand text-primary" aria-label="Raised hand" />
+                                                        <Hand className="raised-hand text-primary size-3.5" aria-label="Raised hand" />
                                                     )}
                                                 </div>
-                                                <p className="text-xs text-muted-foreground">
-                                                    {p.isSpeaking ? "Speaking" : p.connectionQuality}
+                                                <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+                                                    {p.isSpeaking ? "Speaking" : "Connected"}
                                                 </p>
                                             </div>
                                         </div>
 
-                                        <div className="flex shrink-0 items-center gap-1.5 text-muted-foreground">
-                                            {isMicOn
-                                                ? <Mic aria-label="Microphone on" />
-                                                : <MicOff className="text-destructive" aria-label="Muted" />
-                                            }
-                                            {isCamOn
-                                                ? <Video aria-label="Camera on" />
-                                                : <VideoOff className="text-destructive" aria-label="Camera off" />
-                                            }
+                                        <div className="flex shrink-0 items-center gap-2 text-white/40">
+                                            <div className={cn("p-1.5 rounded-full transition-colors", !isMicOn ? "bg-red-500/10 text-red-400" : "bg-white/5 text-white/40")}>
+                                                {isMicOn
+                                                    ? <Mic size={14} aria-label="Microphone on" />
+                                                    : <MicOff size={14} className="text-red-400" aria-label="Muted" />
+                                                }
+                                            </div>
+                                            <div className={cn("p-1.5 rounded-full transition-colors", !isCamOn ? "bg-red-500/10 text-red-400" : "bg-white/5 text-white/40")}>
+                                                {isCamOn
+                                                    ? <Video size={14} aria-label="Camera on" />
+                                                    : <VideoOff size={14} className="text-red-400" aria-label="Camera off" />
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                 );

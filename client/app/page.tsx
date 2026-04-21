@@ -15,10 +15,13 @@ import {PlusIcon} from "@/components/ui/plus";
 import GlassSurface from "@/components/GlassSurface";
 import { FeatureSection } from "@/components/feature-section";
 import {TextHoverEffect} from "@/components/ui/text-hover-effect";
-import {MacbookScroll} from "@/components/ui/macbook-scroll";
+import { MacbookScroll } from "@/components/ui/macbook-scroll";
 import SplitButton from "@/components/ui/split-button";
+import { useLenis } from 'lenis/react';
+import { useScroll, useTransform } from 'framer-motion';
 
 const stagger = {
+
     hidden: {},
     show: {transition: {staggerChildren: 0.12}},
 };
@@ -30,14 +33,17 @@ const fadeUp = {
 
 export default function Home() {
     const router = useRouter()
+    const { scrollY } = useScroll();
+    const backgroundY = useTransform(scrollY, [0, 1000], [0, 400]);
 
     return (
         <div className="relative min-h-screen overflow-hidden bg-background">
-            <div
+            <motion.div
                 className="pointer-events-none absolute inset-0 z-0 h-screen"
                 style={{
                     maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
                     WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+                    y: backgroundY,
                 }}
             >
                 <Prism
@@ -51,7 +57,7 @@ export default function Home() {
                     noise={0}
                     glow={1}
                 />
-            </div>
+            </motion.div>
 
             <div className="relative ">
                 <MacbookScroll
@@ -90,6 +96,7 @@ export default function Home() {
             <div className="h-[150vh]" />
 
             <motion.section
+                id="features"
                 initial="hidden"
                 whileInView="show"
                 viewport={{once: true, margin: "-80px"}}

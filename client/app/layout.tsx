@@ -9,6 +9,7 @@ import Header from "@/components/Header";
 import AxiosProvider from "@/components/AxiosProvider";
 import {Toaster} from "@/components/ui/sonner";
 import {TooltipProvider} from "@/components/ui/tooltip";
+import SmoothScroll from "@/components/SmoothScroll";
 
 
 const geistSans = Geist({
@@ -56,9 +57,11 @@ export default function RootLayout({
           >
                 <AxiosProvider>
                   <TooltipProvider>
-                    <Toaster />
-                    <Header/>
-                    {children}
+                    <SmoothScroll>
+                      <Toaster />
+                      <Header/>
+                      {children}
+                    </SmoothScroll>
                   </TooltipProvider>
                 </AxiosProvider>
 

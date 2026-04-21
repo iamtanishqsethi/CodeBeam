@@ -4,9 +4,8 @@ import {useEffect, useMemo, useState} from "react";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {Home, PhoneOff} from "lucide-react";
-
-import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
+import GlassSurface from "@/components/GlassSurface";
 
 interface MeetingEndedScreenProps {
     message?: string;
@@ -46,52 +45,59 @@ export default function MeetingEndedScreen({
     }, [redirectAfterSeconds, secondsLeft]);
 
     return (
-        <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-20 text-center sm:px-6">
-            <div className="interface-grid-bg pointer-events-none absolute inset-x-0 top-0 h-full" />
-            <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-border" />
-            <section className="surface-panel relative flex w-full max-w-3xl flex-col items-center gap-8 p-6 sm:p-10">
-                <Badge variant="outline" className="rounded-md px-3 py-1">
-                    Session complete
-                </Badge>
-
-                <div className="flex flex-col items-center gap-4">
-                    <div className="flex size-16 items-center justify-center rounded-lg border bg-muted">
-                        <PhoneOff className="size-8 text-muted-foreground" />
-                    </div>
-                    <div className="flex max-w-2xl flex-col items-center gap-3">
-                        <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-5xl">
+        <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-20">
+            <div className="pointer-events-none absolute inset-0 z-0 h-screen">
+                <div className="absolute inset-0 bg-[radial_gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-950 to-black" />
+            </div>
+            
+            <section className="relative flex w-full max-w-lg flex-col items-center gap-10 p-8">
+                <div className="flex flex-col items-center gap-6 text-center">
+                    <GlassSurface
+                        borderRadius={999}
+                        width={72}
+                        height={72}
+                        backgroundOpacity={0.15}
+                        blur={30}
+                        className="border border-white/5"
+                        contentClassName="flex items-center justify-center"
+                    >
+                        <PhoneOff className="size-8 text-white/60" />
+                    </GlassSurface>
+                    
+                    <div className="flex flex-col gap-3">
+                        <h1 className="text-3xl font-bold text-white tracking-tight">
                             Meeting ended
                         </h1>
-                        <p className="text-balance text-base leading-7 text-muted-foreground">
+                        <p className="text-sm text-white/50">
                             {message} You will return home automatically.
                         </p>
                     </div>
                 </div>
 
-                <div className="flex w-full flex-col items-center justify-between gap-5 border-t pt-6 sm:flex-row sm:text-left">
-                    <div className="flex items-center gap-4">
+                <div className="flex w-full flex-col items-center gap-6">
+                    <div className="flex items-center gap-5">
                         <div
-                            className="flex size-16 shrink-0 items-center justify-center rounded-full border bg-background"
+                            className="flex size-16 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5"
                             style={{
-                                background: `conic-gradient(var(--primary) ${progress}%, var(--muted) ${progress}% 100%)`,
+                                background: `conic-gradient(rgba(255,255,255,0.2) ${progress}%, transparent ${progress}% 100%)`,
                             }}
                             aria-hidden="true"
                         >
-                            <div className="flex size-12 items-center justify-center rounded-full bg-background text-lg font-semibold">
+                            <div className="flex size-12 items-center justify-center rounded-full bg-zinc-950 text-lg font-bold text-white">
                                 {secondsLeft}
                             </div>
                         </div>
                         <div className="flex flex-col gap-1">
-                            <p className="font-medium">Redirecting to home</p>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="font-medium text-white/80">Redirecting to home</p>
+                            <p className="text-xs text-white/40">
                                 {secondsLeft === 1 ? "1 second left" : `${secondsLeft} seconds left`}
                             </p>
                         </div>
                     </div>
 
-                    <Button asChild className="interactive-lift w-full sm:w-auto">
+                    <Button asChild className="w-full h-12 rounded-xl bg-white text-black hover:bg-white/90">
                         <Link href="/">
-                            <Home data-icon="inline-start" />
+                            <Home size={18} className="mr-2" />
                             Go now
                         </Link>
                     </Button>

@@ -9,6 +9,7 @@ import {Sheet, SheetContent, SheetDescription, SheetTitle} from "@/components/ui
 import {useEffect, useState} from "react";
 import ChatTab from "@/components/ui-meet/ChatTab";
 import ParticipantsTab from "@/components/ui-meet/ParticipantsTab";
+import GlassSurface from "@/components/GlassSurface";
 
 interface TabbedSidebarProps {
     meetingId: string;
@@ -45,28 +46,59 @@ export default function TabbedSidebar({
             className="flex h-full flex-col"
         >
             <div className="flex items-center justify-between border-b border-white/10 px-3 py-2">
-                <TabsList className="h-9 w-full bg-white/5 border border-white/10 p-1">
-                    <TabsTrigger value="chat" className="flex-1 gap-1.5 data-[state=active]:bg-white/10 data-[state=active]:text-white">
-                        <MessageCircle size={16} />
-                        Chat
-                        {unreadCount > 0 && (
-                            <Badge className="ml-1 min-w-5 px-1 text-[10px] bg-primary text-white border-none">
-                                {unreadCount > 9 ? "9+" : unreadCount}
-                            </Badge>
-                        )}
-                    </TabsTrigger>
-                    <TabsTrigger value="participants" className="flex-1 gap-1.5 data-[state=active]:bg-white/10 data-[state=active]:text-white">
-                        <Users size={16} />
-                        People
-                    </TabsTrigger>
-                </TabsList>
+                <GlassSurface
+                    borderRadius={999}
+                    width="100%"
+                    height={36}
+                    backgroundOpacity={0.05}
+                    blur={20}
+                    className="mr-1.5"
+                    contentClassName="p-0"
+                >
+                    <TabsList className="h-full w-full bg-transparent border-none p-1 rounded-full relative">
+                        <TabsTrigger 
+                            value="chat" 
+                            className="flex-1 gap-1.5 rounded-full text-xs font-bold uppercase tracking-widest text-white/60 data-[state=active]:text-white data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-none border-none relative z-10 transition-colors duration-300"
+                        >
+                            {currentTab === "chat" && (
+                                <motion.div
+                                    layoutId="activeTab"
+                                    className="absolute inset-0 bg-white/10 rounded-full -z-10"
+                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                />
+                            )}
+                            <MessageCircle size={14} />
+                            Chat
+                            {unreadCount > 0 && (
+                                <Badge className="ml-1 min-w-5 px-1 text-[10px] bg-primary text-white border-none">
+                                    {unreadCount > 9 ? "9+" : unreadCount}
+                                </Badge>
+                            )}
+                        </TabsTrigger>
+                        <TabsTrigger 
+                            value="participants" 
+                            className="flex-1 gap-1.5 rounded-full text-xs font-bold uppercase tracking-widest text-white/60 data-[state=active]:text-white data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-none border-none relative z-10 transition-colors duration-300"
+                        >
+                            {currentTab === "participants" && (
+                                <motion.div
+                                    layoutId="activeTab"
+                                    className="absolute inset-0 bg-white/10 rounded-full -z-10"
+                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                />
+                            )}
+                            <Users size={14} />
+                            People
+                        </TabsTrigger>
+                    </TabsList>
+                </GlassSurface>
+
                 <Button
                     type="button"
-                    variant="ghost"
-                    size="icon"
+                    variant="default"
                     aria-label="Close panel"
                     onClick={onClose}
-                    className="interactive-lift ml-2 size-8 shrink-0 hover:bg-white/10 text-white/70"
+                    size={'icon-sm'}
+                    className=" size-4 shrink-0  text-white/70 rounded-full "
                 >
                     <X className="size-4" />
                 </Button>
@@ -84,7 +116,7 @@ export default function TabbedSidebar({
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-                <SheetContent side="right" showCloseButton={false} className="w-full p-0 sm:max-w-none bg-white/5 backdrop-blur-2xl border-white/10 shadow-[-8px_0_32px_rgba(0,0,0,0.37)]">
+                <SheetContent side="right" showCloseButton={false} className="w-[85%] sm:w-[400px] p-0 sm:max-w-none bg-white/5 backdrop-blur-2xl border-white/10 shadow-[-8px_0_32px_rgba(0,0,0,0.37)]">
                     <SheetTitle className="sr-only">Meeting Panel</SheetTitle>
                     <SheetDescription className="sr-only">Chat and participants panel</SheetDescription>
                     {sidebarContent}
@@ -98,7 +130,7 @@ export default function TabbedSidebar({
             {isOpen && (
                 <motion.aside
                     initial={{ width: 0, opacity: 0 }}
-                    animate={{ width: 352, opacity: 1 }}
+                    animate={{ width: 400, opacity: 1 }}
                     exit={{ width: 0, opacity: 0 }}
                     transition={{
                         width: { type: "spring", damping: 30, stiffness: 300, restDelta: 0.5 },
@@ -106,11 +138,12 @@ export default function TabbedSidebar({
                     }}
                     className="hidden md:flex shrink-0 flex-col border-l border-white/10 bg-white/5 backdrop-blur-2xl relative z-40 overflow-hidden"
                 >
-                    <div className="h-full w-[352px] flex flex-col shadow-[-8px_0_32px_rgba(0,0,0,0.37)]">
+                    <div className="h-full w-[400px] flex flex-col shadow-[-8px_0_32px_rgba(0,0,0,0.37)]">
                         {sidebarContent}
                     </div>
                 </motion.aside>
             )}
         </AnimatePresence>
     );
+
 }

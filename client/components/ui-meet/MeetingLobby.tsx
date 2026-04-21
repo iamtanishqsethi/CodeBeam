@@ -1,6 +1,6 @@
 "use client";
 
-import {Camera, Clock, Mic, User, VideoOff} from "lucide-react";
+import {Camera, Clock, Mic, User, VideoOff, Layout, Sparkles, Settings2, MicOff, Video, X} from "lucide-react";
 import {useEffect, useRef, useState} from "react";
 import {useMeetingStore} from "@/store/meetingStore";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
@@ -16,8 +16,19 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import {Switch} from "@/components/ui/switch";
-import {motion} from "framer-motion";
+import {motion, AnimatePresence} from "framer-motion";
 import {Spinner} from "@/components/kibo-ui/spinner";
+import GlassSurface from "@/components/GlassSurface";
+import {AnimatedShinyText} from "@/components/ui/animated-shiny-text";
+import {cn} from "@/lib/utils";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {RecordPlayer} from "@/components/RecordPlayer";
+import {FloatingDock} from "@/components/ui/floating-dock";
+
+const fadeUp = {
+    hidden: {opacity: 0, y: 24},
+    show: {opacity: 1, y: 0, transition: {duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const}},
+};
 
 interface MeetingLobbyProps {
     meetingId: string;
@@ -30,7 +41,9 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
     const [micLevel, setMicLevel] = useState(0);
-
+    const [showSettings, setShowSettings] = useState(false);
+    const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+    
     const videoDevices = devices.filter(device => device.kind === "videoinput");
     const audioDevices = devices.filter(device => device.kind === "audioinput");
 
@@ -128,173 +141,202 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
     ]);
 
     return (
-        <div className="app-shell pt-8 sm:pt-10">
-            <div className="interface-grid-bg pointer-events-none absolute inset-x-0 top-0 h-[24rem]" />
-            <motion.div
-                initial={{opacity: 0, y: 20}}
-                animate={{opacity: 1, y: 0}}
-                transition={{duration: 0.4, ease: "easeOut"}}
-                className="section-shell relative grid min-h-[calc(100svh-5rem)] gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(20rem,0.9fr)] lg:items-center"
+        <div className="relative min-h-screen overflow-hidden bg-background">
+            <div
+                className="pointer-events-none absolute inset-0 z-0 h-screen"
+                style={{
+                    maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+                }}
             >
-                <motion.section
-                    initial={{opacity: 0, x: -20}}
-                    animate={{opacity: 1, x: 0}}
-                    transition={{duration: 0.4, delay: 0.1}}
-                    className="flex flex-col gap-5"
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-950 to-black" />
+            </div>
+
+            <div className="relative flex min-h-screen items-center justify-center p-4 lg:p-12">
+                <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    animate="show"
+                    className="w-full max-w-7xl flex flex-col gap-12"
                 >
-                    <div className="flex flex-col gap-2">
-                        <Badge variant="outline" className="w-fit border-primary/30 bg-primary/10 text-primary">
-                            Waiting room
-                        </Badge>
-                        <h1 className="text-balance text-3xl font-semibold tracking-tight">Check your setup</h1>
-                        <p className="max-w-2xl text-muted-foreground">
-                            The host will let you in from here.
-                        </p>
+                    {/* Header */}
+                    <div className="flex flex-col items-center lg:items-start gap-4 text-center lg:text-left">
+                        <motion.div variants={fadeUp}>
+                            <div className="group w-fit rounded-full border border-white/5 bg-neutral-900/50 px-4 py-1">
+                                <AnimatedShinyText className="inline-flex items-center justify-center text-xs font-bold uppercase tracking-[0.2em]">
+                                    <Spinner variant={'bars'} size={16} className={'mr-2'}/>  Waiting for host...
+                                </AnimatedShinyText>
+                            </div>
+                        </motion.div>
+                        <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl font-(family-name:--font-share-tech) uppercase text-white/90">
+                            Set up your space
+                        </h1>
                     </div>
 
-                    <div className="relative aspect-video overflow-hidden rounded-lg border bg-tile shadow-sm">
-                        {mediaPreferences.videoEnabled ? (
-                            <video
-                                ref={videoRef}
-                                autoPlay
-                                muted
-                                playsInline
-                                className="size-full object-cover"
-                            />
-                        ) : (
-                            <div className="flex size-full items-center justify-center">
-                                <div className="absolute inset-0 bg-[linear-gradient(135deg,color-mix(in_oklch,var(--primary)_14%,transparent),transparent_44%),linear-gradient(315deg,color-mix(in_oklch,var(--accent)_10%,transparent),transparent_48%)]" />
-                                <Avatar className="size-28 border-2 border-white/10 bg-background/12">
-                                    {user?.imageUrl && <AvatarImage src={user.imageUrl} />}
-                                    <AvatarFallback className="bg-transparent text-3xl font-semibold text-primary-foreground">
-                                        {user?.firstName ? user.firstName.slice(0, 2).toUpperCase() : "CB"}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-lg bg-black/55 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-lg">
-                                    <VideoOff data-icon="inline-start" />
-                                    Camera off
+                    {/* Main Side by Side Content */}
+                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-12 items-center">
+                        
+                        {/* Left: User Preview & Controls */}
+                        <div className="flex flex-col gap-8 w-full justify-self-center max-w-2xl">
+                            <div className="relative aspect-video w-full overflow-hidden rounded-[2.5rem] border border-white/10 bg-black/40 shadow-2xl group">
+                                <div className="size-full bg-zinc-900/40">
+                                    {mediaPreferences.videoEnabled ? (
+                                        <video
+                                            ref={videoRef}
+                                            autoPlay
+                                            muted
+                                            playsInline
+                                            className="size-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="flex size-full items-center justify-center bg-zinc-900/60 backdrop-blur-2xl">
+                                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03)_0%,transparent_70%)]" />
+                                            <Avatar className="size-40 border-4 border-white/5 bg-white/5 shadow-2xl backdrop-blur-3xl">
+                                                {user?.imageUrl && <AvatarImage src={user.imageUrl} />}
+                                                <AvatarFallback className="bg-transparent text-5xl font-bold text-white/80">
+                                                    {user?.firstName ? user.firstName.slice(0, 2).toUpperCase() : "CB"}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Bottom Controls - Floating Dock Style */}
+                                <div className="absolute inset-x-0 bottom-0 flex items-center justify-center p-8 pt-24 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
+                                    <FloatingDock
+                                        items={[
+                                            {
+                                                title: mediaPreferences.audioEnabled ? "Mute" : "Unmute",
+                                                icon: mediaPreferences.audioEnabled ? <Mic size={22} /> : <MicOff size={22} />,
+                                                onClick: () => setMediaPreferences({audioEnabled: !mediaPreferences.audioEnabled}),
+                                                className: cn(!mediaPreferences.audioEnabled && "!bg-red-500/20 !text-red-400 !border-red-500/30"),
+                                            },
+                                            {
+                                                title: mediaPreferences.videoEnabled ? "Stop Video" : "Start Video",
+                                                icon: mediaPreferences.videoEnabled ? <Video size={22} /> : <VideoOff size={22} />,
+                                                onClick: () => setMediaPreferences({videoEnabled: !mediaPreferences.videoEnabled}),
+                                                className: cn(!mediaPreferences.videoEnabled && "!bg-red-500/20 !text-red-400 !border-red-500/30"),
+                                            },
+                                            {
+                                                title: "Settings",
+                                                icon: <Settings2 size={22} />,
+                                                onClick: () => setShowSettings(!showSettings),
+                                                className: cn(showSettings && "!bg-white/20 !border-white/30"),
+                                            },
+                                        ]}
+                                        desktopClassName="bg-transparent border-none backdrop-blur-0 shadow-none"
+                                        mobileClassName="bg-transparent border-none backdrop-blur-0 shadow-none"
+                                    />
+                                </div>
+
+                                {/* Settings Overlay */}
+                                <AnimatePresence>
+                                    {showSettings && (
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            className="absolute inset-0 z-50 flex items-center justify-center p-8 bg-black/80 backdrop-blur-xl"
+                                        >
+                                            <div className="w-full max-w-sm flex flex-col gap-6">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="p-2 rounded-xl bg-white/5">
+                                                            <Settings2 size={20} className="text-white" />
+                                                        </div>
+                                                        <h3 className="text-base font-bold uppercase tracking-wider text-white">Settings</h3>
+                                                    </div>
+                                                    <Button variant="ghost" size="icon" className="rounded-full text-white/40 hover:text-white" onClick={() => setShowSettings(false)}>
+                                                        <X size={18} />
+                                                    </Button>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="space-y-3">
+                                                        <div className="flex items-center gap-2 text-white/40">
+                                                            <Camera size={14} />
+                                                            <p className="text-[10px] font-bold uppercase tracking-wider">Camera</p>
+                                                        </div>
+                                                        <Select
+                                                            value={mediaPreferences.videoDeviceId || "default"}
+                                                            onValueChange={value => setMediaPreferences({videoDeviceId: value === "default" ? "" : value})}
+                                                            disabled={!mediaPreferences.videoEnabled}
+                                                        >
+                                                            <SelectTrigger className="w-full bg-white/5 border-white/10 rounded-xl h-10 text-white text-xs">
+                                                                <SelectValue placeholder="Default" />
+                                                            </SelectTrigger>
+                                                            <SelectContent className="bg-zinc-900 border-white/10 text-white">
+                                                                <SelectGroup>
+                                                                    <SelectItem value="default">System Default</SelectItem>
+                                                                    {videoDevices.map((device, index) => (
+                                                                        <SelectItem key={device.deviceId} value={device.deviceId}>
+                                                                            {device.label || `Camera ${index + 1}`}
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </SelectGroup>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+
+                                                    <div className="space-y-3">
+                                                        <div className="flex items-center gap-2 text-white/40">
+                                                            <Mic size={14} />
+                                                            <p className="text-[10px] font-bold uppercase tracking-wider">Mic</p>
+                                                        </div>
+                                                        <Select
+                                                            value={mediaPreferences.audioDeviceId || "default"}
+                                                            onValueChange={value => setMediaPreferences({audioDeviceId: value === "default" ? "" : value})}
+                                                            disabled={!mediaPreferences.audioEnabled}
+                                                        >
+                                                            <SelectTrigger className="w-full bg-white/5 border-white/10 rounded-xl h-10 text-white text-xs">
+                                                                <SelectValue placeholder="Default" />
+                                                            </SelectTrigger>
+                                                            <SelectContent className="bg-zinc-900 border-white/10 text-white">
+                                                                <SelectGroup>
+                                                                    <SelectItem value="default">System Default</SelectItem>
+                                                                    {audioDevices.map((device, index) => (
+                                                                        <SelectItem key={device.deviceId} value={device.deviceId}>
+                                                                            {device.label || `Mic ${index + 1}`}
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </SelectGroup>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                            
+                            {/* Joining Status */}
+                            <div className="flex items-center justify-center lg:justify-start gap-6">
+                                <div className="flex flex-col gap-1 text-center lg:text-left">
+                                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">Secured Meeting ID</p>
+                                    <code className="text-sm font-mono tracking-widest text-white/80">{meetingId}</code>
                                 </div>
                             </div>
-                        )}
-                    </div>
-                </motion.section>
-
-                <motion.section
-                    initial={{opacity: 0, x: 20}}
-                    animate={{opacity: 1, x: 0}}
-                    transition={{duration: 0.4, delay: 0.2}}
-                    className="surface-panel flex flex-col gap-5 p-5"
-                >
-                    <div className="flex items-center gap-3">
-                        <div className="flex size-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                            <Clock />
                         </div>
-                        <div>
-                            <h2 className="text-base font-semibold">Ready when the host is</h2>
-                            <p className="text-sm text-muted-foreground">Your request is already in the queue.</p>
-                        </div>
-                    </div>
 
-                    <div className="flex flex-col gap-4">
-                        <label className="control-row">
-                            <span className="flex items-center gap-2 text-sm font-medium">
-                                <Camera />
-                                Camera
-                            </span>
-                            <Switch
-                                checked={mediaPreferences.videoEnabled}
-                                onCheckedChange={checked => setMediaPreferences({videoEnabled: checked})}
-                                aria-label="Toggle camera"
-                            />
-                        </label>
-
-                        <Select
-                            value={mediaPreferences.videoDeviceId || "default"}
-                            onValueChange={value => setMediaPreferences({videoDeviceId: value === "default" ? "" : value})}
-                            disabled={!mediaPreferences.videoEnabled}
+                        {/* Right: Record Player / Jazz Vibe */}
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.3 }}
+                            className="hidden lg:flex items-center justify-center"
                         >
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Camera device" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectItem value="default">Default camera</SelectItem>
-                                    {videoDevices.filter(device => device.deviceId).map((device, index) => (
-                                        <SelectItem key={device.deviceId} value={device.deviceId}>
-                                            {device.label || `Camera ${index + 1}`}
-                                        </SelectItem>
-                                    ))}
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-
-                        <label className="control-row">
-                            <span className="flex items-center gap-2 text-sm font-medium">
-                                <Mic />
-                                Microphone
-                            </span>
-                            <Switch
-                                checked={mediaPreferences.audioEnabled}
-                                onCheckedChange={checked => setMediaPreferences({audioEnabled: checked})}
-                                aria-label="Toggle microphone"
+                            <RecordPlayer 
+                                isPlaying={isMusicPlaying} 
+                                onToggle={() => setIsMusicPlaying(!isMusicPlaying)} 
                             />
-                        </label>
+                        </motion.div>
 
-                        <Select
-                            value={mediaPreferences.audioDeviceId || "default"}
-                            onValueChange={value => setMediaPreferences({audioDeviceId: value === "default" ? "" : value})}
-                            disabled={!mediaPreferences.audioEnabled}
-                        >
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Microphone device" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectItem value="default">Default microphone</SelectItem>
-                                    {audioDevices.filter(device => device.deviceId).map((device, index) => (
-                                        <SelectItem key={device.deviceId} value={device.deviceId}>
-                                            {device.label || `Microphone ${index + 1}`}
-                                        </SelectItem>
-                                    ))}
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-
-                        <div className="flex items-end gap-1 rounded-lg border bg-background/60 p-3" aria-label="Microphone level">
-                            {[0, 1, 2, 3, 4, 5].map(index => (
-                                <span
-                                    key={index}
-                                    className="meter-bar h-8 flex-1 rounded-full bg-primary"
-                                    style={{
-                                        transform: `scaleY(${Math.max(0.12, micLevel * (0.45 + index * 0.12))})`,
-                                        animationDelay: `${index * 70}ms`,
-                                    }}
-                                />
-                            ))}
-                        </div>
                     </div>
-
-                    <Button
-                        type="button"
-                        size="lg"
-                        disabled
-                        className="h-11 interactive-lift bg-primary/20 text-primary border-primary/30"
-                    >
-                        <Spinner variant={'bars'} size={18} className="mr-2" />
-                        Waiting for host
-                    </Button>
-
-                    <div className="flex flex-col gap-2 border-t pt-4">
-                        <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <User />
-                            Meeting ID
-                        </p>
-                        <code className="block rounded-lg bg-muted/50 px-4 py-3 text-sm font-medium tracking-[0.2em]">
-                            {meetingId}
-                        </code>
-                    </div>
-                </motion.section>
-            </motion.div>
+                </motion.div>
+            </div>
         </div>
     );
 }

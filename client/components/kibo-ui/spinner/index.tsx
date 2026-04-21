@@ -261,8 +261,14 @@ export const Spinner = ({ variant, ...props }: SpinnerProps) => {
       return <Ring {...props} />;
     case "bars":
     default:
+      const { size, ...rest } = props;
+      const numericSize = typeof size === "string" ? parseInt(size, 10) : size;
       return (
-        <ShadcnSpinner className={cn("size-6", props.className)} {...props} />
+        <ShadcnSpinner 
+          className={cn("size-6", props.className)} 
+          size={numericSize}
+          {...rest} 
+        />
       );
     case "infinite":
       return <Infinite {...props} />;

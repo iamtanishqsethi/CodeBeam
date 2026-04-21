@@ -26,9 +26,9 @@ import { IconCaretDownFilled } from "@tabler/icons-react";
 
 
 const scrollTexts = [
-  { text: "Noise cancellation that just works", start: 0.20, end: 0.37 },
-  { text: "Crystal clear video calls", start: 0.35, end: 0.52 },
-  { text: "Collaborate with your team", start: 0.50, end: 0.77 },
+  { text: "Noise cancellation that just works", start: 0.20, end: 0.33 },
+  { text: "Crystal clear video calls", start: 0.31, end: 0.47 },
+  { text: "Collaborate with your team", start: 0.45, end: 0.77 },
 ];
 
 // Must be a separate component — hooks cannot be called inside .map()
@@ -218,6 +218,7 @@ export const Lid = ({
               translateY: translate,
               transformStyle: "preserve-3d",
               transformOrigin: "top",
+              willChange: "transform",
             }}
             className="absolute inset-0 h-96 w-[32rem] rounded-2xl bg-[#010101] p-2"
         >

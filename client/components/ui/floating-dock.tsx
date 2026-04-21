@@ -54,76 +54,42 @@ const FloatingDockMobile = ({
   }[];
   className?: string;
 }) => {
-  const [open, setOpen] = useState(false);
   return (
-    <div className={cn("relative block md:hidden", className)}>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            layoutId="nav"
-            className="absolute inset-x-0 bottom-full mb-2 flex flex-col gap-2"
-          >
-            {items.map((item, idx) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                exit={{
-                  opacity: 0,
-                  y: 10,
-                  transition: {
-                    delay: idx * 0.05,
-                  },
-                }}
-                transition={{ delay: (items.length - 1 - idx) * 0.05 }}
-              >
-                {item.href ? (
-                  <a
-                    href={item.href}
-                    key={item.title}
-                    className={cn(
-                      "flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900",
-                      item.className
-                    )}
-                  >
-                    <div className="h-4 w-4">{item.icon}</div>
-                  </a>
-                ) : item.onClick ? (
-                  <button
-                    onClick={item.onClick}
-                    key={item.title}
-                    className={cn(
-                      "flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900",
-                      item.className
-                    )}
-                  >
-                    <div className="h-4 w-4">{item.icon}</div>
-                  </button>
-                ) : (
-                  <div
-                    key={item.title}
-                    className={cn(
-                      "flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900",
-                      item.className
-                    )}
-                  >
-                    <div className="h-4 w-4">{item.icon}</div>
-                  </div>
+    <div className={cn("flex h-12 items-center gap-2 px-3 md:hidden", className)}>
+      {items.map((item) => (
+        <div key={item.title}>
+            {item.href ? (
+                <a
+                href={item.href}
+                className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-full bg-white/10 border border-white/10 backdrop-blur-md",
+                    item.className
                 )}
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-800"
-      >
-        <IconLayoutNavbarCollapse className="h-5 w-5 text-neutral-500 dark:text-neutral-400" />
-      </button>
+                >
+                <div className="flex h-4 w-4 items-center justify-center">{item.icon}</div>
+                </a>
+            ) : item.onClick ? (
+                <button
+                onClick={item.onClick}
+                className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-full bg-white/10 border border-white/10 backdrop-blur-md",
+                    item.className
+                )}
+                >
+                <div className="flex h-4 w-4 items-center justify-center">{item.icon}</div>
+                </button>
+            ) : (
+                <div
+                className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-full bg-white/10 border border-white/10 backdrop-blur-md",
+                    item.className
+                )}
+                >
+                <div className="flex h-4 w-4 items-center justify-center">{item.icon}</div>
+                </div>
+            )}
+        </div>
+      ))}
     </div>
   );
 };
@@ -147,7 +113,7 @@ const FloatingDockDesktop = ({
       onMouseMove={(e) => mouseX.set(e.pageX)}
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
-        "mx-auto hidden h-16 items-end gap-4 rounded-2xl bg-gray-50 px-4 pb-3 md:flex dark:bg-neutral-900",
+        "mx-auto hidden h-16 items-end gap-4 rounded-full px-4 pb-3 md:flex",
         className,
       )}
     >
@@ -218,7 +184,7 @@ function IconContainer({
       ref={ref}
       style={{ width, height }}
       className={cn(
-        "relative flex aspect-square items-center justify-center rounded-full bg-gray-200 dark:bg-neutral-800",
+        "relative flex aspect-square items-center justify-center rounded-full bg-white/10 border border-white/10 backdrop-blur-md transition-colors hover:bg-white/20",
         className,
       )}
     >

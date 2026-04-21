@@ -3,13 +3,10 @@
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
 } from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
-import {LogOut, PhoneOff} from "lucide-react";
+import {PhoneOff} from "lucide-react";
+import GlassSurface from "@/components/GlassSurface";
 
 interface LeaveDialogProps {
     open: boolean;
@@ -28,52 +25,62 @@ export default function LeaveDialog({
 }: LeaveDialogProps) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-sm bg-background/95 backdrop-blur-2xl sm:rounded-lg">
-                <DialogHeader>
-                    <DialogTitle>Leave meeting?</DialogTitle>
-                    <DialogDescription>
-                        {isHost
-                            ? "As the host, you can leave or end the meeting for everyone."
-                            : "You will be disconnected from the meeting."
-                        }
-                    </DialogDescription>
-                </DialogHeader>
-                <DialogFooter className="flex flex-col gap-2 sm:flex-col">
-                    <Button
-                        type="button"
-                        variant="destructive"
-                        onClick={() => {
-                            onLeave();
-                            onOpenChange(false);
-                        }}
-                        className="interactive-lift w-full gap-2"
+            <DialogContent className="max-w-sm border border-white/10 bg-zinc-950/90 backdrop-blur-2xl sm:rounded-2xl p-0">
+                <div className="flex flex-col items-center p-8 text-center">
+                    <GlassSurface
+                        borderRadius={999}
+                        width={64}
+                        height={64}
+                        backgroundOpacity={0.15}
+                        blur={30}
+                        className="mb-6 border border-white/5"
+                        contentClassName="flex items-center justify-center"
                     >
-                        <PhoneOff data-icon="inline-start" />
-                        Leave meeting
-                    </Button>
-                    {isHost && (
+                        <PhoneOff className="size-7 text-red-400" />
+                    </GlassSurface>
+                    
+                    <h2 className="text-xl font-bold text-white mb-2">Leave meeting?</h2>
+                    <p className="text-sm text-white/50 mb-8">
+                        {isHost
+                            ? "You can leave or end the meeting for everyone."
+                            : "You'll be disconnected from the meeting."
+                        }
+                    </p>
+
+                    <div className="flex w-full flex-col gap-3">
                         <Button
                             type="button"
-                            variant="outline"
                             onClick={() => {
-                                onEndMeeting();
+                                onLeave();
                                 onOpenChange(false);
                             }}
-                            className="interactive-lift w-full gap-2 border-destructive/30 text-destructive hover:bg-destructive/10"
+                            className="w-full h-12 rounded-xl bg-red-500 text-white hover:bg-red-600"
                         >
-                            <LogOut data-icon="inline-start" />
-                            End for everyone
+                            Leave meeting
                         </Button>
-                    )}
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        onClick={() => onOpenChange(false)}
-                        className="interactive-lift w-full"
-                    >
-                        Cancel
-                    </Button>
-                </DialogFooter>
+                        {isHost && (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                    onEndMeeting();
+                                    onOpenChange(false);
+                                }}
+                                className="w-full h-12 rounded-xl border-white/10 text-white/70 hover:bg-white/5"
+                            >
+                                End for everyone
+                            </Button>
+                        )}
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => onOpenChange(false)}
+                            className="w-full h-12 rounded-xl text-white/50 hover:text-white hover:bg-white/5"
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+                </div>
             </DialogContent>
         </Dialog>
     );

@@ -7,9 +7,10 @@ import {ChatMessage} from "@/types/store.types";
 import {Button} from "@/components/ui/button";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Input} from "@/components/ui/input";
-import {Send} from "lucide-react";
+import {Send, MessageCircle, Smile} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {playMeetingSound} from "@/lib/meeting-sounds";
+import GlassSurface from "@/components/GlassSurface";
 
 interface ChatTabProps {
     meetingId: string;
@@ -45,16 +46,22 @@ export default function ChatTab({meetingId}: ChatTabProps) {
 
     return (
         <div className="flex h-full flex-col">
+            <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
+                <MessageCircle size={16} className="text-white/60" />
+                <span className="text-sm font-semibold text-white/90">Chat</span>
+            </div>
+
             <ScrollArea className="min-h-0 flex-1">
-                <div className="flex flex-col gap-3 p-4">
+                <div className="flex flex-col gap-4 p-4">
                     {messages.length === 0 && (
-                        <div className="mt-12 flex flex-col items-center gap-2 text-center">
-                            <div className="flex size-12 items-center justify-center rounded-lg bg-muted">
-                                <Send className="text-muted-foreground" />
+                        <div className="mt-16 flex flex-col items-center gap-3 text-center">
+                            <div className="flex size-12 items-center justify-center rounded-full bg-white/5">
+                                <Send size={18} className="text-white/40" />
                             </div>
-                            <p className="text-sm text-muted-foreground">
-                                No messages yet. Say hello!
-                            </p>
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium text-white/60">No messages yet</p>
+                                <p className="text-xs text-white/40">Say hello to start the conversation</p>
+                            </div>
                         </div>
                     )}
 
@@ -68,38 +75,24 @@ export default function ChatTab({meetingId}: ChatTabProps) {
                                 className={cn("group flex flex-col gap-1", isSelf ? "items-end" : "items-start")}
                             >
                                 <div className={cn("flex items-center gap-2", isSelf && "flex-row-reverse")}>
-                                    <span className="text-xs font-medium text-muted-foreground">{sender}</span>
-                                    <span className="text-xs text-muted-foreground/60 opacity-0 transition-opacity group-hover:opacity-100">
+                                    <span className="text-[11px] font-semibold text-white/50">{sender}</span>
+                                    <span className="text-[10px] text-white/30 opacity-0 transition-opacity group-hover:opacity-100">
                                         {new Date(m.timestamp ?? 0).toLocaleTimeString([], {
                                             hour: "2-digit",
                                             minute: "2-digit",
                                         })}
                                     </span>
                                 </div>
-                                <div className={cn("flex items-end gap-2", isSelf && "flex-row-reverse")}>
-                                    <p
+                                <div className={cn("flex items-end gap-2 max-w-[85%]", isSelf && "flex-row-reverse")}>
+                                    <div
                                         className={cn(
-                                            "max-w-[82%] rounded-lg px-3.5 py-2 text-sm leading-6 shadow-sm",
+                                            "rounded-2xl px-4 py-2.5 text-[13px] leading-relaxed",
                                             isSelf
-                                                ? "bg-primary text-primary-foreground"
-                                                : "bg-muted text-foreground"
+                                                ? "bg-white text-black rounded-br-md"
+                                                : "bg-white/10 text-white/90 rounded-bl-md"
                                         )}
                                     >
                                         {m.text}
-                                    </p>
-                                    <div className="flex translate-y-1 gap-1 opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
-                                        {["👍", "❤️"].map((emoji) => (
-                                            <Button
-                                                key={emoji}
-                                                type="button"
-                                                variant="ghost"
-                                                size="icon"
-                                                aria-label={`React ${emoji}`}
-                                                className="size-6 text-xs"
-                                            >
-                                                {emoji}
-                                            </Button>
-                                        ))}
                                     </div>
                                 </div>
                             </div>
@@ -109,24 +102,45 @@ export default function ChatTab({meetingId}: ChatTabProps) {
                 </div>
             </ScrollArea>
 
-            <form onSubmit={sendMessage} className="flex gap-2 border-t p-3">
-                <Input
-                    value={text}
-                    onChange={e => setText(e.target.value)}
-                    placeholder="Type a message..."
-                    className="min-w-0 flex-1 bg-muted/50"
-                    aria-label="Chat message"
-                />
-                <Button
-                    type="submit"
-                    size="icon"
-                    disabled={!text.trim()}
-                    aria-label="Send message"
-                    className="interactive-lift"
-                >
-                    <Send data-icon="inline-start" />
-                </Button>
+            <form onSubmit={sendMessage} className="relative flex border-t border-white/10 p-3">
+                <div className="relative flex w-full items-center group">
+                    <GlassSurface
+                        borderRadius={999}
+                        width="100%"
+                        height={44}
+                        backgroundOpacity={0.05}
+                        blur={20}
+                        className="transition-all duration-300 group-focus-within:background-opacity-10 group-focus-within:border-white/20"
+                        contentClassName="p-0"
+                    >
+                        <div className="relative w-full h-full flex items-center pr-1">
+                            <Input
+                                value={text}
+                                onChange={e => setText(e.target.value)}
+                                placeholder="Type a message..."
+                                className="min-w-0 flex-1 bg-transparent border-none text-[13px] font-medium text-white/90 placeholder:text-white/25 focus-visible:ring-0 focus-visible:ring-offset-0 h-full"
+                                aria-label="Chat message"
+                            />
+                            <Button
+                                variant={'secondary'}
+                                type="submit"
+                                size="icon"
+                                disabled={!text.trim()}
+                                className={cn(
+                                    "absolute right-1 size-8 rounded-full transition-all duration-300",
+                                    text.trim() 
+                                    ? "bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:scale-105 active:scale-95" 
+                                    : "bg-white/5 text-white/20"
+                                )}
+                                aria-label="Send message"
+                            >
+                                <Send size={14} />
+                            </Button>
+                        </div>
+                    </GlassSurface>
+                </div>
             </form>
+
         </div>
     );
 }

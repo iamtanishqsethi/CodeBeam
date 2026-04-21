@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useId } from 'react';
+import { cn } from "@/lib/utils";
 
 export interface GlassSurfaceProps {
   children?: React.ReactNode;
@@ -40,6 +41,7 @@ export interface GlassSurfaceProps {
     | 'plus-darker'
     | 'plus-lighter';
   className?: string;
+  contentClassName?: string;
   style?: React.CSSProperties;
 }
 
@@ -80,6 +82,7 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   yChannel = 'G',
   mixBlendMode = 'difference',
   className = '',
+  contentClassName = 'p-2',
   style = {}
 }) => {
   const uniqueId = useId().replace(/:/g, '-');
@@ -291,7 +294,7 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   };
 
   const glassSurfaceClasses =
-    'relative flex items-center justify-center overflow-hidden transition-opacity duration-[260ms] ease-out';
+    'relative flex items-center justify-center transition-opacity duration-[260ms] ease-out';
 
   const focusVisibleClasses = isDarkMode
     ? 'focus-visible:outline-2 focus-visible:outline-[#0A84FF] focus-visible:outline-offset-2'
@@ -357,7 +360,7 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
         </defs>
       </svg>
 
-      <div className="w-full h-full flex items-center justify-center p-2 rounded-[inherit] relative z-10">
+      <div className={cn("w-full h-full flex items-center justify-center rounded-[inherit] relative z-10", contentClassName)}>
         {children}
       </div>
     </div>

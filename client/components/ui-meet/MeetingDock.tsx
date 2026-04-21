@@ -22,6 +22,7 @@ import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Badge} from "@/components/ui/badge";
 import {cn} from "@/lib/utils";
 import {Spinner} from "@/components/kibo-ui/spinner";
+import GlassSurface from "@/components/GlassSurface";
 
 interface MeetingDockProps {
     onLeave: () => void;
@@ -86,11 +87,11 @@ export default function MeetingDock({
         {
             title: isMicrophoneEnabled ? "Mute" : "Unmute",
             icon: pendingAction === "mic" ? (
-                <Spinner variant={'bars'} size={20} />
+                <Spinner variant={'bars'} />
             ) : isMicrophoneEnabled ? (
-                <Mic size={20} />
+                <Mic />
             ) : (
-                <MicOff size={20} />
+                <MicOff />
             ),
             onClick: () => runMediaAction("mic", () => localParticipant.setMicrophoneEnabled(!isMicrophoneEnabled)),
             className: cn(!isMicrophoneEnabled && "!bg-red-500/20 !text-red-400 !border-red-500/30"),
@@ -98,11 +99,11 @@ export default function MeetingDock({
         {
             title: isCameraEnabled ? "Stop Video" : "Start Video",
             icon: pendingAction === "camera" ? (
-                <Spinner variant={'bars'} size={20} />
+                <Spinner variant={'bars'} />
             ) : isCameraEnabled ? (
-                <Video size={20} />
+                <Video />
             ) : (
-                <VideoOff size={20} />
+                <VideoOff />
             ),
             onClick: () => runMediaAction("camera", () => localParticipant.setCameraEnabled(!isCameraEnabled)),
             className: cn(!isCameraEnabled && "!bg-red-500/20 !text-red-400 !border-red-500/30"),
@@ -110,11 +111,11 @@ export default function MeetingDock({
         {
             title: isScreenShareEnabled ? "Stop Sharing" : "Share Screen",
             icon: pendingAction === "screen" ? (
-                <Spinner variant={'bars'} size={20} />
+                <Spinner variant={'bars'} />
             ) : isScreenShareEnabled ? (
-                <ScreenShareOff size={20} />
+                <ScreenShareOff />
             ) : (
-                <ScreenShare size={20} />
+                <ScreenShare />
             ),
             onClick: () => runMediaAction("screen", () => localParticipant.setScreenShareEnabled(!isScreenShareEnabled)),
             className: cn(isScreenShareEnabled && "!bg-primary/20 !text-primary !border-primary/30"),
@@ -125,7 +126,7 @@ export default function MeetingDock({
                 <Popover>
                     <PopoverTrigger asChild>
                         <div className="flex size-full items-center justify-center">
-                            <Smile size={20} />
+                            <Smile />
                         </div>
                     </PopoverTrigger>
                     <PopoverContent side="top" className="w-fit rounded-xl bg-white/5 border border-white/10 p-2 backdrop-blur-2xl shadow-2xl">
@@ -150,7 +151,7 @@ export default function MeetingDock({
         },
         {
             title: "Participants",
-            icon: <Users size={20} />,
+            icon: <Users />,
             onClick: () => onTogglePanel("participants"),
             className: cn(activePanel === "participants" && "!bg-white/15 !border-white/30"),
         },
@@ -158,7 +159,7 @@ export default function MeetingDock({
             title: "Chat",
             icon: (
                 <div className="relative flex size-full items-center justify-center">
-                    <MessageCircle size={20} />
+                    <MessageCircle />
                     {unreadCount > 0 && (
                         <Badge className="absolute -top-1 -right-1 min-w-4 px-1 text-[10px] bg-primary text-white border-none animate-pulse">
                             {unreadCount > 9 ? "9+" : unreadCount}
@@ -171,12 +172,12 @@ export default function MeetingDock({
         },
         {
             title: "Settings",
-            icon: <Settings size={20} />,
+            icon: <Settings />,
             onClick: onOpenSettings,
         },
         {
             title: "Leave",
-            icon: pendingAction === "leave" ? <Spinner variant={'bars'} size={20} /> : <PhoneOff size={20} />,
+            icon: pendingAction === "leave" ? <Spinner variant={'bars'} /> : <PhoneOff />,
             onClick: leave,
             className: "!bg-red-500 !text-white shadow-[0_8px_24px_rgba(239,68,68,0.4)] hover:bg-red-500/90 !border-none",
         },
@@ -185,19 +186,29 @@ export default function MeetingDock({
     if (isHost) {
         items.push({
             title: "End Meeting",
-            icon: pendingAction === "end" ? <Spinner variant={'bars'} size={20} /> : <LogOut size={20} />,
+            icon: pendingAction === "end" ? <Spinner variant={'bars'} /> : <LogOut />,
             onClick: endMeeting,
             className: "!bg-red-600 !text-white shadow-[0_8px_24px_rgba(220,38,38,0.4)] hover:bg-red-600/90 !border-none",
         });
     }
 
     return (
-        <div className="flex items-center justify-center">
-            <FloatingDock
-                items={items}
-                desktopClassName="border border-white/10 bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]"
-                mobileClassName="translate-y-[-20px]"
-            />
+        <div className="flex items-center justify-center max-w-full">
+            <GlassSurface
+                borderRadius={999}
+                width="auto"
+                height="auto"
+                backgroundOpacity={0.05}
+                blur={20}
+                className="shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] overflow-visible"
+                contentClassName="p-0"
+            >
+                <FloatingDock
+                    items={items}
+                    desktopClassName="border-none bg-transparent backdrop-blur-0 shadow-none"
+                    mobileClassName="border-none bg-transparent backdrop-blur-0 shadow-none"
+                />
+            </GlassSurface>
         </div>
     );
 }
