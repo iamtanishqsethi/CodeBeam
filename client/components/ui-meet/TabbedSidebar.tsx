@@ -13,9 +13,9 @@ import GlassSurface from "@/components/GlassSurface";
 
 interface TabbedSidebarProps {
     meetingId: string;
-    activePanel: "chat" | "participants" | "editor" | null;
+    activePanel: "chat" | "participants" | "editor" | "whiteboard" | null;
     onClose: () => void;
-    onTabChange: (tab: "chat" | "participants" | "editor") => void;
+    onTabChange: (tab: "chat" | "participants" | "editor" | "whiteboard") => void;
     unreadCount: number;
 }
 
@@ -36,8 +36,8 @@ export default function TabbedSidebar({
         return () => mediaQuery.removeEventListener("change", update);
     }, []);
 
-    const isOpen = activePanel !== null && activePanel !== "editor";
-    const currentTab = activePanel === "editor" ? "chat" : (activePanel ?? "chat");
+    const isOpen = activePanel !== null && activePanel !== "editor" && activePanel !== "whiteboard";
+    const currentTab = (activePanel === "editor" || activePanel === "whiteboard") ? "chat" : (activePanel ?? "chat");
 
     const sidebarContent = (
         <Tabs

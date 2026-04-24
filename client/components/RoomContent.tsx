@@ -22,7 +22,13 @@ import {ReactionsOverlay, type ReactionItem} from "@/components/ui-meet/Reaction
 import {playMeetingSound} from "@/lib/meeting-sounds";
 import {Spinner} from "@/components/kibo-ui/spinner";
 import {motion} from "framer-motion";
-import CollaborativeEditor from "@/components/ui/CollaborativeEditor";
+import dynamic from "next/dynamic";
+import CollaborativeWhiteboard from "@/components/ui/CollaborativeWhiteboard";
+
+const CollaborativeEditor = dynamic(
+  () => import("@/components/ui/CollaborativeEditor"),
+  { ssr: false }
+);
 
 export function RoomContent({
     handleLeave,
@@ -227,13 +233,20 @@ export function RoomContent({
                     />
 
                     <main className="relative min-h-0 flex-1 overflow-hidden p-3 pb-24 pt-16 sm:p-4 sm:pb-24 sm:pt-16">
-                        {activePanel === "editor" ? (
+                        {activePanel === "editor" || activePanel === "whiteboard" ? (
                             <div className="grid h-full min-h-0 gap-3 lg:grid-cols-[minmax(0,0.72fr)_minmax(14rem,0.28fr)]">
                                 <div className="min-h-[22rem] w-full h-full relative rounded-xl overflow-hidden border border-white/10 shadow-2xl">
-                                    <CollaborativeEditor 
-                                        roomId={meetingId} 
-                                        userName={room.localParticipant?.name || room.localParticipant?.identity || "Participant"} 
-                                    />
+                                    {activePanel === "editor" ? (
+                                        <CollaborativeEditor 
+                                            roomId={meetingId} 
+                                            userName={room.localParticipant?.name || room.localParticipant?.identity || "Participant"} 
+                                        />
+                                    ) : (
+                                        <CollaborativeWhiteboard 
+                                            roomId={meetingId} 
+                                            userName={room.localParticipant?.name || room.localParticipant?.identity || "Participant"} 
+                                        />
+                                    )}
                                 </div>
                                 <div className="grid min-h-0 grid-cols-2 gap-3 overflow-y-auto lg:grid-cols-1">
                                     {visibleTracks.map(trackRef => {

@@ -60,8 +60,8 @@ export interface MeetingStore {
     toggleParticipants:()=>void
 
     // sidebar v2 (ui-meet)
-    activePanel: "chat" | "participants" | "editor" | null
-    setActivePanel: (panel: "chat" | "participants" | "editor" | null) => void
-    togglePanel: (panel: "chat" | "participants" | "editor") => void
+    activePanel: "chat" | "participants" | "editor" | "whiteboard" | null
+    setActivePanel: (panel: "chat" | "participants" | "editor" | "whiteboard" | null) => void
+    togglePanel: (panel: "chat" | "participants" | "editor" | "whiteboard") => void
 
 }

@@ -15,6 +15,7 @@ import {
     Users,
     Video,
     VideoOff,
+    Pen,
 } from "lucide-react";
 import {useState} from "react";
 import {FloatingDock} from "@/components/ui/floating-dock";
@@ -158,6 +159,12 @@ export default function MeetingDock({
             className: cn(activePanel === "editor" && "!bg-white/15 !border-white/30"),
         },
         {
+            title: "Whiteboard",
+            icon: <Pen />,
+            onClick: () => onTogglePanel("whiteboard"),
+            className: cn(activePanel === "whiteboard" && "!bg-white/15 !border-white/30"),
+        },
+        {
             title: "Participants",
             icon: <Users />,
             onClick: () => onTogglePanel("participants"),
@@ -225,6 +232,12 @@ export default function MeetingDock({
             icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-code size-4"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>,
             onClick: () => { onTogglePanel("editor"); setMoreOpen(false); },
             className: cn(activePanel === "editor" && "text-primary"),
+        },
+        {
+            label: "Whiteboard",
+            icon: <Pen className="size-4" />,
+            onClick: () => { onTogglePanel("whiteboard"); setMoreOpen(false); },
+            className: cn(activePanel === "whiteboard" && "text-primary"),
         },
         {
             label: "Chat",
