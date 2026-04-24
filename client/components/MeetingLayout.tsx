@@ -11,6 +11,7 @@ import {RoomContent} from "@/components/RoomContent";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {playMeetingSound, warmMeetingSounds} from "@/lib/meeting-sounds";
 import MeetingEndedScreen from "@/components/MeetingEndedScreen";
+import MeetingErrorScreen from "@/components/MeetingErrorScreen";
 
 interface MeetingLayoutProps {
     meetingId: string;
@@ -135,11 +136,7 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
     }
 
     if (!token || !LIVEKIT_URL) {
-        return (
-            <div className="h-full flex items-center justify-center text-destructive">
-                Missing connection details. Please rejoin the meeting.
-            </div>
-        );
+        return <MeetingErrorScreen type="error" title="Connection Failed" message="Missing connection details. Please rejoin the meeting." />;
     }
 
     const videoInput = mediaPreferences.videoEnabled

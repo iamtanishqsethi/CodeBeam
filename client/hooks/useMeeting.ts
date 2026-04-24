@@ -5,7 +5,7 @@ import {connectSocket, disconnectSocket, socket} from "@/lib/socket";
 import {useUser} from "@clerk/nextjs";
 import {AxiosError} from "axios";
 
-type MeetingPageStatus = "loading" | "waiting" | "joined" | "rejected" | "ended";
+type MeetingPageStatus = "loading" | "waiting" | "joined" | "rejected" | "ended" | "error";
 
 export function useMeeting(meetingId: string) {
     const setToken = useMeetingStore(state => state.setToken);
@@ -62,6 +62,12 @@ export function useMeeting(meetingId: string) {
                     setHost(false);
                     setStatus("ended");
                     setMessage(error.response.data?.message || "This meeting has already ended.");
+                } else if (error.response?.status === 404) {
+                    setStatus("error");
+                    setMessage("Meeting not found. Please check the link and try again.");
+                } else {
+                    setStatus("error");
+                    setMessage(error.response?.data?.message || "An unexpected error occurred while joining the meeting.");
                 }
             }
         }
