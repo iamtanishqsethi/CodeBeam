@@ -8,6 +8,7 @@ import {LiveKitRoom} from "@livekit/components-react";
 import {toast} from "sonner";
 import {useEffect, useRef, useState} from "react";
 import {RoomContent} from "@/components/RoomContent";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {playMeetingSound, warmMeetingSounds} from "@/lib/meeting-sounds";
 import MeetingEndedScreen from "@/components/MeetingEndedScreen";
 
@@ -37,16 +38,27 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
 
     useEffect(() => {
         const handleNewWaitingUser = (data: unknown) => {
+            const payload = data as { userName: string; imageUrl?: string };
             if (isHost) {
                 playMeetingSound("waiting");
-                toast.message("New user joined the waiting room");
+                toast.custom((t) => (
+                    <div className="flex w-full items-center gap-3 rounded-xl border border-white/10 bg-black/60 p-4 text-sm text-white/90 shadow-2xl backdrop-blur-xl">
+                        <Avatar className="h-8 w-8 border border-white/10 bg-white/5">
+                            <AvatarImage src={payload.imageUrl} alt={payload.userName} />
+                            <AvatarFallback className="bg-transparent font-medium">
+                                {payload.userName?.charAt(0).toUpperCase() || '?'}
+                            </AvatarFallback>
+                        </Avatar>
+                        <span className="font-medium tracking-wide">
+                            <span className="font-bold text-white">{payload.userName}</span> is waiting to join
+                        </span>
+                    </div>
+                ));
             }
             console.log("new user waiting", data);
         };
 
         const handleUserLeaveEvent=(data: unknown)=>{
-            playMeetingSound("left");
-            toast.message("User left the meeting");
             console.log("user left",data)
         }
 

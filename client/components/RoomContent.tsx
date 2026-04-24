@@ -24,6 +24,8 @@ import {Spinner} from "@/components/kibo-ui/spinner";
 import {motion} from "framer-motion";
 import dynamic from "next/dynamic";
 import CollaborativeWhiteboard from "@/components/ui/CollaborativeWhiteboard";
+import {toast} from "sonner";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 
 const CollaborativeEditor = dynamic(
   () => import("@/components/ui/CollaborativeEditor"),
@@ -117,6 +119,31 @@ export function RoomContent({
     useEffect(() => {
         const handleParticipant = (participant: Participant, action: "joined" | "left") => {
             playMeetingSound(action);
+            
+            const displayName = participant.name || participant.identity || "A participant";
+            let imageUrl: string | undefined = undefined;
+            try {
+                if (participant.metadata) {
+                    const metadata = JSON.parse(participant.metadata);
+                    imageUrl = metadata.imageUrl;
+                }
+            } catch {
+                // ignore parsing errors
+            }
+
+            toast.custom((t) => (
+                <div className="flex w-full items-center gap-3 rounded-xl border border-white/10 bg-black/60 p-4 text-sm text-white/90 shadow-2xl backdrop-blur-xl">
+                    <Avatar className="h-8 w-8 border border-white/10 bg-white/5">
+                        <AvatarImage src={imageUrl} alt={displayName} />
+                        <AvatarFallback className="bg-transparent font-medium">
+                            {displayName.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                    </Avatar>
+                    <span className="font-medium tracking-wide">
+                        <span className="font-bold text-white">{displayName}</span> has {action}
+                    </span>
+                </div>
+            ));
         };
 
         const onConnected = (participant: Participant) => handleParticipant(participant, "joined");
