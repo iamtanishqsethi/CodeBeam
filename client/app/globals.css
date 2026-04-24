@@ -515,33 +515,60 @@ html.lenis body {
 .lenis.lenis-scrolling iframe {
   pointer-events: none;
 }
-/* Yjs Monaco Remote Cursor Styles */
+/* ── Yjs Monaco Remote Cursor Styles ─────────────────────────────── */
+@keyframes cursor-fade-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cursor-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
 .yRemoteSelection {
-  background-color: var(--cursor-color, rgba(250, 129, 0, 0.3));
+  background-color: var(--cursor-color, rgba(250, 129, 0, 0.25));
   margin-right: -2px;
 }
+
 .yRemoteSelectionHead {
   position: absolute;
   border-left: 2px solid var(--cursor-color, orange);
-  border-top: 2px solid var(--cursor-color, orange);
-  border-bottom: 2px solid var(--cursor-color, orange);
   height: 100%;
   box-sizing: border-box;
+  animation: cursor-pulse 1.8s ease-in-out infinite;
 }
+
+/* Cursor dot */
+.yRemoteSelectionHead::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--cursor-color, orange);
+}
+
+/* Name label */
 .yRemoteSelectionHead::after {
   position: absolute;
-  content: attr(user-name);
-  border: 1px solid var(--cursor-color, orange);
-  background-color: var(--cursor-color, orange);
-  border-radius: 4px;
-  border-bottom-left-radius: 0;
+  content: attr(data-user-name);
+  background: var(--cursor-color, orange);
   color: white;
   font-size: 10px;
-  font-weight: bold;
-  padding: 0 4px;
-  top: -16px;
+  font-weight: 700;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  letter-spacing: 0.02em;
+  padding: 1px 6px;
+  border-radius: 6px;
+  border-bottom-left-radius: 0;
+  top: -18px;
   left: -2px;
   pointer-events: none;
   white-space: nowrap;
   z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  animation: cursor-fade-in 0.2s ease-out;
 }

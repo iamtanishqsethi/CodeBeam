@@ -232,7 +232,7 @@ export function RoomContent({
                                 <div className="min-h-[22rem] w-full h-full relative rounded-xl overflow-hidden border border-white/10 shadow-2xl">
                                     <CollaborativeEditor 
                                         roomId={meetingId} 
-                                        userName={useMeetingStore.getState().mediaPreferences.username || "Participant"} 
+                                        userName={room.localParticipant?.name || room.localParticipant?.identity || "Participant"} 
                                     />
                                 </div>
                                 <div className="grid min-h-0 grid-cols-2 gap-3 overflow-y-auto lg:grid-cols-1">
