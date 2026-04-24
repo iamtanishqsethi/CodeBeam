@@ -83,7 +83,11 @@ export default function MeetingLayout({meetingId}: MeetingLayoutProps ){
 
         try{
             const response = await leaveMeeting(meetingId)
-            socket.emit('leave-meeting', {meetingId, meetingEnded: Boolean(response?.meetingEnded)})
+            socket.emit('leave-meeting', {
+                meetingId,
+                meetingEnded: Boolean(response?.meetingEnded),
+                roomEmpty: Boolean(response?.roomEmpty)
+            })
             clearToken()
             setHost(false)
             router.push('/')

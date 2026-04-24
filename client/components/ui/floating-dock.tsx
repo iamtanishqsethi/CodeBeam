@@ -55,37 +55,37 @@ const FloatingDockMobile = ({
   className?: string;
 }) => {
   return (
-    <div className={cn("flex h-12 items-center gap-2 px-3 md:hidden", className)}>
+    <div className={cn("flex h-11 items-center gap-1 px-2 md:hidden", className)}>
       {items.map((item) => (
         <div key={item.title}>
             {item.href ? (
                 <a
                 href={item.href}
                 className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-full bg-white/10 border border-white/10 backdrop-blur-md",
+                    "flex h-8 w-8 items-center justify-center rounded-full bg-white/10 border border-white/10 backdrop-blur-md",
                     item.className
                 )}
                 >
-                <div className="flex h-4 w-4 items-center justify-center">{item.icon}</div>
+                <div className="flex h-3.5 w-3.5 items-center justify-center">{item.icon}</div>
                 </a>
             ) : item.onClick ? (
                 <button
                 onClick={item.onClick}
                 className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-full bg-white/10 border border-white/10 backdrop-blur-md",
+                    "flex h-8 w-8 items-center justify-center rounded-full bg-white/10 border border-white/10 backdrop-blur-md",
                     item.className
                 )}
                 >
-                <div className="flex h-4 w-4 items-center justify-center">{item.icon}</div>
+                <div className="flex h-3.5 w-3.5 items-center justify-center">{item.icon}</div>
                 </button>
             ) : (
                 <div
                 className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-full bg-white/10 border border-white/10 backdrop-blur-md",
+                    "flex h-8 w-8 items-center justify-center rounded-full bg-white/10 border border-white/10 backdrop-blur-md",
                     item.className
                 )}
                 >
-                <div className="flex h-4 w-4 items-center justify-center">{item.icon}</div>
+                <div className="flex h-3.5 w-3.5 items-center justify-center">{item.icon}</div>
                 </div>
             )}
         </div>

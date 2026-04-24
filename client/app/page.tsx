@@ -62,7 +62,7 @@ export default function Home() {
             <div className="relative ">
                 <MacbookScroll
                     title={
-                        <div className="flex flex-col items-center justify-center gap-6">
+                        <div className="flex flex-col items-center justify-center gap-6 px-4 sm:px-0">
                             <motion.div variants={fadeUp}>
                                 <div
                                     className={cn(
@@ -93,7 +93,7 @@ export default function Home() {
                 />
             </div>
 
-            <div className="h-[150vh]" />
+            <div className="h-[10vh] sm:h-[40vh] md:h-[80vh] lg:h-[120vh]" />
 
             <motion.section
                 id="features"

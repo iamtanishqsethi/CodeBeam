@@ -116,7 +116,7 @@ export default function TabbedSidebar({
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-                <SheetContent side="right" showCloseButton={false} className="w-[85%] sm:w-[400px] p-0 sm:max-w-none bg-white/5 backdrop-blur-2xl border-white/10 shadow-[-8px_0_32px_rgba(0,0,0,0.37)]">
+                <SheetContent side="right" showCloseButton={false} className="w-full sm:w-[400px] p-0 sm:max-w-none bg-white/5 backdrop-blur-2xl border-white/10 shadow-[-8px_0_32px_rgba(0,0,0,0.37)] overflow-hidden">
                     <SheetTitle className="sr-only">Meeting Panel</SheetTitle>
                     <SheetDescription className="sr-only">Chat and participants panel</SheetDescription>
                     {sidebarContent}

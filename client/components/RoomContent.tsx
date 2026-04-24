@@ -8,8 +8,6 @@ import {
 import {MotionConfig} from "framer-motion";
 import {useEffect, useMemo, useState} from "react";
 import {Track, RoomEvent, type Participant} from "livekit-client";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import {toast} from "sonner";
 import {useMeetingStore} from "@/store/meetingStore";
 import {getMeetingTrackId} from "@/components/ui-meet/ParticipantTile";
 import {socket} from "@/lib/socket";
@@ -118,16 +116,6 @@ export function RoomContent({
             } catch {}
 
             playMeetingSound(action);
-
-            toast(
-                <div className="flex items-center gap-3">
-                    <Avatar className="size-8">
-                        {typeof metadata?.imageUrl === "string" && <AvatarImage src={metadata.imageUrl} alt={name} />}
-                        <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm font-medium">{name} {action} the meeting</span>
-                </div>
-            );
         };
 
         const onConnected = (participant: Participant) => handleParticipant(participant, "joined");
@@ -163,6 +151,28 @@ export function RoomContent({
         };
     }, [addMessage, activePanel]);
 
+    // Reactions from socket
+    useEffect(() => {
+        const handleReaction = (data: { emoji: string }) => {
+            const id = `${data.emoji}-${Date.now()}-${Math.random()}`;
+            const reaction = {
+                id,
+                emoji: data.emoji,
+                x: Math.round((Math.random() - 0.5) * 180),
+            };
+
+            setReactions(current => [...current, reaction]);
+            window.setTimeout(() => {
+                setReactions(current => current.filter(item => item.id !== id));
+            }, 820);
+        };
+
+        socket.on("reaction", handleReaction);
+        return () => {
+            socket.off("reaction", handleReaction);
+        };
+    }, []);
+
     const togglePin = (trackId: string) => {
         setPinnedTrackId(current => current === trackId ? null : trackId);
     };
@@ -179,6 +189,8 @@ export function RoomContent({
         window.setTimeout(() => {
             setReactions(current => current.filter(item => item.id !== id));
         }, 820);
+
+        socket.emit("reaction", { meetingId, emoji });
     };
 
     const visibleUnreadCount = activePanel === "chat" ? 0 : unreadCount;

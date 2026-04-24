@@ -1,9 +1,45 @@
+'use client'
+
 import {SignUp} from "@clerk/nextjs";
+import Prism from "@/components/Prism";
+import {motion} from "framer-motion";
+
+const fadeUp = {
+    hidden: {opacity: 0, y: 24},
+    show: {opacity: 1, y: 0, transition: {duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const}},
+};
 
 export default function Page() {
-    return(
-        <div className={'flex flex-col items-center justify-center min-h-screen'}>
-            <SignUp/>
+    return (
+        <div className="relative min-h-screen overflow-hidden bg-background">
+            <div
+                className="pointer-events-none absolute inset-0 z-0 h-screen"
+                style={{
+                    maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+                }}
+            >
+                <Prism
+                    animationType="rotate"
+                    timeScale={0.5}
+                    height={3.5}
+                    baseWidth={5.5}
+                    scale={3.6}
+                    hueShift={0}
+                    colorFrequency={1}
+                    noise={0}
+                    glow={1}
+                />
+            </div>
+
+            <motion.div
+                variants={fadeUp}
+                initial="hidden"
+                animate="show"
+                className="relative flex min-h-screen flex-col items-center justify-center px-4 py-20"
+            >
+                <SignUp />
+            </motion.div>
         </div>
     )
 }

@@ -194,7 +194,7 @@ export async function leaveMeeting(req:Request,res:Response){
         const result = await meetingService.leaveMeeting(meetingId as string,userId)
         return res.status(200).json(
             {success:true, ...result}
-        )
+        )  // roomEmpty flag is included when returned by leaveMeeting
     }
     catch (e:Error|any){
         return handleControllerError(res, e)

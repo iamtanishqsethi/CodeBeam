@@ -6,11 +6,18 @@ import {useRouter} from "next/navigation";
 import {Home, PhoneOff} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import GlassSurface from "@/components/GlassSurface";
+import Prism from "@/components/Prism";
+import {motion} from "framer-motion";
 
 interface MeetingEndedScreenProps {
     message?: string;
     redirectAfterSeconds?: number;
 }
+
+const fadeUp = {
+    hidden: {opacity: 0, y: 24},
+    show: {opacity: 1, y: 0, transition: {duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const}},
+};
 
 export default function MeetingEndedScreen({
     message = "This meeting has ended.",
@@ -46,11 +53,32 @@ export default function MeetingEndedScreen({
 
     return (
         <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-20">
-            <div className="pointer-events-none absolute inset-0 z-0 h-screen">
-                <div className="absolute inset-0 bg-[radial_gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-950 to-black" />
+            <div
+                className="pointer-events-none absolute inset-0 z-0 h-screen"
+                style={{
+                    maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+                }}
+            >
+                <Prism
+                    animationType="rotate"
+                    timeScale={0.5}
+                    height={3.5}
+                    baseWidth={5.5}
+                    scale={3.6}
+                    hueShift={0}
+                    colorFrequency={1}
+                    noise={0}
+                    glow={1}
+                />
             </div>
             
-            <section className="relative flex w-full max-w-lg flex-col items-center gap-10 p-8">
+            <motion.section
+                variants={fadeUp}
+                initial="hidden"
+                animate="show"
+                className="relative flex w-full max-w-lg flex-col items-center gap-10 p-8"
+            >
                 <div className="flex flex-col items-center gap-6 text-center">
                     <GlassSurface
                         borderRadius={999}
@@ -61,14 +89,14 @@ export default function MeetingEndedScreen({
                         className="border border-white/5"
                         contentClassName="flex items-center justify-center"
                     >
-                        <PhoneOff className="size-8 text-white/60" />
+                        <PhoneOff className="size-8 text-muted-foreground" />
                     </GlassSurface>
                     
                     <div className="flex flex-col gap-3">
-                        <h1 className="text-3xl font-bold text-white tracking-tight">
+                        <h1 className="text-3xl font-bold tracking-tight font-(family-name:--font-share-tech) uppercase text-foreground">
                             Meeting ended
                         </h1>
-                        <p className="text-sm text-white/50">
+                        <p className="text-sm text-muted-foreground">
                             {message} You will return home automatically.
                         </p>
                     </div>
@@ -77,32 +105,32 @@ export default function MeetingEndedScreen({
                 <div className="flex w-full flex-col items-center gap-6">
                     <div className="flex items-center gap-5">
                         <div
-                            className="flex size-16 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5"
+                            className="flex size-16 shrink-0 items-center justify-center rounded-full border border-border bg-muted/30"
                             style={{
-                                background: `conic-gradient(rgba(255,255,255,0.2) ${progress}%, transparent ${progress}% 100%)`,
+                                background: `conic-gradient(var(--primary) ${progress}%, transparent ${progress}% 100%)`,
                             }}
                             aria-hidden="true"
                         >
-                            <div className="flex size-12 items-center justify-center rounded-full bg-zinc-950 text-lg font-bold text-white">
+                            <div className="flex size-12 items-center justify-center rounded-full bg-background text-lg font-bold text-foreground">
                                 {secondsLeft}
                             </div>
                         </div>
                         <div className="flex flex-col gap-1">
-                            <p className="font-medium text-white/80">Redirecting to home</p>
-                            <p className="text-xs text-white/40">
+                            <p className="font-medium text-foreground">Redirecting to home</p>
+                            <p className="text-xs text-muted-foreground">
                                 {secondsLeft === 1 ? "1 second left" : `${secondsLeft} seconds left`}
                             </p>
                         </div>
                     </div>
 
-                    <Button asChild className="w-full h-12 rounded-xl bg-white text-black hover:bg-white/90">
+                    <Button asChild className="w-full h-12 rounded-xl">
                         <Link href="/">
                             <Home size={18} className="mr-2" />
                             Go now
                         </Link>
                     </Button>
                 </div>
-            </section>
+            </motion.section>
         </main>
     );
 }

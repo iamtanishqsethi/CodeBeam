@@ -221,10 +221,10 @@ export default function ParticipantsTab({meetingId}: ParticipantsTabProps) {
                                 return (
                                     <div
                                             key={p.identity}
-                                            className="flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 transition-all hover:bg-white/5 group"
+                                            className="flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 transition-all hover:bg-white/5 group overflow-hidden"
                                         >
                                         <div className="flex min-w-0 items-center gap-3">
-                                            <div className="relative">
+                                            <div className="relative shrink-0">
                                                 <Avatar className="size-10 border border-white/10 shadow-md group-hover:border-white/20 transition-colors">
                                                     {typeof metadata?.imageUrl === "string" && <AvatarImage src={metadata.imageUrl} alt={name} />}
                                                     <AvatarFallback className="bg-white/5 text-xs font-bold">{initials(name)}</AvatarFallback>
@@ -237,21 +237,21 @@ export default function ParticipantsTab({meetingId}: ParticipantsTabProps) {
                                                     aria-label={p.isSpeaking ? "Speaking" : "Not speaking"}
                                                 />
                                             </div>
-                                            <div className="min-w-0">
-                                                <div className="flex min-w-0 items-center gap-2">
+                                            <div className="min-w-0 overflow-hidden">
+                                                <div className="flex min-w-0 items-center gap-2 overflow-hidden">
                                                     <p className="truncate text-sm font-bold text-white/90">
                                                         {p.isLocal ? `${name} (You)` : name}
                                                     </p>
                                                     {showHost && (
-                                                        <Badge variant="secondary" className="h-4 px-1.5 text-[9px] font-bold uppercase tracking-wider bg-white/10 text-white border-none">
+                                                        <Badge variant="secondary" className="shrink-0 h-4 px-1.5 text-[9px] font-bold uppercase tracking-wider bg-white/10 text-white border-none">
                                                             Host
                                                         </Badge>
                                                     )}
                                                     {raisedHand && (
-                                                        <Hand className="raised-hand text-primary size-3.5" aria-label="Raised hand" />
+                                                        <Hand className="shrink-0 raised-hand text-primary size-3.5" aria-label="Raised hand" />
                                                     )}
                                                 </div>
-                                                <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+                                                <p className="truncate text-[10px] font-bold uppercase tracking-widest text-white/40">
                                                     {p.isSpeaking ? "Speaking" : "Connected"}
                                                 </p>
                                             </div>

@@ -109,13 +109,20 @@ export default function registerMeetingSocket(io:Server) {
             }
         })
 
-        socket.on('leave-meeting',({meetingId, meetingEnded})=>{
+        socket.on('leave-meeting',({meetingId, meetingEnded, roomEmpty})=>{
             try{
                 const userId=socket.data.userId
                 socket.leave(meetingId)
                 if (meetingEnded) {
                     socket.to(meetingId).emit('meeting-ended', {meetingId})
                     return
+                }
+
+                // If the room is now empty, start the grace-period timer
+                if (roomEmpty) {
+                    meetingService.startEmptyRoomTimer(meetingId, (endedMeetingId) => {
+                        io.to(endedMeetingId).emit('meeting-ended', {meetingId: endedMeetingId})
+                    })
                 }
 
                 socket.to(meetingId).emit('user-left',{userId})
@@ -131,6 +138,12 @@ export default function registerMeetingSocket(io:Server) {
         socket.on('chat-message', (data) => {
             if (data.meetingId) {
                 socket.to(data.meetingId).emit('chat-message', data);
+            }
+        })
+
+        socket.on('reaction', (data) => {
+            if (data.meetingId) {
+                socket.to(data.meetingId).emit('reaction', data);
             }
         })
 

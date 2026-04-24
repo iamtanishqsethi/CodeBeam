@@ -152,15 +152,15 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-950 to-black" />
             </div>
 
-            <div className="relative flex min-h-screen items-center justify-center p-4 lg:p-12">
+<div className="relative flex min-h-screen items-center justify-center p-4 md:p-8 lg:p-12">
                 <motion.div
                     variants={fadeUp}
                     initial="hidden"
                     animate="show"
-                    className="w-full max-w-7xl flex flex-col gap-12"
+                    className="w-full max-w-7xl flex flex-col gap-8 lg:gap-12"
                 >
                     {/* Header */}
-                    <div className="flex flex-col items-center lg:items-start gap-4 text-center lg:text-left">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 text-center lg:text-left">
                         <motion.div variants={fadeUp}>
                             <div className="group w-fit rounded-full border border-white/5 bg-neutral-900/50 px-4 py-1">
                                 <AnimatedShinyText className="inline-flex items-center justify-center text-xs font-bold uppercase tracking-[0.2em]">
@@ -168,17 +168,17 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
                                 </AnimatedShinyText>
                             </div>
                         </motion.div>
-                        <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl font-(family-name:--font-share-tech) uppercase text-white/90">
+                        <h1 className="text-2xl sm:text-3xl lg:text-5xl font-extrabold tracking-tight font-(family-name:--font-share-tech) uppercase text-white/90">
                             Set up your space
                         </h1>
                     </div>
 
                     {/* Main Side by Side Content */}
-                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-12 items-center">
+                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-8 lg:gap-12 items-center">
                         
                         {/* Left: User Preview & Controls */}
-                        <div className="flex flex-col gap-8 w-full justify-self-center max-w-2xl">
-                            <div className="relative aspect-video w-full overflow-hidden rounded-[2.5rem] border border-white/10 bg-black/40 shadow-2xl group">
+                        <div className="flex flex-col gap-6 lg:gap-8 w-full justify-self-center max-w-2xl">
+                            <div className="relative aspect-video w-full overflow-hidden rounded-[1.5rem] lg:rounded-[2.5rem] border border-white/10 bg-black/40 shadow-2xl group">
                                 <div className="size-full bg-zinc-900/40">
                                     {mediaPreferences.videoEnabled ? (
                                         <video
@@ -191,9 +191,9 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
                                     ) : (
                                         <div className="flex size-full items-center justify-center bg-zinc-900/60 backdrop-blur-2xl">
                                             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03)_0%,transparent_70%)]" />
-                                            <Avatar className="size-40 border-4 border-white/5 bg-white/5 shadow-2xl backdrop-blur-3xl">
+                                            <Avatar className="size-20 lg:size-40 border-4 border-white/5 bg-white/5 shadow-2xl backdrop-blur-3xl">
                                                 {user?.imageUrl && <AvatarImage src={user.imageUrl} />}
-                                                <AvatarFallback className="bg-transparent text-5xl font-bold text-white/80">
+                                                <AvatarFallback className="bg-transparent text-3xl lg:text-5xl font-bold text-white/80">
                                                     {user?.firstName ? user.firstName.slice(0, 2).toUpperCase() : "CB"}
                                                 </AvatarFallback>
                                             </Avatar>
@@ -202,24 +202,24 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
                                 </div>
 
                                 {/* Bottom Controls - Floating Dock Style */}
-                                <div className="absolute inset-x-0 bottom-0 flex items-center justify-center p-8 pt-24 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
+                                <div className="absolute inset-x-0 bottom-0 flex items-center justify-center p-4 lg:p-8 pt-16 lg:pt-24 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
                                     <FloatingDock
                                         items={[
                                             {
                                                 title: mediaPreferences.audioEnabled ? "Mute" : "Unmute",
-                                                icon: mediaPreferences.audioEnabled ? <Mic size={22} /> : <MicOff size={22} />,
+                                                icon: mediaPreferences.audioEnabled ? <Mic size={20} /> : <MicOff size={20} />,
                                                 onClick: () => setMediaPreferences({audioEnabled: !mediaPreferences.audioEnabled}),
                                                 className: cn(!mediaPreferences.audioEnabled && "!bg-red-500/20 !text-red-400 !border-red-500/30"),
                                             },
                                             {
                                                 title: mediaPreferences.videoEnabled ? "Stop Video" : "Start Video",
-                                                icon: mediaPreferences.videoEnabled ? <Video size={22} /> : <VideoOff size={22} />,
+                                                icon: mediaPreferences.videoEnabled ? <Video size={20} /> : <VideoOff size={20} />,
                                                 onClick: () => setMediaPreferences({videoEnabled: !mediaPreferences.videoEnabled}),
                                                 className: cn(!mediaPreferences.videoEnabled && "!bg-red-500/20 !text-red-400 !border-red-500/30"),
                                             },
                                             {
                                                 title: "Settings",
-                                                icon: <Settings2 size={22} />,
+                                                icon: <Settings2 size={20} />,
                                                 onClick: () => setShowSettings(!showSettings),
                                                 className: cn(showSettings && "!bg-white/20 !border-white/30"),
                                             },

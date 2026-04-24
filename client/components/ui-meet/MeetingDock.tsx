@@ -6,6 +6,7 @@ import {
     MessageCircle,
     Mic,
     MicOff,
+    MoreHorizontal,
     PhoneOff,
     ScreenShare,
     ScreenShareOff,
@@ -57,6 +58,7 @@ export default function MeetingDock({
         isScreenShareEnabled,
     } = useLocalParticipant();
     const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+    const [moreOpen, setMoreOpen] = useState(false);
 
     const runMediaAction = async (action: PendingAction, fn: () => Promise<unknown>) => {
         if (pendingAction) return;
@@ -192,23 +194,193 @@ export default function MeetingDock({
         });
     }
 
+    /* ── Secondary items for mobile "More" popover ── */
+    const mobileSecondaryItems: {
+        label: string;
+        icon: React.ReactNode;
+        onClick: () => void;
+        className?: string;
+        badge?: React.ReactNode;
+    }[] = [
+        {
+            label: isScreenShareEnabled ? "Stop Sharing" : "Share Screen",
+            icon: pendingAction === "screen" ? <Spinner variant={'bars'} className="size-4" /> : isScreenShareEnabled ? <ScreenShareOff className="size-4" /> : <ScreenShare className="size-4" />,
+            onClick: () => { runMediaAction("screen", () => localParticipant.setScreenShareEnabled(!isScreenShareEnabled)); setMoreOpen(false); },
+            className: cn(isScreenShareEnabled && "text-primary"),
+        },
+        {
+            label: "Participants",
+            icon: <Users className="size-4" />,
+            onClick: () => { onTogglePanel("participants"); setMoreOpen(false); },
+            className: cn(activePanel === "participants" && "text-primary"),
+        },
+        {
+            label: "Chat",
+            icon: <MessageCircle className="size-4" />,
+            onClick: () => { onTogglePanel("chat"); setMoreOpen(false); },
+            className: cn(activePanel === "chat" && "text-primary"),
+            badge: unreadCount > 0 ? (
+                <Badge className="ml-auto min-w-5 justify-center px-1 text-[10px] bg-primary text-white border-none">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                </Badge>
+            ) : undefined,
+        },
+        {
+            label: "Settings",
+            icon: <Settings className="size-4" />,
+            onClick: () => { onOpenSettings(); setMoreOpen(false); },
+        },
+    ];
+
+    if (isHost) {
+        mobileSecondaryItems.push({
+            label: "End Meeting",
+            icon: pendingAction === "end" ? <Spinner variant={'bars'} className="size-4" /> : <LogOut className="size-4" />,
+            onClick: () => { endMeeting(); setMoreOpen(false); },
+            className: "text-red-400",
+        });
+    }
+
     return (
         <div className="flex items-center justify-center max-w-full">
-            <GlassSurface
-                borderRadius={999}
-                width="auto"
-                height="auto"
-                backgroundOpacity={0.05}
-                blur={20}
-                className="shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] overflow-visible"
-                contentClassName="p-0"
-            >
-                <FloatingDock
-                    items={items}
-                    desktopClassName="border-none bg-transparent backdrop-blur-0 shadow-none"
-                    mobileClassName="border-none bg-transparent backdrop-blur-0 shadow-none"
-                />
-            </GlassSurface>
+            {/* ── Desktop: full floating dock ── */}
+            <div className="hidden md:block">
+                <GlassSurface
+                    borderRadius={999}
+                    width="auto"
+                    height="auto"
+                    backgroundOpacity={0.05}
+                    blur={20}
+                    className="shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] overflow-visible"
+                    contentClassName="p-0"
+                >
+                    <FloatingDock
+                        items={items}
+                        desktopClassName="border-none bg-transparent backdrop-blur-0 shadow-none"
+                        mobileClassName="border-none bg-transparent backdrop-blur-0 shadow-none"
+                    />
+                </GlassSurface>
+            </div>
+
+            {/* ── Mobile: compact primary controls + more popover ── */}
+            <div className="flex md:hidden">
+                <GlassSurface
+                    borderRadius={999}
+                    width="auto"
+                    height="auto"
+                    backgroundOpacity={0.05}
+                    blur={20}
+                    className="shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] overflow-visible"
+                    contentClassName="p-0"
+                >
+                    <div className="flex items-center gap-2 px-3 py-2">
+                        {/* Mic */}
+                        <button
+                            onClick={() => runMediaAction("mic", () => localParticipant.setMicrophoneEnabled(!isMicrophoneEnabled))}
+                            className={cn(
+                                "flex size-11 items-center justify-center rounded-full bg-white/10 border border-white/10 backdrop-blur-md transition-colors",
+                                !isMicrophoneEnabled && "!bg-red-500/20 !text-red-400 !border-red-500/30"
+                            )}
+                        >
+                            <div className="flex size-5 items-center justify-center">
+                                {pendingAction === "mic" ? <Spinner variant={'bars'} /> : isMicrophoneEnabled ? <Mic /> : <MicOff />}
+                            </div>
+                        </button>
+
+                        {/* Camera */}
+                        <button
+                            onClick={() => runMediaAction("camera", () => localParticipant.setCameraEnabled(!isCameraEnabled))}
+                            className={cn(
+                                "flex size-11 items-center justify-center rounded-full bg-white/10 border border-white/10 backdrop-blur-md transition-colors",
+                                !isCameraEnabled && "!bg-red-500/20 !text-red-400 !border-red-500/30"
+                            )}
+                        >
+                            <div className="flex size-5 items-center justify-center">
+                                {pendingAction === "camera" ? <Spinner variant={'bars'} /> : isCameraEnabled ? <Video /> : <VideoOff />}
+                            </div>
+                        </button>
+
+                        {/* Reactions */}
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <button className="flex size-11 items-center justify-center rounded-full bg-white/10 border border-white/10 backdrop-blur-md transition-colors">
+                                    <div className="flex size-5 items-center justify-center">
+                                        <Smile />
+                                    </div>
+                                </button>
+                            </PopoverTrigger>
+                            <PopoverContent side="top" className="w-fit rounded-xl bg-white/5 border border-white/10 p-2 backdrop-blur-2xl shadow-2xl">
+                                <div className="flex gap-1">
+                                    {reactionItems.map((emoji) => (
+                                        <Button
+                                            key={emoji}
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            aria-label={`React ${emoji}`}
+                                            onClick={() => onReaction(emoji)}
+                                            className="interactive-lift size-10 text-xl hover:bg-white/10"
+                                        >
+                                            {emoji}
+                                        </Button>
+                                    ))}
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+
+                        {/* More */}
+                        <Popover open={moreOpen} onOpenChange={setMoreOpen}>
+                            <PopoverTrigger asChild>
+                                <button className={cn(
+                                    "relative flex size-11 items-center justify-center rounded-full bg-white/10 border border-white/10 backdrop-blur-md transition-colors",
+                                    moreOpen && "!bg-white/20 !border-white/30"
+                                )}>
+                                    <div className="flex size-5 items-center justify-center">
+                                        <MoreHorizontal />
+                                    </div>
+                                    {unreadCount > 0 && (
+                                        <Badge className="absolute -top-1 -right-1 min-w-4 px-1 text-[10px] bg-primary text-white border-none animate-pulse">
+                                            {unreadCount > 9 ? "9+" : unreadCount}
+                                        </Badge>
+                                    )}
+                                </button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                                side="top"
+                                align="center"
+                                className="w-48 rounded-2xl bg-black/80 border border-white/10 p-1.5 backdrop-blur-2xl shadow-2xl"
+                            >
+                                <div className="flex flex-col gap-0.5">
+                                    {mobileSecondaryItems.map((item) => (
+                                        <button
+                                            key={item.label}
+                                            onClick={item.onClick}
+                                            className={cn(
+                                                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-white/80 transition-colors hover:bg-white/10",
+                                                item.className
+                                            )}
+                                        >
+                                            {item.icon}
+                                            <span>{item.label}</span>
+                                            {item.badge}
+                                        </button>
+                                    ))}
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+
+                        {/* Leave */}
+                        <button
+                            onClick={leave}
+                            className="flex size-11 items-center justify-center rounded-full bg-red-500 text-white shadow-[0_8px_24px_rgba(239,68,68,0.4)] transition-colors hover:bg-red-500/90"
+                        >
+                            <div className="flex size-5 items-center justify-center">
+                                {pendingAction === "leave" ? <Spinner variant={'bars'} /> : <PhoneOff />}
+                            </div>
+                        </button>
+                    </div>
+                </GlassSurface>
+            </div>
         </div>
     );
 }

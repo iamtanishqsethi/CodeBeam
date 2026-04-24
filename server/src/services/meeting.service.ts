@@ -31,6 +31,70 @@ async function getMeetingOrThrow(meetingId: string) {
     return meeting;
 }
 
+// ── Empty-room grace period (2 minutes) ──────────────────────────────
+const EMPTY_ROOM_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes
+
+// Stores the pending timeout handle for each meeting that is counting down
+const emptyRoomTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+/**
+ * Cancel and remove a pending empty-room timer for a meeting.
+ * Returns true if a timer was actually cancelled.
+ */
+export function cancelEmptyRoomTimer(meetingId: string): boolean {
+    const timer = emptyRoomTimers.get(meetingId);
+    if (timer) {
+        clearTimeout(timer);
+        emptyRoomTimers.delete(meetingId);
+        console.log(`[meeting:${meetingId}] Empty-room timer cancelled — participant rejoined`);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Starts the 2-minute empty-room countdown. When it fires, the meeting is
+ * ended in the DB and socketCallback is invoked so the socket layer can
+ * broadcast the event to any remaining listeners.
+ */
+export function startEmptyRoomTimer(
+    meetingId: string,
+    socketCallback: (meetingId: string) => void
+): void {
+    // If there's already a timer running for this meeting, don't start another
+    if (emptyRoomTimers.has(meetingId)) return;
+
+    console.log(`[meeting:${meetingId}] All participants left — starting ${EMPTY_ROOM_TIMEOUT_MS / 1000}s empty-room timer`);
+
+    const timer = setTimeout(async () => {
+        emptyRoomTimers.delete(meetingId);
+
+        try {
+            // Re-check: someone may have rejoined in the meantime
+            const approvedCount = await prisma.participant.count({
+                where: {meetingId, status: "APPROVED"}
+            });
+
+            if (approvedCount > 0) {
+                console.log(`[meeting:${meetingId}] Timer fired but participants are present — skipping end`);
+                return;
+            }
+
+            await prisma.meeting.update({
+                where: {id: meetingId},
+                data: {status: "ENDED", endedAt: new Date()}
+            });
+
+            console.log(`[meeting:${meetingId}] Meeting ended after empty-room timeout`);
+            socketCallback(meetingId);
+        } catch (e) {
+            console.error(`[meeting:${meetingId}] Error ending meeting after timeout`, e);
+        }
+    }, EMPTY_ROOM_TIMEOUT_MS);
+
+    emptyRoomTimers.set(meetingId, timer);
+}
+
 export async function createMeeting(userId:string,title:string){
     return prisma.meeting.create({
         data:{
@@ -53,6 +117,9 @@ export async function joinMeeting(meetingId:string,userId:string){
     if (meeting.status === 'ENDED') {
         throw meetingEnded();
     }
+
+    // If someone is joining/rejoining, cancel any pending empty-room timer
+    cancelEmptyRoomTimer(meetingId);
 
     return prisma.$transaction(async (tx)=>{
         const existingMeet=await tx.participant.findUnique({
@@ -174,15 +241,9 @@ export async function leaveMeeting(meetingId:string,userId:string){
         });
 
         if (approvedParticipantsCount === 0) {
-            await tx.meeting.update({
-                where: {id: meetingId},
-                data: {
-                    status: "ENDED",
-                    endedAt: new Date()
-                }
-            });
-
-            return {meetingEnded: true};
+            // Don't end immediately — return flag so the controller/socket
+            // layer can start the empty-room grace-period timer instead.
+            return {meetingEnded: false, roomEmpty: true};
         }
 
         return {meetingEnded: false};
@@ -190,6 +251,9 @@ export async function leaveMeeting(meetingId:string,userId:string){
 }
 
 export async function endMeeting(meetingId: string) {
+    // Cancel any pending empty-room timer since we're ending explicitly
+    cancelEmptyRoomTimer(meetingId);
+
     const meeting = await getMeetingOrThrow(meetingId);
 
     if (meeting.status === "ENDED") {

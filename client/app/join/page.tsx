@@ -97,9 +97,9 @@ export default function JoinMeetingPage() {
                         animate="show"
                         className="w-full max-w-6xl"
                     >
-                        <div className="grid gap-8 lg:grid-cols-[1fr_1.2fr] lg:items-stretch">
-                            <div className="flex flex-col gap-8 justify-center">
-                                <div className="flex flex-col gap-6">
+                        <div className="grid gap-6 lg:gap-8 md:grid-cols-2 lg:grid-cols-[1fr_1.2fr] lg:items-stretch">
+                            <div className="flex flex-col gap-6 lg:gap-8 justify-center order-2 lg:order-1">
+                                <div className="flex flex-col gap-4 lg:gap-6">
                                     <motion.div variants={fadeUp}>
                                         <div
                                             className={cn(
@@ -112,11 +112,11 @@ export default function JoinMeetingPage() {
                                         </div>
                                     </motion.div>
 
-                                    <div className="flex flex-col gap-4">
-                                        <h1 className="text-balance text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl font-(family-name:--font-share-tech) uppercase">
+                                    <div className="flex flex-col gap-3 lg:gap-4">
+                                        <h1 className="text-balance text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight font-(family-name:--font-share-tech) uppercase">
                                             Enter the room code
                                         </h1>
-                                        <p className="max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+                                        <p className="max-w-xl text-base leading-relaxed text-muted-foreground lg:text-lg">
                                             Paste the meeting ID from the host, then continue to camera and microphone setup.
                                         </p>
                                     </div>
@@ -143,7 +143,7 @@ export default function JoinMeetingPage() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center justify-center w-full max-w-xl mx-auto lg:mx-0">
+                            <div className="flex items-center justify-center w-full max-w-xl mx-auto lg:mx-0 order-1 lg:order-2 mb-4 lg:mb-0">
                                 <CustomPreJoin
                                     onSubmit={handlePreJoinSubmit}
                                 />

@@ -8,48 +8,48 @@ const features = [
 	{
 		id: "video-calls",
 		children: <VideoCallsVisual />,
-		className: "md:col-span-2",
+		className: "col-span-1 md:col-span-2",
 	},
 	{
 		id: "security",
 		children: <SecurityVisual />,
-		className: "md:col-span-2",
+		className: "col-span-1 md:col-span-2",
 	},
 	{
 		id: "collaboration",
 		children: <CollaborationVisual />,
-		className: "sm:col-span-2 md:col-span-2",
+		className: "col-span-1 sm:col-span-2",
 	},
 	{
 		id: "dashboard",
 		children: <DashboardVisual />,
-		className: "sm:col-span-2 md:col-span-3 p-0",
+		className: "col-span-1 sm:col-span-2 md:col-span-3 p-0",
 	},
 	{
 		id: "presence",
 		children: <PresenceVisual />,
-		className: "sm:col-span-2 md:col-span-3 p-0",
+		className: "col-span-1 sm:col-span-2 md:col-span-3 p-0",
 	},
     {
         id: "calendar",
         children: <CalendarVisual />,
-        className: "md:col-span-2",
+        className: "col-span-1 md:col-span-2",
     },
     {
         id: "terminal",
         children: <TerminalVisual />,
-        className: "md:col-span-2",
+        className: "col-span-1 md:col-span-2",
     },
     {
         id: "code-sandbox",
         children: <CodeSandboxVisual />,
-        className: "md:col-span-2",
+        className: "col-span-1 md:col-span-2",
     },
 ];
 
 export function FeatureSection() {
 	return (
-		<div className="relative mx-auto grid w-full max-w-5xl grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
+		<div className="relative mx-auto grid w-full max-w-5xl grid-cols-1 gap-3 px-1 sm:px-0 sm:grid-cols-2 md:grid-cols-6">
 			{features.map((feature) => (
 				<FeatureCard className={feature.className} key={feature.id}>
 					{feature.children}
@@ -69,7 +69,7 @@ function FeatureCard({
 	return (
 		<div
 			className={cn(
-				"group relative overflow-hidden rounded-2xl border bg-background px-8 pt-8 pb-6",
+				"group relative overflow-hidden rounded-2xl border bg-background px-5 pt-6 pb-5 sm:px-8 sm:pt-8 sm:pb-6",
 				className
 			)}
 		>
@@ -108,9 +108,9 @@ function FeatureDescription({
 function VideoCallsVisual() {
 	return (
 		<>
-			<div className="relative mx-auto flex size-32 items-center justify-center rounded-full border-4 border-dashed bg-background shadow-xs outline outline-border outline-offset-4">
+			<div className="relative mx-auto flex size-24 sm:size-32 items-center justify-center rounded-full border-4 border-dashed bg-background shadow-xs outline outline-border outline-offset-4">
 				<div className="absolute inset-0 z-10 scale-120 bg-radial from-foreground/20 via-foreground/5 to-transparent blur-xl" />
-				<VideoIcon className="size-14 text-primary/90" />
+				<VideoIcon className="size-10 sm:size-14 text-primary/90" />
 			</div>
 
 			<div className="relative mt-8 space-y-1.5 text-center">
@@ -126,8 +126,8 @@ function VideoCallsVisual() {
 function SecurityVisual() {
 	return (
 		<>
-			<div className="relative mx-auto flex size-32 items-center justify-center rounded-full border bg-background shadow-xs outline outline-border outline-offset-4">
-				<CustomLockIcon className="size-24" />
+			<div className="relative mx-auto flex size-24 sm:size-32 items-center justify-center rounded-full border bg-background shadow-xs outline outline-border outline-offset-4">
+				<CustomLockIcon className="size-16 sm:size-24" />
 				<div className="absolute inset-0 scale-120 bg-radial from-foreground/15 via-foreground/5 to-transparent blur-xl" />
 			</div>
 
@@ -144,11 +144,11 @@ function SecurityVisual() {
 function CollaborationVisual() {
 	return (
 		<>
-			<div className="min-h-32 flex items-center justify-center">
-				<div className="relative flex size-24 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <UsersIcon className="size-10" />
-                    <div className="absolute -top-2 -right-2 flex size-8 items-center justify-center rounded-full bg-background border shadow-sm">
-                        <ZapIcon className="size-4 text-yellow-500 fill-yellow-500" />
+			<div className="min-h-24 sm:min-h-32 flex items-center justify-center">
+				<div className="relative flex size-20 sm:size-24 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <UsersIcon className="size-8 sm:size-10" />
+                    <div className="absolute -top-2 -right-2 flex size-7 sm:size-8 items-center justify-center rounded-full bg-background border shadow-sm">
+                        <ZapIcon className="size-3.5 sm:size-4 text-yellow-500 fill-yellow-500" />
                     </div>
 				</div>
 			</div>
@@ -179,7 +179,12 @@ function DashboardVisual() {
 				</div>
 			</div>
 			{/* Dashboard Screen */}
-			<div className="mask-b-from-90% mask-r-from-90% relative aspect-video sm:aspect-auto">
+			<div className="relative aspect-video sm:aspect-auto" style={{
+				maskImage: 'linear-gradient(to bottom, black 90%, transparent), linear-gradient(to right, black 90%, transparent)',
+				WebkitMaskImage: 'linear-gradient(to bottom, black 90%, transparent), linear-gradient(to right, black 90%, transparent)',
+				maskComposite: 'intersect',
+				WebkitMaskComposite: 'source-in',
+			} as React.CSSProperties}>
 				<div className="absolute -right-1 -bottom-1 aspect-video max-h-50 rounded-tl-md border bg-card p-1 sm:max-h-42 md:aspect-square md:max-h-50 lg:aspect-16/12">
 					<div className="aspect-video h-full overflow-hidden rounded-tl-sm border *:pointer-events-none *:size-full *:shrink-0 *:select-none">
 						<img
@@ -333,8 +338,8 @@ function ReportsChartsSvg(props: React.ComponentProps<"svg">) {
 function CalendarVisual() {
     return (
         <>
-            <div className="relative mx-auto flex size-32 items-center justify-center rounded-full border-4 border-dashed bg-background shadow-xs outline outline-border outline-offset-4">
-                <CalendarIcon className="size-14 text-primary/90" />
+            <div className="relative mx-auto flex size-24 sm:size-32 items-center justify-center rounded-full border-4 border-dashed bg-background shadow-xs outline outline-border outline-offset-4">
+                <CalendarIcon className="size-10 sm:size-14 text-primary/90" />
             </div>
             <div className="relative mt-8 space-y-1.5 text-center">
                 <FeatureTitle upcoming>Google Calendar Sync</FeatureTitle>
@@ -349,9 +354,9 @@ function CalendarVisual() {
 function TerminalVisual() {
     return (
         <>
-            <div className="relative mx-auto flex size-32 items-center justify-center rounded-full border bg-background shadow-xs outline outline-border outline-offset-4 overflow-hidden">
-                <TerminalIcon className="size-14 text-primary/90" />
-                <div className="absolute bottom-0 left-0 right-0 h-12 bg-muted/50 flex items-center px-4 font-mono text-[10px] text-muted-foreground">
+            <div className="relative mx-auto flex size-24 sm:size-32 items-center justify-center rounded-full border bg-background shadow-xs outline outline-border outline-offset-4 overflow-hidden">
+                <TerminalIcon className="size-10 sm:size-14 text-primary/90" />
+                <div className="absolute bottom-0 left-0 right-0 h-10 sm:h-12 bg-muted/50 flex items-center px-3 sm:px-4 font-mono text-[9px] sm:text-[10px] text-muted-foreground">
                     $ npm run dev
                 </div>
             </div>
@@ -368,10 +373,10 @@ function TerminalVisual() {
 function CodeSandboxVisual() {
     return (
         <>
-            <div className="relative mx-auto flex size-32 items-center justify-center rounded-full border bg-background shadow-xs outline outline-border outline-offset-4">
-                <CodeIcon className="size-14 text-primary/90" />
-                <div className="absolute top-2 right-2">
-                    <ZapIcon className="size-4 text-yellow-500 fill-yellow-500" />
+            <div className="relative mx-auto flex size-24 sm:size-32 items-center justify-center rounded-full border bg-background shadow-xs outline outline-border outline-offset-4">
+                <CodeIcon className="size-10 sm:size-14 text-primary/90" />
+                <div className="absolute top-1 right-1 sm:top-2 sm:right-2">
+                    <ZapIcon className="size-3.5 sm:size-4 text-yellow-500 fill-yellow-500" />
                 </div>
             </div>
             <div className="relative mt-8 space-y-1.5 text-center">

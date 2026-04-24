@@ -66,7 +66,7 @@ export function MeetingTopBar({duration, roomName, layoutMode, onLayoutModeChang
                     height="auto"
                     backgroundOpacity={0.05}
                     blur={20}
-                    className="shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]"
+                    className="hidden md:block shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]"
                     contentClassName="p-0"
                 >
                     <OptionPicker
