@@ -9,7 +9,7 @@ import {MotionConfig} from "framer-motion";
 import {useEffect, useMemo, useState} from "react";
 import {Track, RoomEvent, type Participant} from "livekit-client";
 import {useMeetingStore} from "@/store/meetingStore";
-import {getMeetingTrackId} from "@/components/ui-meet/ParticipantTile";
+import ParticipantTile, {getMeetingTrackId} from "@/components/ui-meet/ParticipantTile";
 import {socket} from "@/lib/socket";
 import {ChatMessage} from "@/types/store.types";
 
@@ -22,6 +22,7 @@ import {ReactionsOverlay, type ReactionItem} from "@/components/ui-meet/Reaction
 import {playMeetingSound} from "@/lib/meeting-sounds";
 import {Spinner} from "@/components/kibo-ui/spinner";
 import {motion} from "framer-motion";
+import CollaborativeEditor from "@/components/ui/CollaborativeEditor";
 
 export function RoomContent({
     handleLeave,
@@ -109,12 +110,6 @@ export function RoomContent({
     // Participant join/leave toasts
     useEffect(() => {
         const handleParticipant = (participant: Participant, action: "joined" | "left") => {
-            const name = participant.name || participant.identity || "Guest";
-            let metadata: Record<string, unknown> | null = null;
-            try {
-                if (participant.metadata) metadata = JSON.parse(participant.metadata);
-            } catch {}
-
             playMeetingSound(action);
         };
 
@@ -146,6 +141,7 @@ export function RoomContent({
         };
 
         socket.on("chat-message", handleMessage);
+
         return () => {
             socket.off("chat-message", handleMessage);
         };
@@ -231,13 +227,39 @@ export function RoomContent({
                     />
 
                     <main className="relative min-h-0 flex-1 overflow-hidden p-3 pb-24 pt-16 sm:p-4 sm:pb-24 sm:pt-16">
-                        <BentoVideoGrid
-                            tracks={visibleTracks}
-                            spotlightTrack={spotlightTrack}
-                            pinnedTrackId={pinnedTrackId}
-                            isHost={isHost}
-                            onTogglePin={togglePin}
-                        />
+                        {activePanel === "editor" ? (
+                            <div className="grid h-full min-h-0 gap-3 lg:grid-cols-[minmax(0,0.72fr)_minmax(14rem,0.28fr)]">
+                                <div className="min-h-[22rem] w-full h-full relative rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+                                    <CollaborativeEditor 
+                                        roomId={meetingId} 
+                                        userName={useMeetingStore.getState().mediaPreferences.username || "Participant"} 
+                                    />
+                                </div>
+                                <div className="grid min-h-0 grid-cols-2 gap-3 overflow-y-auto lg:grid-cols-1">
+                                    {visibleTracks.map(trackRef => {
+                                        const trackId = getMeetingTrackId(trackRef);
+                                        return (
+                                            <ParticipantTile
+                                                key={trackId}
+                                                trackRef={trackRef}
+                                                isPinned={pinnedTrackId === trackId}
+                                                isHost={isHost}
+                                                onTogglePin={togglePin}
+                                                className="min-h-28"
+                                            />
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ) : (
+                            <BentoVideoGrid
+                                tracks={visibleTracks}
+                                spotlightTrack={spotlightTrack}
+                                pinnedTrackId={pinnedTrackId}
+                                isHost={isHost}
+                                onTogglePin={togglePin}
+                            />
+                        )}
                     </main>
 
                     <ReactionsOverlay reactions={reactions} />
@@ -262,7 +284,7 @@ export function RoomContent({
                     meetingId={meetingId}
                     activePanel={activePanel}
                     onClose={() => setActivePanel(null)}
-                    onTabChange={(tab) => setActivePanel(tab)}
+                    onTabChange={togglePanel}
                     unreadCount={visibleUnreadCount}
                 />
 

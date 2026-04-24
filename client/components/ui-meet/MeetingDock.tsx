@@ -30,8 +30,8 @@ interface MeetingDockProps {
     onEndMeeting: () => void;
     onReaction: (emoji: string) => void;
     onOpenSettings: () => void;
-    onTogglePanel: (panel: "chat" | "participants") => void;
-    activePanel: "chat" | "participants" | null;
+    onTogglePanel: (panel: "chat" | "participants" | "editor") => void;
+    activePanel: "chat" | "participants" | "editor" | null;
     unreadCount: number;
     layoutMode: "grid" | "speaker";
     onLayoutModeChange: (mode: "grid" | "speaker") => void;
@@ -152,6 +152,12 @@ export default function MeetingDock({
             ),
         },
         {
+            title: "Editor",
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-code"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>,
+            onClick: () => onTogglePanel("editor"),
+            className: cn(activePanel === "editor" && "!bg-white/15 !border-white/30"),
+        },
+        {
             title: "Participants",
             icon: <Users />,
             onClick: () => onTogglePanel("participants"),
@@ -213,6 +219,12 @@ export default function MeetingDock({
             icon: <Users className="size-4" />,
             onClick: () => { onTogglePanel("participants"); setMoreOpen(false); },
             className: cn(activePanel === "participants" && "text-primary"),
+        },
+        {
+            label: "Code Editor",
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-code size-4"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>,
+            onClick: () => { onTogglePanel("editor"); setMoreOpen(false); },
+            className: cn(activePanel === "editor" && "text-primary"),
         },
         {
             label: "Chat",

@@ -7,6 +7,7 @@ import webhookService from "./services/webhook.service.js";
 import  http from "http";
 import {Server} from "socket.io";
 import registerMeetingSocket from "./sockets/meeting.socket.js";
+import registerEditorSocket from "./sockets/editor.socket.js";
 
 dotenv.config()
 
@@ -42,6 +43,7 @@ export const io=new Server(server,{
 })
 
 registerMeetingSocket(io)
+registerEditorSocket(io)
 
 server.listen(port,()=>{
     console.log(`Server is running on port ${port}`);
