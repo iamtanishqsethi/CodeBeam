@@ -13,34 +13,34 @@ interface Track {
   image: string;
 }
 
-const LOFITracks: Track[] = [
+const ElevatorTracks: Track[] = [
   {
     id: 1,
-    title: "Midnight Coffee",
-    artist: "Lofi Vibes",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    image: "https://images.unsplash.com/photo-1514525253344-99a42999328a?w=400&h=400&fit=crop"
+    title: "Elevator Bossa Nova",
+    artist: "Corporate Chill",
+    src: "https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8a7315b.mp3",
+    image: "https://images.unsplash.com/photo-1541887258327-020478db1894?w=400&h=400&fit=crop"
   },
   {
     id: 2,
-    title: "Rainy Afternoon",
-    artist: "Chill Beats",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-    image: "https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=400&h=400&fit=crop"
+    title: "Lobby Vibes",
+    artist: "Muzak Masters",
+    src: "https://cdn.pixabay.com/audio/2022/02/07/audio_03134f7f6f.mp3",
+    image: "https://images.unsplash.com/photo-1578330776510-7e3fccf7d0c7?w=400&h=400&fit=crop"
   },
   {
     id: 3,
-    title: "Late Night Study",
-    artist: "Focus Flow",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
-    image: "https://images.unsplash.com/photo-1519389950473-47ba0273381a?w=400&h=400&fit=crop"
+    title: "Waiting Room Groove",
+    artist: "The Hold Tones",
+    src: "https://cdn.pixabay.com/audio/2022/01/21/audio_3106199468.mp3",
+    image: "https://images.unsplash.com/photo-1563212046-24e52643a29b?w=400&h=400&fit=crop"
   },
   {
     id: 4,
-    title: "Cozy Fireplace",
-    artist: "Winter Vibes",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3",
-    image: "https://images.unsplash.com/photo-1542296332-2e44a996aa0d?w=400&h=400&fit=crop"
+    title: "Going Up",
+    artist: "Floor 42",
+    src: "https://cdn.pixabay.com/audio/2024/05/21/audio_e6e9f60f64.mp3",
+    image: "https://images.unsplash.com/photo-1509114781476-d703057e930f?w=400&h=400&fit=crop"
   }
 ];
 
@@ -57,7 +57,15 @@ export const RecordPlayer: React.FC<RecordPlayerProps> = ({
   const [isChangingTrack, setIsChangingTrack] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const currentTrack = LOFITracks[currentTrackIndex];
+  const currentTrack = ElevatorTracks[currentTrackIndex];
+
+  const nextTrack = useCallback(() => {
+    setIsChangingTrack(true);
+    setTimeout(() => {
+      setCurrentTrackIndex(prev => (prev + 1) % ElevatorTracks.length);
+      setIsChangingTrack(false);
+    }, 500);
+  }, []);
 
   useEffect(() => {
     if (!audioRef.current) {
@@ -68,7 +76,7 @@ export const RecordPlayer: React.FC<RecordPlayerProps> = ({
     const audio = audioRef.current;
     
     const handleEnded = () => {
-      if (currentTrackIndex < LOFITracks.length - 1) {
+      if (currentTrackIndex < ElevatorTracks.length - 1) {
         nextTrack();
       } else {
         onToggle();
@@ -80,37 +88,26 @@ export const RecordPlayer: React.FC<RecordPlayerProps> = ({
       audio.removeEventListener('ended', handleEnded);
       audio.pause();
     };
-  }, [currentTrackIndex, onToggle]);
-
-  useEffect(() => {
-    if (!audioRef.current) return;
-    
-    if (isPlaying) {
-      audioRef.current.play().catch(console.error);
-    } else {
-      audioRef.current.pause();
-    }
-  }, [isPlaying]);
+  }, [currentTrackIndex, onToggle, nextTrack]);
 
   useEffect(() => {
     if (!audioRef.current || !currentTrack) return;
-    
     const audio = audioRef.current;
-    audio.src = currentTrack.src;
-    audio.load();
-    
+
+    // Only update source if it has changed
+    if (audio.src !== currentTrack.src) {
+      audio.src = currentTrack.src;
+      audio.load();
+    }
+
     if (isPlaying) {
-      audio.play().catch(console.error);
+      audio.play().catch(error => {
+        console.error("Playback failed:", error);
+      });
+    } else {
+      audio.pause();
     }
   }, [currentTrack, isPlaying]);
-
-  const nextTrack = useCallback(() => {
-    setIsChangingTrack(true);
-    setTimeout(() => {
-      setCurrentTrackIndex(prev => (prev + 1) % LOFITracks.length);
-      setIsChangingTrack(false);
-    }, 500);
-  }, []);
 
   const handlePlayPause = () => {
     onToggle();
@@ -231,7 +228,7 @@ export const RecordPlayer: React.FC<RecordPlayerProps> = ({
               {currentTrack.artist}
             </span>
             <div className="flex gap-2 mt-2">
-              {LOFITracks.map((_, idx) => (
+              {ElevatorTracks.map((_, idx) => (
                 <div
                   key={idx}
                   className={cn(

@@ -1,12 +1,13 @@
 "use client";
 
-import {Camera, Clock, Mic, User, VideoOff, Layout, Sparkles, Settings2, MicOff, Video, X} from "lucide-react";
+import {Camera, Mic, VideoOff, Settings2, MicOff, Video, X, LogOut} from "lucide-react";
 import {useEffect, useRef, useState} from "react";
 import {useMeetingStore} from "@/store/meetingStore";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {useUser} from "@clerk/nextjs";
 import {Button} from "@/components/ui/button";
-import {Badge} from "@/components/ui/badge";
+import {useRouter} from "next/navigation";
+import {leaveMeeting} from "@/services/api";
 import {
     Select,
     SelectContent,
@@ -43,6 +44,8 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
     const [micLevel, setMicLevel] = useState(0);
     const [showSettings, setShowSettings] = useState(false);
     const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+    const [isLeaving, setIsLeaving] = useState(false);
+    const router = useRouter();
     
     const videoDevices = devices.filter(device => device.kind === "videoinput");
     const audioDevices = devices.filter(device => device.kind === "audioinput");
@@ -160,7 +163,7 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
                     className="w-full max-w-7xl flex flex-col gap-8 lg:gap-12"
                 >
                     {/* Header */}
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 text-center lg:text-left">
+                    <div className="flex flex-col gap-3 text-center lg:text-left items-center lg:items-start">
                         <motion.div variants={fadeUp}>
                             <div className="group w-fit rounded-full border border-white/5 bg-neutral-900/50 px-4 py-1">
                                 <AnimatedShinyText className="inline-flex items-center justify-center text-xs font-bold uppercase tracking-[0.2em]">
@@ -312,21 +315,41 @@ export default function MeetingLobby({meetingId}: MeetingLobbyProps) {
                                 </AnimatePresence>
                             </div>
                             
-                            {/* Joining Status */}
-                            <div className="flex items-center justify-center lg:justify-start gap-6">
-                                <div className="flex flex-col gap-1 text-center lg:text-left">
+                            {/* Joining Status & Actions */}
+                            <div className="flex items-center justify-between w-full p-4 lg:p-5 rounded-2xl bg-white/5 border border-white/10 shadow-lg backdrop-blur-sm">
+                                <div className="flex flex-col gap-1 text-left">
                                     <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">Secured Meeting ID</p>
                                     <code className="text-sm font-mono tracking-widest text-white/80">{meetingId}</code>
                                 </div>
+                                <Button 
+                                    variant="destructive" 
+                                    className="rounded-xl px-4 lg:px-6 bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20 shadow-none transition-all"
+                                    disabled={isLeaving}
+                                    onClick={async () => {
+                                        try {
+                                            setIsLeaving(true);
+                                            await leaveMeeting(meetingId);
+                                            router.push('/');
+                                        } catch (error) {
+                                            console.error("Failed to leave meeting:", error);
+                                            router.push('/');
+                                        }
+                                    }}
+                                >
+                                    {isLeaving ? <Spinner variant={'bars'} size={16} className="lg:mr-2" /> : <LogOut size={16} className="lg:mr-2" />}
+                                    <span className="hidden lg:inline font-bold uppercase tracking-wider text-xs">
+                                        {isLeaving ? "Exiting..." : "Exit"}
+                                    </span>
+                                </Button>
                             </div>
                         </div>
 
-                        {/* Right: Record Player / Jazz Vibe */}
+                        {/* Right: Record Player / Elevator Vibe */}
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.3 }}
-                            className="hidden lg:flex items-center justify-center"
+                            className="flex items-center justify-center w-full mt-4 lg:mt-0"
                         >
                             <RecordPlayer 
                                 isPlaying={isMusicPlaying} 
