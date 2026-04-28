@@ -120,12 +120,12 @@ export default function Home() {
                 <div className="mx-auto max-w-7xl">
                     <div className="flex flex-col items-center justify-center space-y-6 text-center">
                         <div className="h-40 w-full max-w-2xl mx-auto">
-                            <TextHoverEffect text="CodeBeam" className="w-full h-full" />
+                            <TextHoverEffect text="Axon" className="w-full h-full" />
                         </div>
                         
                         <div className="flex flex-col items-center space-y-2">
                             <p className="text-sm text-muted-foreground">
-                                © {new Date().getFullYear()} CodeBeam. Built with Next.js and LiveKit.
+                                © {new Date().getFullYear()} Axon. Built with Next.js and LiveKit.
                             </p>
                             <p className="text-sm font-medium text-muted-foreground">
                                 Made by{" "}

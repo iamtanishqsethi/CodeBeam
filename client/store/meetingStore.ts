@@ -2,7 +2,7 @@ import {create} from 'zustand'
 import { MeetingStore} from "@/types/store.types";
 
 const defaultMediaPreferences = {
-    username: "CodeBeam",
+    username: "Axon",
     audioEnabled: true,
     videoEnabled: true,
     audioDeviceId: "",

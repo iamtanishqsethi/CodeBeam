@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     "You have access to a skills registry. Use the `find_skill` tool to search for available skills that might help you complete your tasks.";
 
   const systemPrompt = `
-    You are an advanced AI developer agent for the CodeBeam application.
+    You are an advanced AI developer agent for the Axon application.
     
     ## SKILLS SYSTEM INSTRUCTIONS
     ${findSkillsInstruction}

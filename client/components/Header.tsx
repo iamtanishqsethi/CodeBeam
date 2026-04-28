@@ -48,7 +48,7 @@ export default function Header() {
                             <div className="flex size-7 items-center justify-center rounded-lg bg-primary/15">
                                 <Zap className="text-primary size-3.5" />
                             </div>
-                            <span className="text-lg font-semibold tracking-tight">CodeBeam</span>
+                            <span className="text-lg font-semibold tracking-tight">Axon</span>
                         </Link>
 
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -95,7 +95,7 @@ export default function Header() {
                             <div className="flex size-7 items-center justify-center rounded-lg bg-primary/15">
                                 <Zap className="text-primary size-3.5" />
                             </div>
-                            <span className="text-base font-semibold tracking-tight">CodeBeam</span>
+                            <span className="text-base font-semibold tracking-tight">Axon</span>
                         </Link>
                         <div className="flex items-center gap-1.5">
                             <AnimatedThemeToggler />

@@ -29,7 +29,7 @@ const shareTech = Share_Tech({
 });
 
 export const metadata: Metadata = {
-  title: "CodeBeam",
+  title: "Axon",
   description: "Focused video rooms for technical teams",
 };
 
