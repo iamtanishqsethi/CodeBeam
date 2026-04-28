@@ -2,6 +2,12 @@ import {clerkClient} from "@clerk/express";
 import {prisma} from "../lib/prisma.js";
 
 type SessionClaims = Record<string, unknown>;
+type UserProfile = {
+    email: string | undefined;
+    firstName: string | undefined;
+    lastName: string | null | undefined;
+    imageUrl: string | null | undefined;
+};
 
 function getString(value: unknown): string | undefined {
     return typeof value === "string" && value.trim().length > 0 ? value.trim() : undefined;
@@ -65,30 +71,65 @@ function getPlaceholderProfile(userId: string) {
     };
 }
 
-export async function ensureUserExists(userId: string, sessionClaims?: SessionClaims | null) {
-    const existingUser = await prisma.user.findUnique({
-        where: {id: userId}
+function buildResolvedProfile(userId: string, profile?: UserProfile | null) {
+    const fallbackProfile = getPlaceholderProfile(userId);
+
+    return {
+        email: profile?.email ?? fallbackProfile.email,
+        firstName: profile?.firstName ?? fallbackProfile.firstName,
+        lastName: profile?.lastName ?? fallbackProfile.lastName,
+        imageUrl: profile?.imageUrl ?? fallbackProfile.imageUrl,
+    };
+}
+
+export async function syncUser(userId: string, profile?: UserProfile | null) {
+    const resolvedProfile = buildResolvedProfile(userId, profile);
+
+    return prisma.$transaction(async (tx) => {
+        const existingById = await tx.user.findUnique({
+            where: {id: userId}
+        });
+
+        if (existingById) {
+            return tx.user.update({
+                where: {id: userId},
+                data: resolvedProfile
+            });
+        }
+
+        const existingByEmail = await tx.user.findUnique({
+            where: {email: resolvedProfile.email}
+        });
+
+        if (existingByEmail) {
+            return tx.user.update({
+                where: {id: existingByEmail.id},
+                data: {
+                    id: userId,
+                    ...resolvedProfile
+                }
+            });
+        }
+
+        return tx.user.create({
+            data: {
+                id: userId,
+                ...resolvedProfile
+            }
+        });
     });
+}
 
-    if (existingUser) {
-        return existingUser;
-    }
-
+export async function ensureUserExists(userId: string, sessionClaims?: SessionClaims | null) {
     const claimsProfile = getUserProfileFromClaims(sessionClaims);
     const clerkProfile = claimsProfile.email && claimsProfile.firstName
         ? null
         : await getUserProfileFromClerk(userId);
-    const fallbackProfile = getPlaceholderProfile(userId);
 
-    return prisma.user.upsert({
-        where: {id: userId},
-        update: {},
-        create: {
-            id: userId,
-            email: claimsProfile.email ?? clerkProfile?.email ?? fallbackProfile.email,
-            firstName: claimsProfile.firstName ?? clerkProfile?.firstName ?? fallbackProfile.firstName,
-            lastName: claimsProfile.lastName ?? clerkProfile?.lastName ?? fallbackProfile.lastName,
-            imageUrl: claimsProfile.imageUrl ?? clerkProfile?.imageUrl ?? fallbackProfile.imageUrl,
-        }
+    return syncUser(userId, {
+        email: claimsProfile.email ?? clerkProfile?.email,
+        firstName: claimsProfile.firstName ?? clerkProfile?.firstName,
+        lastName: claimsProfile.lastName ?? clerkProfile?.lastName,
+        imageUrl: claimsProfile.imageUrl ?? clerkProfile?.imageUrl,
     });
 }

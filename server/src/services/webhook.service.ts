@@ -1,6 +1,6 @@
 import express, {Router} from 'express';
 import {Webhook} from "svix";
-import {prisma} from "../lib/prisma.js";
+import {syncUser} from "./user.service.js";
 
 const router = Router();
 
@@ -65,10 +65,11 @@ router.post('/',express.raw({ type: 'application/json' }), async (req, res) => {
             ...(data.image_url !== undefined ? { imageUrl: data.image_url } : {}),
         };
 
-        await prisma.user.upsert({
-            where: { id: data.id },
-            update: updateUser,
-            create: createUser,
+        await syncUser(data.id, {
+            email: createUser.email,
+            firstName: createUser.firstName,
+            lastName: createUser.lastName ?? null,
+            imageUrl: createUser.imageUrl ?? null,
         })
     }
 
