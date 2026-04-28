@@ -13,6 +13,15 @@ function getString(value: unknown): string | undefined {
     return typeof value === "string" && value.trim().length > 0 ? value.trim() : undefined;
 }
 
+function getNameFromEmail(email?: string) {
+    if (!email) {
+        return undefined;
+    }
+
+    const localPart = email.split("@")[0]?.trim();
+    return localPart && localPart.length > 0 ? localPart : undefined;
+}
+
 function getPrimaryEmailFromClaims(sessionClaims?: SessionClaims | null): string | undefined {
     if (!sessionClaims) {
         return undefined;
@@ -73,10 +82,11 @@ function getPlaceholderProfile(userId: string) {
 
 function buildResolvedProfile(userId: string, profile?: UserProfile | null) {
     const fallbackProfile = getPlaceholderProfile(userId);
+    const resolvedEmail = profile?.email ?? fallbackProfile.email;
 
     return {
-        email: profile?.email ?? fallbackProfile.email,
-        firstName: profile?.firstName ?? fallbackProfile.firstName,
+        email: resolvedEmail,
+        firstName: profile?.firstName ?? getNameFromEmail(resolvedEmail) ?? fallbackProfile.firstName,
         lastName: profile?.lastName ?? fallbackProfile.lastName,
         imageUrl: profile?.imageUrl ?? fallbackProfile.imageUrl,
     };

@@ -46,30 +46,11 @@ router.post('/',express.raw({ type: 'application/json' }), async (req, res) => {
         const email = data.email_addresses?.[0]?.email_address;
         const firstName = data.first_name?.trim();
 
-        if (!email || !firstName) {
-            return res.status(400).send("Missing required user fields");
-        }
-
-        const createUser = {
-            id: data.id,
-            email,
-            firstName,
-            ...(data.last_name !== undefined ? { lastName: data.last_name } : {}),
-            ...(data.image_url !== undefined ? { imageUrl: data.image_url } : {}),
-        };
-
-        const updateUser = {
-            email,
-            firstName,
-            ...(data.last_name !== undefined ? { lastName: data.last_name } : {}),
-            ...(data.image_url !== undefined ? { imageUrl: data.image_url } : {}),
-        };
-
         await syncUser(data.id, {
-            email: createUser.email,
-            firstName: createUser.firstName,
-            lastName: createUser.lastName ?? null,
-            imageUrl: createUser.imageUrl ?? null,
+            email,
+            firstName,
+            lastName: data.last_name ?? null,
+            imageUrl: data.image_url ?? null,
         })
     }
 
