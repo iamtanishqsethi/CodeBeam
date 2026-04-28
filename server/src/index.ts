@@ -28,6 +28,7 @@ app.use(cors(
 app.use('/api/webhooks', webhookService)
 
 app.use(express.json());
+app.get('/',(req,res)=>res.send('Hello World!'))
 
 // Global clerkMiddleware for all subsequent routes
 app.use(clerkMiddleware());
