@@ -31,8 +31,8 @@ interface MeetingDockProps {
     onEndMeeting: () => void;
     onReaction: (emoji: string) => void;
     onOpenSettings: () => void;
-    onTogglePanel: (panel: "chat" | "participants" | "editor") => void;
-    activePanel: "chat" | "participants" | "editor" | null;
+    onTogglePanel: (panel: "chat" | "participants" | "editor" | "whiteboard") => void;
+    activePanel: "chat" | "participants" | "editor" | "whiteboard" | null;
     unreadCount: number;
     layoutMode: "grid" | "speaker";
     onLayoutModeChange: (mode: "grid" | "speaker") => void;

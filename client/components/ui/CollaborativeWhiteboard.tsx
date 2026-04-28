@@ -134,7 +134,7 @@ export default function CollaborativeWhiteboard({ roomId, userName }: Collaborat
         loadScene: false,
         export: false,
       },
-    }),
+    } as const),
     []
   );
 
@@ -144,13 +144,13 @@ export default function CollaborativeWhiteboard({ roomId, userName }: Collaborat
         viewBackgroundColor: "transparent",
         theme: "dark",
       },
-    }),
+    } as const),
     []
   );
 
   const handleExcalidrawAPI = useCallback(
     (api: ExcalidrawImperativeAPI) => {
-      setExcalidrawAPI((prev) => (prev?.ready === api?.ready && prev?.id === api?.id ? prev : api));
+      setExcalidrawAPI(api);
     },
     []
   );
