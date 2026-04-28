@@ -2,6 +2,7 @@ import * as meetingService from '../services/meeting.service.js';
 import {type Request, type Response} from 'express';
 import {getAuth} from "@clerk/express";
 import {prisma} from "../lib/prisma.js";
+import {ensureUserExists} from "../services/user.service.js";
 
 function handleControllerError(res: Response, error: Error | any) {
     console.error(error);
@@ -18,11 +19,13 @@ function handleControllerError(res: Response, error: Error | any) {
 
 export async function createMeeting(req:Request, res:Response) {
     try{
-        const { userId } = getAuth(req)
+        const auth = getAuth(req)
+        const { userId } = auth
         if(!userId){
             return res.status(401).json({message:'Unauthorized'})
         }
 
+        await ensureUserExists(userId, auth.sessionClaims as Record<string, unknown> | null | undefined)
         const meeting=await meetingService.createMeeting(userId,req.body.title)
 
         return res.status(201).json(meeting)
@@ -36,7 +39,8 @@ export async function createMeeting(req:Request, res:Response) {
 
 export async function joinMeeting(req:Request,res:Response) {
     try {
-        const { userId } = getAuth(req)
+        const auth = getAuth(req)
+        const { userId } = auth
         if(!userId){
             return res.status(401).json({message:'Unauthorized'})
         }
@@ -47,6 +51,7 @@ export async function joinMeeting(req:Request,res:Response) {
         }
 
 
+        await ensureUserExists(userId, auth.sessionClaims as Record<string, unknown> | null | undefined)
         const result=await meetingService.joinMeeting(meetingId as string,userId)
 
         return res.status(200).json(result)
@@ -160,7 +165,8 @@ export async function rejectParticipants(req:Request,res:Response){
 export async function getLiveKitToken(req:Request,res:Response){
 
     try{
-        const { userId } = getAuth(req)
+        const auth = getAuth(req)
+        const { userId } = auth
         if(!userId){
             return res.status(401).json({message:'Unauthorized'})
         }
@@ -170,6 +176,7 @@ export async function getLiveKitToken(req:Request,res:Response){
             return res.status(400).json({message:'Meeting ID is required'})
         }
 
+        await ensureUserExists(userId, auth.sessionClaims as Record<string, unknown> | null | undefined)
         const token=await meetingService.generateToken(meetingId as string,userId)
         return res.status(200).json({token})
     }
