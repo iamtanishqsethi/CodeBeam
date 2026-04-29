@@ -1,7 +1,10 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useRef } from "react";
+import Image from "next/image";
 import { MotionValue, motion, useScroll, useTransform } from "motion/react";
 import { cn } from "@/lib/utils";
+import { useGSAP } from "@gsap/react";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import {
   IconBrightnessDown,
   IconBrightnessUp,
@@ -26,54 +29,118 @@ import { IconCaretDownFilled } from "@tabler/icons-react";
 
 
 const scrollTexts = [
-  { text: "Noise cancellation that just works", start: 0.20, end: 0.33 },
+  { text: "Noise cancellation that just works", start: 0.18, end: 0.33 },
   { text: "Crystal clear video calls", start: 0.31, end: 0.47 },
   { text: "Collaborate with your team", start: 0.45, end: 0.77 },
 ];
 
-// Must be a separate component — hooks cannot be called inside .map()
-const ScrollTextItem = ({
-                          item,
-                          scrollYProgress,
-                        }: {
-  item: (typeof scrollTexts)[number];
-  scrollYProgress: MotionValue<number>;
+const ScrollTriggerText = ({
+  container,
+}: {
+  container: HTMLDivElement | null;
 }) => {
-  const transitionBuffer = Math.min(0.05, (item.end - item.start) / 2);
-  const opacity = useTransform(
-      scrollYProgress,
-      [item.start, item.start + transitionBuffer, item.end - transitionBuffer, item.end],
-      [0, 1, 1, 0],
-  );
-  const y = useTransform(
-      scrollYProgress,
-      [item.start, item.start + transitionBuffer],
-      [24, 0],
-  );
+  const textsRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (!container || !textsRef.current) return;
+
+    // 1. Force hide all items immediately to prevent "all at once" look
+    gsap.set(".gsap-text-item", { 
+      opacity: 0, 
+      y: 20, 
+      scale: 0.95,
+      visibility: "hidden" 
+    });
+
+    // 2. Animate individual text reveals
+    scrollTexts.forEach((item, i) => {
+      const el = `.gsap-text-${i}`;
+      
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          start: `${item.start * 100}% top`,
+          end: `${item.end * 100}% top`,
+          scrub: 1, // Smoother scrub
+        }
+      });
+
+      tl.to(el, 
+        { 
+          opacity: 1, 
+          y: 0, 
+          scale: 1, 
+          visibility: "visible",
+          duration: 0.4, 
+          ease: "expo.out",
+          immediateRender: false 
+        }
+      )
+      .to(el, { opacity: 1, duration: 0.2 }) // Hold
+      .to(el, 
+        { 
+          opacity: 0, 
+          y: -20, 
+          scale: 1.05, 
+          duration: 0.4, 
+          ease: "expo.in",
+          immediateRender: false 
+        }
+      );
+    });
+  }, { scope: textsRef, dependencies: [container] });
+
   return (
-      <motion.div
-          style={{ opacity, y }}
-          className="absolute inset-0 flex items-center justify-center text-center px-4"
-      >
-      <span className="text-balance max-w-5xl text-2xl tracking-wide sm:text-4xl md:text-6xl font-extrabold font-(family-name:--font-share-tech) uppercase drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)] ">
-        {item.text}
-      </span>
-      </motion.div>
+    <div 
+      ref={textsRef} 
+      style={{ 
+        transformStyle: "preserve-3d",
+        perspective: "1000px",
+        position: "absolute",
+        inset: 0,
+        zIndex: 1000,
+        pointerEvents: "none"
+      }}
+    >
+      {scrollTexts.map((item, i) => (
+        <div 
+          key={i} 
+          className={cn(
+            `gsap-text-${i} gsap-text-item absolute inset-0 flex items-end justify-center`,
+            "px-4 pb-12 will-change-transform"
+          )}
+          style={{ visibility: "hidden" }} // CSS fallback
+        >
+          <span className="text-balance max-w-3xl text-lg tracking-wider sm:text-xl md:text-3xl font-bold font-(family-name:--font-share-tech) uppercase text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] text-center">
+            {item.text}
+          </span>
+        </div>
+      ))}
+    </div>
   );
 };
 
 export const MacbookScroll = ({
-                                src,
-                                showGradient,
-                                title,
-                                badge,
-                              }: {
+                                 src,
+                                 showGradient,
+                                 title,
+                                 badge,
+                               }: {
   src?: string;
   showGradient?: boolean;
   title?: string | React.ReactNode;
   badge?: React.ReactNode;
 }) => {
+  const [container, setContainer] = React.useState<HTMLDivElement | null>(null);
   const ref = useRef<HTMLDivElement>(null);
+
+  // Sync ref and state
+  React.useEffect(() => {
+    if (ref.current) {
+      setContainer(ref.current);
+    }
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
@@ -93,60 +160,35 @@ export const MacbookScroll = ({
   const rotate = useTransform(scrollYProgress, [0.08, 0.1, 0.25], [-28, -28, 0]);
   const textTransform = useTransform(scrollYProgress, [0, 0.25], [0, 100]);
   const textOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-  // Overall container opacity for the scroll text overlay — ensures it fully fades
-  // before the next section appears (prevents overlap on mobile where sections are compressed)
-  const scrollTextContainerOpacity = useTransform(
-      scrollYProgress,
-      [0, 0.15, 0.78, 0.85],
-      [0, 1, 1, 0],
-  );
 
   return (
       <div
           ref={ref}
-          className="relative min-h-[200vh]"
+          className="relative min-h-[130vh] sm:min-h-[165vh] md:min-h-[200vh]"
       >
-        {/* Scroll text overlay — sticky so it only shows while inside this scroll container */}
-        <motion.div
-            style={{ opacity: scrollTextContainerOpacity }}
-            className="pointer-events-none sticky top-[20vh] z-[100] h-0"
+        <motion.h2
+            style={{
+              translateY: textTransform,
+              opacity: textOpacity,
+            }}
+            className="mx-auto flex min-h-[60svh] max-w-6xl items-center justify-center px-4 pb-8 pt-24 text-center text-3xl font-bold text-neutral-800 dark:text-white sm:min-h-[66svh] sm:pt-28 md:min-h-[74svh] md:pb-12 md:text-4xl"
         >
-          <div className="h-[20vh] flex items-center justify-center px-4">
-            {scrollTexts.map((item, index) => (
-                <ScrollTextItem
-                    key={index}
-                    item={item}
-                    scrollYProgress={scrollYProgress}
-                />
-            ))}
-          </div>
-        </motion.div>
+          {title || (
+              <span>
+              This Macbook is built with Tailwindcss. <br /> No kidding.
+            </span>
+          )}
+        </motion.h2>
 
         {/* Scaled Macbook container */}
         <div
             className={cn(
               "relative flex shrink-0 transform flex-col items-center justify-start py-0 [perspective:800px]",
-              // Scale down on small viewports, full size on md+
-              "scale-[0.35] sm:scale-50 md:scale-100",
-              // Compensate negative space created by CSS scale on small screens
-              "-mb-[65vh] sm:-mb-[50vh] md:mb-0",
-              "md:pt-40 md:pb-60",
+              "scale-[0.62] sm:scale-75 md:scale-100",
+              "-mt-24 -mb-28 sm:-mt-20 sm:-mb-24 md:mt-0 md:mb-0",
+              "md:pt-16 md:pb-60",
             )}
         >
-          <motion.h2
-              style={{
-                translateY: textTransform,
-                opacity: textOpacity,
-              }}
-              className="mb-20 text-center text-3xl font-bold text-neutral-800 dark:text-white"
-          >
-            {title || (
-                <span>
-              This Macbook is built with Tailwindcss. <br /> No kidding.
-            </span>
-            )}
-          </motion.h2>
-
           {/* Macbook Lid */}
           <div className="relative w-[32rem]">
             <Lid
@@ -155,6 +197,7 @@ export const MacbookScroll = ({
                 scaleY={scaleY}
                 rotate={rotate}
                 translate={translate}
+                container={container}
             />
           </div>
 
@@ -193,12 +236,14 @@ export const Lid = ({
                       rotate,
                       translate,
                       src,
+                      container,
                     }: {
   scaleX: MotionValue<number>;
   scaleY: MotionValue<number>;
   rotate: MotionValue<number>;
   translate: MotionValue<number>;
   src?: string;
+  container: HTMLDivElement | null;
 }) => {
   return (
       <div className="relative [perspective:800px]">
@@ -235,11 +280,27 @@ export const Lid = ({
             className="absolute inset-0 h-96 w-[32rem] rounded-2xl bg-[#010101] p-2"
         >
           <div className="absolute inset-0 rounded-lg bg-[#272729]" />
-          <img
-              src={src as string}
-              alt="aceternity logo"
-              className="absolute inset-0 h-full w-full rounded-lg object-cover object-left-top"
-          />
+          {src && (
+              <Image
+                  src={src}
+                  alt="Axon product preview"
+                  fill
+                  priority
+                  sizes="(max-width: 640px) 320px, (max-width: 768px) 384px, 512px"
+                  className="rounded-lg object-cover object-left-top"
+              />
+          )}
+
+          {/* Text overlay - now nested inside the lid motion to move with it naturally */}
+          <div 
+            className="absolute inset-x-0 -top-[32rem] z-50 h-[32rem] pointer-events-none"
+            style={{ 
+              transformStyle: "preserve-3d",
+              transform: "translateZ(300px)"
+            }}
+          >
+            <ScrollTriggerText container={container} />
+          </div>
         </motion.div>
 
       </div>

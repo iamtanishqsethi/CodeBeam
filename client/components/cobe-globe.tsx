@@ -6,32 +6,47 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export function CobeGlobe({ className }: { className?: string }) {
+	const wrapperRef = useRef<HTMLDivElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const pointerInteracting = useRef<number | null>(null);
 	const pointerInteractionStart = useRef<number | null>(null);
-	const [r, setR] = useState(0);
+	const rotationRef = useRef(0);
 	const { theme } = useTheme();
-	const [mounted, setMounted] = useState(false);
+	const [inView, setInView] = useState(false);
 
 	useEffect(() => {
-		setMounted(true);
+		if (!wrapperRef.current) return;
+
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) {
+					setInView(true);
+					observer.disconnect();
+				}
+			},
+			{ rootMargin: "240px" }
+		);
+
+		observer.observe(wrapperRef.current);
+		return () => observer.disconnect();
 	}, []);
 
 	useEffect(() => {
-		if (!mounted || !canvasRef.current) return;
+		if (!inView || !canvasRef.current) return;
 
 		let phi = 0;
 		const width = 600;
+		const dpr = Math.min(window.devicePixelRatio || 1, window.innerWidth < 768 ? 1 : 1.5);
 
 		const globe = createGlobe(canvasRef.current, {
-			devicePixelRatio: 2,
-			width: width * 2,
-			height: width * 2,
+			devicePixelRatio: dpr,
+			width: width * dpr,
+			height: width * dpr,
 			phi: 0,
 			theta: 0,
 			dark: theme === "dark" ? 1 : 0,
 			diffuse: 1.2,
-			mapSamples: 16_000,
+			mapSamples: window.innerWidth < 768 ? 6_000 : 9_000,
 			mapBrightness: 6,
 			baseColor: theme === "dark" ? [0.3, 0.3, 0.3] : [0.9, 0.9, 0.9],
 			markerColor: [0.1, 0.8, 1],
@@ -44,7 +59,7 @@ export function CobeGlobe({ className }: { className?: string }) {
 				if (!pointerInteracting.current) {
 					phi += 0.005;
 				}
-				state.phi = phi + r;
+				state.phi = phi + rotationRef.current;
 			},
 		} as never);
 
@@ -57,16 +72,14 @@ export function CobeGlobe({ className }: { className?: string }) {
 		return () => {
 			globe.destroy();
 		};
-	}, [mounted, theme, r]);
-
-	if (!mounted) return null;
+	}, [inView, theme]);
 
 	return (
-		<div className={cn("relative mx-auto aspect-square w-full max-w-[600px]", className)}>
+		<div ref={wrapperRef} className={cn("relative mx-auto aspect-square w-full max-w-[600px]", className)}>
 			<canvas
 				ref={canvasRef}
 				onPointerDown={(e) => {
-					pointerInteracting.current = e.clientX - pointerInteractionStart.current!;
+					pointerInteracting.current = e.clientX - (pointerInteractionStart.current ?? 0);
 					canvasRef.current!.style.cursor = "grabbing";
 				}}
 				onPointerUp={() => {
@@ -81,7 +94,7 @@ export function CobeGlobe({ className }: { className?: string }) {
 					if (pointerInteracting.current !== null) {
 						const delta = e.clientX - pointerInteracting.current;
 						pointerInteractionStart.current = delta;
-						setR(delta / 200);
+						rotationRef.current = delta / 200;
 					}
 				}}
 				className="h-full w-full opacity-0 transition-opacity duration-500 cursor-grab"

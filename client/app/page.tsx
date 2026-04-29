@@ -1,30 +1,35 @@
 'use client'
 
-import {Button} from "@/components/ui/button";
 import {useRouter} from "next/navigation";
-import {ArrowRight, Plus, Shield, Users, Video, Zap} from "lucide-react";
+import dynamic from "next/dynamic";
 import {motion} from "framer-motion";
-import ShinyText from "@/components/reactbits/ShinyText";
-import SpotlightCard from "@/components/reactbits/SpotlightCard";
-import Prism from "@/components/Prism";
 import {AnimatedShinyText} from "@/components/ui/animated-shiny-text";
 import {LayersIcon} from "@/components/ui/layers";
 import {cn} from "@/lib/utils";
-import {InteractiveHoverButton} from "@/components/ui/interactive-hover-button";
-import {PlusIcon} from "@/components/ui/plus";
-import GlassSurface from "@/components/GlassSurface";
-import { FeatureSection } from "@/components/feature-section";
-import {TextHoverEffect} from "@/components/ui/text-hover-effect";
 import { MacbookScroll } from "@/components/ui/macbook-scroll";
 import SplitButton from "@/components/ui/split-button";
-import { useLenis } from 'lenis/react';
 import { useScroll, useTransform } from 'framer-motion';
 
-const stagger = {
+const Prism = dynamic(() => import("@/components/Prism"), {
+    ssr: false,
+    loading: () => null,
+});
 
-    hidden: {},
-    show: {transition: {staggerChildren: 0.12}},
-};
+const FeatureSection = dynamic(
+    () => import("@/components/feature-section").then((mod) => mod.FeatureSection),
+    {
+        ssr: false,
+        loading: () => <div className="min-h-[520px]" aria-hidden="true" />,
+    },
+);
+
+const TextHoverEffect = dynamic(
+    () => import("@/components/ui/text-hover-effect").then((mod) => mod.TextHoverEffect),
+    {
+        ssr: false,
+        loading: () => <div className="h-full w-full" aria-hidden="true" />,
+    },
+);
 
 const fadeUp = {
     hidden: {opacity: 0, y: 24},
@@ -56,6 +61,7 @@ export default function Home() {
                     colorFrequency={1}
                     noise={0}
                     glow={1}
+                    suspendWhenOffscreen
                 />
             </motion.div>
 
@@ -93,14 +99,14 @@ export default function Home() {
                 />
             </div>
 
-            <div className="h-[10vh] sm:h-[40vh] md:h-[80vh] lg:h-[120vh]" />
+            <div className="h-[6vh] sm:h-[18vh] md:h-[56vh] lg:h-[88vh]" />
 
             <motion.section
                 id="features"
                 initial="hidden"
                 whileInView="show"
                 viewport={{once: true, margin: "-80px"}}
-                className="section-shell relative px-4 pb-20 sm:px-6"
+                className="section-shell relative px-4 pb-16 pt-4 sm:px-6 sm:pb-20"
             >
                 <div className="mb-12 text-center">
                     <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
