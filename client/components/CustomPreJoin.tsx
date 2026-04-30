@@ -177,9 +177,9 @@ export default function CustomPreJoin({ onSubmit, userLabel = "" }: CustomPreJoi
     })
 
     return (
-        <Card className="w-full max-w-md mx-auto border-white/10 bg-background/20 backdrop-blur-xl shadow-2xl overflow-hidden rounded-[24px]">
+        <Card className="w-full max-w-sm sm:max-w-md mx-auto border-white/10 bg-background/20 backdrop-blur-xl shadow-2xl overflow-hidden rounded-[24px]">
 
-            <CardContent className="flex flex-col gap-4 lg:gap-6">
+            <CardContent className="flex flex-col gap-3 sm:gap-4 lg:gap-6 p-4 sm:p-6">
                 {/* Preview Area */}
                 <div className="relative aspect-video w-full rounded-xl lg:rounded-2xl overflow-hidden border border-white/10 bg-black/40 group shadow-inner">
                     <AnimatePresence mode="wait">
@@ -239,22 +239,23 @@ export default function CustomPreJoin({ onSubmit, userLabel = "" }: CustomPreJoi
                 </div>
 
                 {/* Device Toggles & Selectors */}
-                <div className="flex flex-col gap-3 lg:gap-4">
-                    <div className="grid grid-cols-2 gap-3 lg:gap-4">
+                <div className="flex flex-col gap-2.5 sm:gap-3 lg:gap-4">
+                    <div className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:gap-4">
                         <GlassSurface borderRadius={999} className="w-full p-0.5" width="100%" height="auto">
                             <label
                                 className={cn(
-                                    "w-full flex items-center justify-between px-3 lg:px-4 py-1.5 lg:py-2 rounded-full transition-all duration-300 cursor-pointer gap-1",
+                                    "w-full flex items-center justify-between px-2.5 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 rounded-full transition-all duration-300 cursor-pointer gap-1",
                                     mediaPreferences.audioEnabled ? " text-primary" : " text-white/40"
                                 )}
                             >
-                                <div className="flex items-center gap-2 lg:gap-3 ">
-                                    {mediaPreferences.audioEnabled ? <Mic className="size-4 lg:size-5" /> : <MicOff className="size-4 lg:size-5" />}
-                                    <span className="text-xs lg:text-sm font-bold uppercase tracking-wider">Audio</span>
+                                <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3 ">
+                                    {mediaPreferences.audioEnabled ? <Mic className="size-3.5 sm:size-4 lg:size-5" /> : <MicOff className="size-3.5 sm:size-4 lg:size-5" />}
+                                    <span className="text-[10px] sm:text-xs lg:text-sm font-bold uppercase tracking-wider">Audio</span>
                                 </div>
                                 <Switch 
                                     checked={mediaPreferences.audioEnabled}
                                     onCheckedChange={(checked) => setMediaPreferences({ audioEnabled: checked })}
+                                    className="scale-75 sm:scale-90 lg:scale-100"
                                 />
                             </label>
                         </GlassSurface>
@@ -262,23 +263,24 @@ export default function CustomPreJoin({ onSubmit, userLabel = "" }: CustomPreJoi
                         <GlassSurface borderRadius={999} className="w-full p-0.5" width="100%" height="auto">
                             <label
                                 className={cn(
-                                    "w-full flex items-center justify-between px-3 lg:px-4 py-1.5 lg:py-2 rounded-full transition-all duration-300 cursor-pointer gap-1",
+                                    "w-full flex items-center justify-between px-2.5 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 rounded-full transition-all duration-300 cursor-pointer gap-1",
                                     mediaPreferences.videoEnabled ? " text-primary" : " text-white/40"
                                 )}
                             >
-                                <div className="flex items-center gap-2 lg:gap-3">
-                                    {mediaPreferences.videoEnabled ? <Camera className="size-4 lg:size-5" /> : <VideoOff className="size-4 lg:size-5" />}
-                                    <span className="text-xs lg:text-sm font-bold uppercase tracking-wider">Video</span>
+                                <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3">
+                                    {mediaPreferences.videoEnabled ? <Camera className="size-3.5 sm:size-4 lg:size-5" /> : <VideoOff className="size-3.5 sm:size-4 lg:size-5" />}
+                                    <span className="text-[10px] sm:text-xs lg:text-sm font-bold uppercase tracking-wider">Video</span>
                                 </div>
                                 <Switch 
                                     checked={mediaPreferences.videoEnabled}
                                     onCheckedChange={(checked) => setMediaPreferences({ videoEnabled: checked })}
+                                    className="scale-75 sm:scale-90 lg:scale-100"
                                 />
                             </label>
                         </GlassSurface>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 lg:gap-4">
+                    <div className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:gap-4">
 
 
                         <DropdownMenu>
@@ -286,11 +288,11 @@ export default function CustomPreJoin({ onSubmit, userLabel = "" }: CustomPreJoi
                                 <Button 
                                     variant="outline" 
                                     disabled={!mediaPreferences.audioEnabled}
-                                    className="w-full h-10 lg:h-12 justify-between border-white/10 rounded-full hover:bg-white/10 text-white/70 px-3 lg:px-4 disabled:opacity-20 transition-all active:scale-[0.98]"
+                                    className="w-full h-9 sm:h-10 lg:h-12 justify-between border-white/10 rounded-full hover:bg-white/10 text-white/70 px-2.5 sm:px-3 lg:px-4 disabled:opacity-20 transition-all active:scale-[0.98]"
                                 >
-                                    <div className="flex items-center gap-2 truncate">
-                                        <Mic className="size-3 lg:size-4 shrink-0" />
-                                        <span className="truncate text-[10px] lg:text-xs font-medium">
+                                    <div className="flex items-center gap-1.5 sm:gap-2 truncate">
+                                        <Mic className="size-3 sm:size-3.5 lg:size-4 shrink-0" />
+                                        <span className="truncate text-[9px] sm:text-[10px] lg:text-xs font-medium">
                                             {audioDevices.find(d => d.deviceId === mediaPreferences.audioDeviceId)?.label || "Select Mic"}
                                         </span>
                                     </div>
@@ -315,11 +317,11 @@ export default function CustomPreJoin({ onSubmit, userLabel = "" }: CustomPreJoi
                                 <Button
                                     variant="outline"
                                     disabled={!mediaPreferences.videoEnabled}
-                                    className="w-full h-10 lg:h-12 justify-between border-white/10 rounded-full hover:bg-white/10 text-white/70 px-3 lg:px-4 disabled:opacity-20 transition-all active:scale-[0.98]"
+                                    className="w-full h-9 sm:h-10 lg:h-12 justify-between border-white/10 rounded-full hover:bg-white/10 text-white/70 px-2.5 sm:px-3 lg:px-4 disabled:opacity-20 transition-all active:scale-[0.98]"
                                 >
-                                    <div className="flex items-center gap-2 truncate">
-                                        <Camera className="size-3 lg:size-4 shrink-0" />
-                                        <span className="truncate text-[10px] lg:text-xs font-medium">
+                                    <div className="flex items-center gap-1.5 sm:gap-2 truncate">
+                                        <Camera className="size-3 sm:size-3.5 lg:size-4 shrink-0" />
+                                        <span className="truncate text-[9px] sm:text-[10px] lg:text-xs font-medium">
                                             {videoDevices.find(d => d.deviceId === mediaPreferences.videoDeviceId)?.label || "Select Camera"}
                                         </span>
                                     </div>
@@ -344,7 +346,7 @@ export default function CustomPreJoin({ onSubmit, userLabel = "" }: CustomPreJoi
                 {/* Final Join Button */}
 
                 <SlideToUnlock
-                    className={'w-full rounded-full'}
+                    className={'w-full rounded-full scale-95 sm:scale-100'}
                     onUnlock={() => {
                         play()
                         handleJoin()

@@ -33,7 +33,7 @@ export default function SplitButton({
     const [open, setOpen] = useState<boolean>(false);
 
     return (
-        <div className="relative flex min-h-[40px] w-full items-center justify-center font-bold">
+        <div className="relative flex min-h-[36px] sm:min-h-[40px] w-full items-center justify-center font-bold">
             {/* MAIN BUTTON */}
             <motion.button
                 layout
@@ -55,10 +55,10 @@ export default function SplitButton({
                     width="auto" 
                     height="auto" 
                     borderRadius={999}
-                    className="px-5 py-2"
+                    className="px-4 py-1.5 sm:px-5 sm:py-2"
                     backgroundOpacity={0.1}
                 >
-                    <span className="text-neutral-700 dark:text-neutral-200 text-base font-semibold">
+                    <span className="text-neutral-700 dark:text-neutral-200 text-sm sm:text-base font-semibold">
                         {label}
                     </span>
                 </GlassSurface>
@@ -89,10 +89,10 @@ export default function SplitButton({
                         width="auto" 
                         height="auto" 
                         borderRadius={999}
-                        className="p-2"
+                        className="p-1.5 sm:p-2"
                         backgroundOpacity={0.1}
                     >
-                        <HugeiconsIcon icon={ArrowLeft01Icon} size={18} className="text-neutral-700 dark:text-neutral-200 " />
+                        <HugeiconsIcon icon={ArrowLeft01Icon} size={open ? 18 : 16} className="text-neutral-700 dark:text-neutral-200 " />
                     </GlassSurface>
                 </motion.button>
 
@@ -112,10 +112,10 @@ export default function SplitButton({
                                 width="auto" 
                                 height="auto" 
                                 borderRadius={999}
-                                className="px-4 py-2"
+                                className="px-3 py-1.5 sm:px-4 sm:py-2"
                                 backgroundOpacity={0.1}
                             >
-                                <span className="text-neutral-700 dark:text-neutral-200 text-base font-semibold">
+                                <span className="whitespace-nowrap text-neutral-700 dark:text-neutral-200 text-sm sm:text-base font-semibold">
                                     {action.label}
                                 </span>
                             </GlassSurface>

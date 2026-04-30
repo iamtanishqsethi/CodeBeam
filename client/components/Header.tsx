@@ -9,10 +9,10 @@ import {
     MobileNavToggle,
     MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
-import {Show, SignInButton, SignUpButton, UserButton} from "@clerk/nextjs";
+import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
-import {Zap} from "lucide-react";
-import {usePathname} from "next/navigation";
+import { Zap } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { AnimatedThemeToggler } from "./ui/animated-theme-toggler";
 import GlassSurface from "./GlassSurface";
 import { Button } from "./ui/button";
@@ -69,12 +69,12 @@ export default function Header() {
                             <AnimatedThemeToggler />
                             <Show when="signed-out">
                                 <SignInButton>
-                                    <Button variant="ghost" size="sm" className="cursor-pointer text-sm font-medium">
+                                    <Button variant="ghost" size="sm" className="cursor-pointer text-sm font-medium rounded-full py-1.5">
                                         Sign In
                                     </Button>
                                 </SignInButton>
                                 <SignUpButton>
-                                    <Button size="sm" className="interactive-lift cursor-pointer px-5 text-sm font-semibold shadow-sm shadow-primary/20">
+                                    <Button size="sm" className="cursor-pointer text-sm font-medium shadow-sm shadow-primary/20 rounded-full py-1.5">
                                         Sign Up
                                     </Button>
                                 </SignUpButton>
@@ -89,55 +89,64 @@ export default function Header() {
 
             {/* Mobile Navigation */}
             <MobileNav className="p-0 border-none bg-transparent shadow-none backdrop-blur-0 lg:hidden overflow-visible">
-                <div className="flex flex-col w-full relative">
-                    <MobileNavHeader className="px-4 py-3">
-                        <Link href="/" className="interactive-lift flex items-center gap-2">
-                            <div className="flex size-7 items-center justify-center rounded-lg bg-primary/15">
-                                <Zap className="text-primary size-3.5" />
-                            </div>
-                            <span className="text-base font-semibold tracking-tight">Axon</span>
-                        </Link>
-                        <div className="flex items-center gap-1.5">
-                            <AnimatedThemeToggler />
-                            <Show when="signed-in">
-                                <UserButton />
-                            </Show>
-                            <MobileNavToggle
-                                isOpen={isMobileMenuOpen}
-                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            />
-                        </div>
-                    </MobileNavHeader>
-
-                    <MobileNavMenu
-                        isOpen={isMobileMenuOpen}
-                        onClose={() => setIsMobileMenuOpen(false)}
-                        className="top-16 left-3 right-3 mx-0 w-auto rounded-2xl border border-border/50 bg-background/80 backdrop-blur-xl shadow-xl p-0"
-                    >
-                        <div className="px-5 py-5 space-y-1">
-                            {navItems.map((item, idx) => (
-                                <Link
-                                    key={`mobile-link-${idx}`}
-                                    href={item.link}
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className="block text-sm font-medium text-muted-foreground hover:text-foreground py-2.5 px-3 rounded-lg hover:bg-muted/50 transition-colors"
-                                >
-                                    {item.name}
-                                </Link>
-                            ))}
-                            <div className="flex w-full flex-col gap-2 pt-3 mt-2 border-t border-border/50">
-                                <Show when="signed-out">
-                                    <SignInButton>
-                                        <Button variant="outline" size="sm" className="w-full h-10 text-sm">Sign In</Button>
-                                    </SignInButton>
-                                    <SignUpButton>
-                                        <Button size="sm" className="w-full h-10 text-sm">Sign Up</Button>
-                                    </SignUpButton>
+                <GlassSurface
+                    width="100%"
+                    height="100%"
+                    borderRadius={32}
+                    className="w-full h-full"
+                    backgroundOpacity={0.1}
+                    blur={12}
+                    saturation={1.2}
+                >
+                    <div className="flex flex-col w-full relative">
+                        <MobileNavHeader>
+                            <Link href="/" className="interactive-lift flex items-center gap-2">
+                                <div className="flex size-7 items-center justify-center rounded-lg bg-primary/15">
+                                    <Zap className="text-primary size-3.5" />
+                                </div>
+                                <span className="text-base font-semibold tracking-tight">Axon</span>
+                            </Link>
+                            <div className="flex items-center gap-1.5">
+                                <AnimatedThemeToggler />
+                                <Show when="signed-in">
+                                    <UserButton />
                                 </Show>
+                                <MobileNavToggle
+                                    isOpen={isMobileMenuOpen}
+                                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                />
                             </div>
-                        </div>
-                    </MobileNavMenu>
-                </div>
+                        </MobileNavHeader>
+
+                        <MobileNavMenu
+                            isOpen={isMobileMenuOpen}
+                            onClose={() => setIsMobileMenuOpen(false)}
+                            className="top-16 left-0 right-0 mx-0 w-auto border border-border/50 p-0"
+                        >
+                            <div className="px-5 py-5 space-y-1">
+                                {navItems.map((item, idx) => (
+                                    <Link
+                                        key={`mobile-link-${idx}`}
+                                        href={item.link}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="block text-sm font-medium text-muted-foreground hover:text-foreground py-2.5 px-3 rounded-lg hover:bg-muted/50 transition-colors"
+                                    >
+                                        {item.name}
+                                    </Link>
+                                ))}
+                                <div className="flex w-full flex-col gap-2 pt-3 mt-2 border-t border-border/50">
+                                    <Show when="signed-out">
+                                        <SignInButton>
+                                            <Button variant="outline" size="sm" className="w-full h-9 text-sm rounded-full">Sign In</Button>
+                                        </SignInButton>
+                                        <SignUpButton>
+                                            <Button size="sm" className="w-full h-9 text-sm rounded-full">Sign Up</Button>
+                                        </SignUpButton>                                    </Show>
+                                </div>
+                            </div>
+                        </MobileNavMenu>
+                    </div>
+                </GlassSurface>
             </MobileNav>
         </Navbar>
     );

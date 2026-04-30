@@ -6,7 +6,7 @@ import {useRouter} from "next/navigation";
 import {Home, PhoneOff} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import GlassSurface from "@/components/GlassSurface";
-import Prism from "@/components/Prism";
+import { FlickeringGrid } from "@/components/ui/flickering-grid";
 import {motion} from "framer-motion";
 
 interface MeetingEndedScreenProps {
@@ -53,23 +53,14 @@ export default function MeetingEndedScreen({
 
     return (
         <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-20">
-            <div
-                className="pointer-events-none absolute inset-0 z-0 h-screen"
-                style={{
-                    maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
-                    WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
-                }}
-            >
-                <Prism
-                    animationType="rotate"
-                    timeScale={0.5}
-                    height={3.5}
-                    baseWidth={5.5}
-                    scale={3.6}
-                    hueShift={0}
-                    colorFrequency={1}
-                    noise={0}
-                    glow={1}
+            <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                <FlickeringGrid
+                    className="absolute inset-0 z-0 h-full w-full [mask-image:radial-gradient(ellipse_at_center,white_30%,transparent_80%)]"
+                    squareSize={4}
+                    gridGap={6}
+                    color="#ffffff"
+                    maxOpacity={0.4}
+                    flickerChance={0.1}
                 />
             </div>
             

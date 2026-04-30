@@ -5,7 +5,7 @@ import {useState} from 'react';
 import {useMeetingStore} from '@/store/meetingStore';
 import {ArrowLeft, LogIn, Sparkles, Video} from 'lucide-react';
 import {motion} from 'framer-motion';
-import Prism from "@/components/Prism";
+import { FlickeringGrid } from "@/components/ui/flickering-grid";
 import GlassSurface from "@/components/GlassSurface";
 import {AnimatedShinyText} from "@/components/ui/animated-shiny-text";
 import {cn} from "@/lib/utils";
@@ -57,23 +57,14 @@ export default function JoinMeetingPage() {
 
     return (
         <div className="relative min-h-screen overflow-hidden bg-background">
-            <div
-                className="pointer-events-none absolute inset-0 z-0 h-screen"
-                style={{
-                    maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
-                    WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
-                }}
-            >
-                <Prism
-                    animationType="rotate"
-                    timeScale={0.5}
-                    height={3.5}
-                    baseWidth={5.5}
-                    scale={3.6}
-                    hueShift={0}
-                    colorFrequency={1}
-                    noise={0}
-                    glow={1}
+            <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                <FlickeringGrid
+                    className="absolute inset-0 z-0 h-full w-full [mask-image:radial-gradient(ellipse_at_center,white_30%,transparent_80%)]"
+                    squareSize={4}
+                    gridGap={6}
+                    color="#ffffff"
+                    maxOpacity={0.4}
+                    flickerChance={0.1}
                 />
             </div>
 
@@ -98,7 +89,7 @@ export default function JoinMeetingPage() {
                         className="w-full max-w-6xl"
                     >
                         <div className="grid gap-6 lg:gap-8 md:grid-cols-2 lg:grid-cols-[1fr_1.2fr] lg:items-stretch">
-                            <div className="flex flex-col gap-6 lg:gap-8 justify-center order-2 lg:order-1">
+                            <div className="flex flex-col gap-6 lg:gap-8 justify-center order-1">
                                 <div className="flex flex-col gap-4 lg:gap-6">
                                     <motion.div variants={fadeUp}>
                                         <div
@@ -116,7 +107,7 @@ export default function JoinMeetingPage() {
                                         <h1 className="text-balance text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight font-(family-name:--font-share-tech) uppercase">
                                             Enter the room code
                                         </h1>
-                                        <p className="max-w-xl text-base leading-relaxed text-muted-foreground lg:text-lg">
+                                        <p className="hidden md:block max-w-xl text-base leading-relaxed text-muted-foreground lg:text-lg">
                                             Paste the meeting ID from the host, then continue to camera and microphone setup.
                                         </p>
                                     </div>
@@ -143,7 +134,7 @@ export default function JoinMeetingPage() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center justify-center w-full max-w-xl mx-auto lg:mx-0 order-1 lg:order-2 mb-4 lg:mb-0">
+                            <div className="flex items-center justify-center w-full max-w-xl mx-auto lg:mx-0 order-2 mb-4 lg:mb-0">
                                 <CustomPreJoin
                                     onSubmit={handlePreJoinSubmit}
                                 />
