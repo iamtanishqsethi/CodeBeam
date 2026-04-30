@@ -163,6 +163,11 @@ export default function CustomPreJoin({ onSubmit, userLabel = "" }: CustomPreJoi
     ]);
 
     const handleJoin = () => {
+        console.log("[CustomPreJoin] handleJoin triggered", {
+            username: username || "Anonymous",
+            video: mediaPreferences.videoEnabled,
+            audio: mediaPreferences.audioEnabled
+        });
         onSubmit({
             username: username || "Anonymous",
             videoEnabled: mediaPreferences.videoEnabled,
@@ -348,7 +353,11 @@ export default function CustomPreJoin({ onSubmit, userLabel = "" }: CustomPreJoi
                 <SlideToUnlock
                     className={'w-full rounded-full scale-95 sm:scale-100'}
                     onUnlock={() => {
-                        play()
+                        try {
+                            play()
+                        } catch (e) {
+                            console.warn("[CustomPreJoin] Sound playback failed", e)
+                        }
                         handleJoin()
                     }}
                 >

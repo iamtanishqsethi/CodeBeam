@@ -15,10 +15,18 @@ export const useAxiosInterceptor = () => {
         const interceptorId=apiClient.interceptors.request.use(async (config)=>{
             const activeSession = sessionRef.current;
             if(activeSession){
-                const token=await activeSession.getToken()
-                if(token){
-                    config.headers.Authorization=`Bearer ${token}`
+                try {
+                    const token=await activeSession.getToken()
+                    if(token){
+                        config.headers.Authorization=`Bearer ${token}`
+                    } else {
+                        console.warn("[AxiosInterceptor] No token returned from session")
+                    }
+                } catch (error) {
+                    console.error("[AxiosInterceptor] Failed to get session token", error)
                 }
+            } else {
+                console.warn("[AxiosInterceptor] No active session found")
             }
             return config
         })

@@ -70,7 +70,9 @@ export function SlideToUnlock({
     const trackWidth = trackRef.current?.offsetWidth || 0
     const maxX = trackWidth - handleWidth
 
-    if (x.get() >= maxX) {
+    // Add 10px tolerance to account for sub-pixel rounding or rounding errors in different browsers
+    if (x.get() >= maxX - 10) {
+      console.log("[SlideToUnlock] Unlock triggered")
       onUnlock?.()
     } else {
       animate(x, 0, { type: "spring", bounce: 0, duration: 0.25 })
