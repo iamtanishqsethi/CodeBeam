@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useTheme } from "next-themes"
 
 import { cn } from "@/lib/utils"
 
@@ -19,20 +20,21 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
   squareSize = 4,
   gridGap = 6,
   flickerChance = 0.3,
-  color = "rgb(0, 0, 0)",
+  color,
   width,
   height,
   className,
   maxOpacity = 0.3,
   ...props
 }) => {
+  const { resolvedTheme } = useTheme()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [isInView, setIsInView] = useState(false)
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 })
 
   const memoizedColor = useMemo(() => {
-    const toRGBA = (color: string) => {
+    const toRGBA = (colorStr: string) => {
       if (typeof window === "undefined") {
         return `rgba(0, 0, 0,`
       }
@@ -40,13 +42,14 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
       canvas.width = canvas.height = 1
       const ctx = canvas.getContext("2d")
       if (!ctx) return "rgba(255, 0, 0,"
-      ctx.fillStyle = color
+      ctx.fillStyle = colorStr
       ctx.fillRect(0, 0, 1, 1)
       const [r, g, b] = Array.from(ctx.getImageData(0, 0, 1, 1).data)
       return `rgba(${r}, ${g}, ${b},`
     }
-    return toRGBA(color)
-  }, [color])
+    const finalColor = color || (resolvedTheme === "dark" ? "#ffffff" : "#000000")
+    return toRGBA(finalColor)
+  }, [color, resolvedTheme])
 
   const setupCanvas = useCallback(
     (canvas: HTMLCanvasElement, width: number, height: number) => {

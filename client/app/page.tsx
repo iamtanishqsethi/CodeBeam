@@ -37,7 +37,6 @@ export default function Home() {
                         className="absolute inset-0 z-0 h-full w-full [mask-image:radial-gradient(ellipse_at_center,white_30%,transparent_80%)]"
                         squareSize={4}
                         gridGap={6}
-                        color="#ffffff"
                         maxOpacity={0.4}
                         flickerChance={0.1}
                     />
