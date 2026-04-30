@@ -18,9 +18,8 @@ import GlassSurface from "./GlassSurface";
 import { Button } from "./ui/button";
 
 const navItems = [
-    { name: "Features", link: "/#features" },
-    { name: "Pricing", link: "/#pricing" },
-    { name: "FAQ", link: "/#faq" },
+    { name: "Create Meeting", link: "/create" },
+    { name: "Join Meeting", link: "/join" },
 ];
 
 export default function Header() {
